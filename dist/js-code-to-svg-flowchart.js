@@ -1937,7 +1937,8 @@ var DefaultShape = {
     symbolHeight: 10,
     symbolWidth: 7.8,
     horizontalPadding: 10,
-    verticalPadding: 10
+    verticalPadding: 10,
+    childOffset: 40
 };
 
 var Themes = exports.Themes = {
@@ -1973,8 +1974,17 @@ var Themes = exports.Themes = {
             fillColor: '#fff59d'
         }),
 
-        Rhombus: _extends({}, DefaultShape, {
-            fillColor: '#90CAF9'
+        LoopRhombus: _extends({}, DefaultShape, {
+            fillColor: '#90CAF9',
+            thinPartOffset: 15,
+            doubleLayerOffset: 4,
+            childOffset: 20
+        }),
+
+        ConditionRhombus: _extends({}, DefaultShape, {
+            fillColor: '#ce93d8',
+            thinPartOffset: 15,
+            childOffset: 20
         })
     }
 };
@@ -3118,10 +3128,10 @@ var Shape = function () {
             this.position = { x: x, y: y };
             this.dimensions = { w: w, h: h };
 
-            this.fromPoint = { x: x + w / 4, y: y + h / 2 };
+            this.fromPoint = this.calculateFromPoint(x, y, w, h);
             this.toPoint = { x: x, y: y + h / 2 };
             this.backPoint = { x: x + w, y: y + h / 2 };
-            this.childOffsetPoint = { x: w / 2, y: h + h / 4 };
+            this.childOffsetPoint = this.calculateChildOffsetPoint(x, y, w, h);
         }
     }, {
         key: 'getPosition',
@@ -3138,6 +3148,11 @@ var Shape = function () {
         value: function setFromPoint(point) {
             this.fromPoint = point;
             return this;
+        }
+    }, {
+        key: 'calculateFromPoint',
+        value: function calculateFromPoint(x, y, w, h) {
+            return { x: x + theme.childOffset / 2, y: y + h / 2 };
         }
     }, {
         key: 'getToPoint',
@@ -3164,6 +3179,11 @@ var Shape = function () {
         value: function setChildOffsetPoint(point) {
             this.childOffsetPoint = point;
             return this;
+        }
+    }, {
+        key: 'calculateChildOffsetPoint',
+        value: function calculateChildOffsetPoint(x, y, w, h) {
+            return { x: theme.childOffset, y: h + h / 4 };
         }
     }, {
         key: 'printName',
@@ -16774,9 +16794,13 @@ var _Rectangle = __webpack_require__(176);
 
 var _Rectangle2 = _interopRequireDefault(_Rectangle);
 
-var _Rhombus = __webpack_require__(177);
+var _ConditionRhombus = __webpack_require__(444);
 
-var _Rhombus2 = _interopRequireDefault(_Rhombus);
+var _ConditionRhombus2 = _interopRequireDefault(_ConditionRhombus);
+
+var _LoopRhombus = __webpack_require__(445);
+
+var _LoopRhombus2 = _interopRequireDefault(_LoopRhombus);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -16789,8 +16813,11 @@ var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node, x
             break;
 
         case _constants.ALIASES.LOOP:
+            shape = _LoopRhombus2.default;
+            break;
+
         case _constants.ALIASES.CONDITIONAL:
-            shape = _Rhombus2.default;
+            shape = _ConditionRhombus2.default;
             break;
 
         default:
@@ -16931,68 +16958,7 @@ exports.default = function (name, config) {
 module.exports = exports['default'];
 
 /***/ }),
-/* 177 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _Shape2 = __webpack_require__(42);
-
-var _Shape3 = _interopRequireDefault(_Shape2);
-
-var _Theme = __webpack_require__(26);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var theme = (0, _Theme.getTheme)().Rhombus;
-
-var Rhombus = function (_Shape) {
-    _inherits(Rhombus, _Shape);
-
-    function Rhombus() {
-        _classCallCheck(this, Rhombus);
-
-        return _possibleConstructorReturn(this, (Rhombus.__proto__ || Object.getPrototypeOf(Rhombus)).apply(this, arguments));
-    }
-
-    _createClass(Rhombus, [{
-        key: 'print',
-        value: function print() {
-            var _position = this.position,
-                x = _position.x,
-                y = _position.y,
-                _dimensions = this.dimensions,
-                w = _dimensions.w,
-                h = _dimensions.h;
-
-
-            return '\n            <g>\n                <rect x="' + x + '" y="' + y + '"\n                    width="' + w + '" height=' + h + '\n                    style="fill:' + theme.fillColor + '; stroke-width:' + theme.strokeWidth + '; stroke:' + theme.strokeColor + '" />\n               ' + this.printName() + '\n            </g>';
-        }
-    }]);
-
-    return Rhombus;
-}(_Shape3.default);
-
-exports.default = function (name, config) {
-    return new Rhombus(name, config);
-};
-
-module.exports = exports['default'];
-
-/***/ }),
+/* 177 */,
 /* 178 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17113,7 +17079,7 @@ var getConnectionConfig = exports.getConnectionConfig = function getConnectionCo
         arrowType: { x: 0, y: 0 }
     };
 
-    if (startPoint.x < endPoint.x && startPoint.y < endPoint.y) {
+    if (startPoint.x <= endPoint.x && startPoint.y <= endPoint.y) {
         config.linePoints = [{ x: startPoint.x, y: startPoint.y }, { x: startPoint.x, y: endPoint.y }, { x: endPoint.x, y: endPoint.y }];
         config.arrowType = ARROW_TYPE.RIGHT;
     } else if (startPoint.y > endPoint.y) {
@@ -36384,6 +36350,176 @@ var getBasicEntryConfig = function getBasicEntryConfig(item, path) {
 
     return config;
 };
+
+/***/ }),
+/* 444 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Shape2 = __webpack_require__(42);
+
+var _Shape3 = _interopRequireDefault(_Shape2);
+
+var _Theme = __webpack_require__(26);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var theme = (0, _Theme.getTheme)().ConditionRhombus;
+
+var Rhombus = function (_Shape) {
+    _inherits(Rhombus, _Shape);
+
+    function Rhombus() {
+        _classCallCheck(this, Rhombus);
+
+        return _possibleConstructorReturn(this, (Rhombus.__proto__ || Object.getPrototypeOf(Rhombus)).apply(this, arguments));
+    }
+
+    _createClass(Rhombus, [{
+        key: 'calculateWidth',
+        value: function calculateWidth(name) {
+            return 2 * theme.horizontalPadding + name.length * theme.symbolWidth + 2 * theme.thinPartOffset;
+        }
+    }, {
+        key: 'calculateHeight',
+        value: function calculateHeight() {
+            return 2 * theme.verticalPadding + theme.symbolHeight + 2 * theme.thinPartOffset;
+        }
+    }, {
+        key: 'calculateFromPoint',
+        value: function calculateFromPoint(x, y, w, h) {
+            return { x: x + w / 2, y: y + h / 2 };
+        }
+    }, {
+        key: 'calculateChildOffsetPoint',
+        value: function calculateChildOffsetPoint(x, y, w, h) {
+            return { x: w / 2 + theme.childOffset, y: h + h / 4 };
+        }
+    }, {
+        key: 'print',
+        value: function print() {
+            var _position = this.position,
+                x = _position.x,
+                y = _position.y,
+                _dimensions = this.dimensions,
+                w = _dimensions.w,
+                h = _dimensions.h,
+                namePosition = { x: x + theme.thinPartOffset, y: y + theme.thinPartOffset };
+
+
+            return '<g>\n            <polygon points="' + x + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + y + ' ' + (x + w) + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + (y + h) + '"\n                style="fill:' + theme.fillColor + ';stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />\n                \n            ' + this.printName(namePosition) + '\n        </g>';
+        }
+    }]);
+
+    return Rhombus;
+}(_Shape3.default);
+
+exports.default = function (name, config) {
+    return new Rhombus(name, config);
+};
+
+module.exports = exports['default'];
+
+/***/ }),
+/* 445 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Shape2 = __webpack_require__(42);
+
+var _Shape3 = _interopRequireDefault(_Shape2);
+
+var _Theme = __webpack_require__(26);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var theme = (0, _Theme.getTheme)().LoopRhombus;
+
+var Rhombus = function (_Shape) {
+    _inherits(Rhombus, _Shape);
+
+    function Rhombus() {
+        _classCallCheck(this, Rhombus);
+
+        return _possibleConstructorReturn(this, (Rhombus.__proto__ || Object.getPrototypeOf(Rhombus)).apply(this, arguments));
+    }
+
+    _createClass(Rhombus, [{
+        key: 'calculateWidth',
+        value: function calculateWidth(name) {
+            return 2 * theme.horizontalPadding + name.length * theme.symbolWidth + 2 * theme.thinPartOffset;
+        }
+    }, {
+        key: 'calculateHeight',
+        value: function calculateHeight() {
+            return 2 * theme.verticalPadding + theme.symbolHeight + 2 * theme.thinPartOffset;
+        }
+    }, {
+        key: 'calculateFromPoint',
+        value: function calculateFromPoint(x, y, w, h) {
+            return { x: x + w / 2, y: y + h / 2 };
+        }
+    }, {
+        key: 'calculateChildOffsetPoint',
+        value: function calculateChildOffsetPoint(x, y, w, h) {
+            return { x: w / 2 + theme.childOffset, y: h + h / 4 };
+        }
+    }, {
+        key: 'print',
+        value: function print() {
+            var _position = this.position,
+                x = _position.x,
+                y = _position.y,
+                _dimensions = this.dimensions,
+                w = _dimensions.w,
+                h = _dimensions.h,
+                namePosition = { x: x + theme.thinPartOffset, y: y + theme.thinPartOffset },
+                doubleLayerOffset = theme.doubleLayerOffset,
+                fillColor = theme.fillColor,
+                strokeColor = theme.strokeColor,
+                strokeWidth = theme.strokeWidth;
+
+
+            return '<g>\n            <polygon points="\n                    ' + (x + doubleLayerOffset / 2) + ',' + (y + h / 2 - doubleLayerOffset) + ' \n                    ' + (x + w / 2 + doubleLayerOffset / 2) + ',' + (y - doubleLayerOffset) + ' \n                    ' + (x + w + theme.doubleLayerOffset / 2) + ',' + (y + h / 2 - doubleLayerOffset) + ' \n                    ' + (x + w / 2 + theme.doubleLayerOffset / 2) + ',' + (y + h - doubleLayerOffset) + '"\n                style="fill:' + fillColor + ';stroke:' + strokeColor + ';stroke-width:' + strokeWidth + '" />\n                \n            <polygon points="' + x + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + y + ' ' + (x + w) + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + (y + h) + '"\n                style="fill:' + fillColor + ';stroke:' + strokeColor + ';stroke-width:' + strokeWidth + '" />\n                \n            ' + this.printName(namePosition) + '\n        </g>';
+        }
+    }]);
+
+    return Rhombus;
+}(_Shape3.default);
+
+exports.default = function (name, config) {
+    return new Rhombus(name, config);
+};
+
+module.exports = exports['default'];
 
 /***/ })
 /******/ ]);

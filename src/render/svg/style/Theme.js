@@ -8,7 +8,8 @@ const DefaultShape = {
     symbolHeight: 10,
     symbolWidth: 7.8,
     horizontalPadding: 10,
-    verticalPadding: 10
+    verticalPadding: 10,
+    childOffset: 40
 };
 
 export const Themes = {
@@ -49,9 +50,19 @@ export const Themes = {
             fillColor: '#fff59d'
         },
 
-        Rhombus: {
+        LoopRhombus: {
             ...DefaultShape,
-            fillColor: '#90CAF9'
+            fillColor: '#90CAF9',
+            thinPartOffset: 15,
+            doubleLayerOffset: 4,
+            childOffset: 20
+        },
+
+        ConditionRhombus: {
+            ...DefaultShape,
+            fillColor: '#ce93d8',
+            thinPartOffset: 15,
+            childOffset: 20
         }
     }
 };

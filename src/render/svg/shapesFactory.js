@@ -1,7 +1,8 @@
 import {ALIASES} from '../../shared/constants';
 import VerticalEdgedRectangle from './shapes/VerticalEdgedRectangle';
 import Rectangle from './shapes/Rectangle';
-import Rhombus from './shapes/Rhombus';
+import ConditionRhombus from './shapes/ConditionRhombus';
+import LoopRhombus from './shapes/LoopRhombus';
 
 export const getShapeForNode = (node, x, y) => {
     let shape;
@@ -12,8 +13,11 @@ export const getShapeForNode = (node, x, y) => {
             break;
 
         case ALIASES.LOOP:
+            shape = LoopRhombus;
+            break;
+
         case ALIASES.CONDITIONAL:
-            shape = Rhombus;
+            shape = ConditionRhombus;
             break;
 
         default:

@@ -86,7 +86,7 @@ export const getConnectionConfig = (startPoint, endPoint) => {
         arrowType: {x: 0, y: 0}
     };
 
-    if (startPoint.x < endPoint.x && startPoint.y < endPoint.y) {
+    if (startPoint.x <= endPoint.x && startPoint.y <= endPoint.y) {
         config.linePoints = [
             {x: startPoint.x, y: startPoint.y},
             {x: startPoint.x, y: endPoint.y},

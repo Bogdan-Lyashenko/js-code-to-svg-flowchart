@@ -20,10 +20,10 @@ export default class Shape {
         this.position = {x, y};
         this.dimensions = {w, h};
 
-        this.fromPoint = {x: x + w/4, y: y + h/2};
+        this.fromPoint = this.calculateFromPoint(x, y, w, h);
         this.toPoint = {x, y: y + h/2};
         this.backPoint = {x: x  + w, y: y + h/2};
-        this.childOffsetPoint = {x: w/2, y: h + h/4};
+        this.childOffsetPoint = this.calculateChildOffsetPoint(x, y, w, h);
     }
 
     getPosition() {
@@ -37,6 +37,10 @@ export default class Shape {
     setFromPoint(point) {
         this.fromPoint = point;
         return this;
+    }
+
+    calculateFromPoint(x, y, w, h) {
+        return {x: x + theme.childOffset / 2, y: y + h/2};
     }
 
     getToPoint() {
@@ -58,6 +62,10 @@ export default class Shape {
     setChildOffsetPoint(point) {
         this.childOffsetPoint = point;
         return this;
+    }
+
+    calculateChildOffsetPoint(x, y, w, h) {
+        return {x: theme.childOffset, y: h + h/4};
     }
 
     printName(position) {
