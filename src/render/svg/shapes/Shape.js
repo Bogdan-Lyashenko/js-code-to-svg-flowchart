@@ -1,10 +1,16 @@
 import {getTheme} from '../style/Theme';
+import {generateId} from '../../../shared/utils/string';
+import {flatTree} from '../../../shared/utils/flatten';
+import {getBoundaries} from '../../../shared/utils/geometry';
 
 const theme = getTheme().Shape;
 
 export default class Shape {
-    constructor(name, {x, y}) {
-        this.setupProperties(name, x, y, this.calculateWidth(name), this.calculateHeight());
+    constructor(node, {x, y}) {
+        this.id = generateId();
+        this.body = [];
+
+        this.setupProperties(node, x, y, this.calculateWidth(node.name), this.calculateHeight());
     }
 
     calculateWidth(name) {
@@ -15,8 +21,10 @@ export default class Shape {
         return 2 * theme.verticalPadding + theme.symbolHeight;
     }
 
-    setupProperties(name, x, y, w, h) {
-        this.name = name;
+    setupProperties(node, x, y, w, h) {
+        this.node = node;
+        this.name = node.name;
+
         this.position = {x, y};
         this.dimensions = {w, h};
 
@@ -62,6 +70,22 @@ export default class Shape {
     setChildOffsetPoint(point) {
         this.childOffsetPoint = point;
         return this;
+    }
+
+    getChildBoundaries() {
+        const list = flatTree(this);
+
+        return getBoundaries(list.map(item => item.getBoundaries()));
+    }
+
+    getBoundaries() {
+        const {x, y} = this.position,
+            {w, h} = this.dimensions;
+
+        return {
+            min: {x, y},
+            max: {x: x + w, y: y + h}
+        };
     }
 
     calculateChildOffsetPoint(x, y, w, h) {

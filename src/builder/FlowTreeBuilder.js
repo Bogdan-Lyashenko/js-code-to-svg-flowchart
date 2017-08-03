@@ -11,7 +11,7 @@ export const getFlowTree = (code, config) => {
 
     traverse(AST, visitor);
 
-    return {name: 'root', body: treeNodes};
+    return {name: '', body: treeNodes};
 };
 
 export const getAST = (code, config) => {

@@ -4,9 +4,9 @@ export const SVGBase = () => {
             h: 1000,
             w: 1000
         },
-        body: [],
+        children: [],
         add(shape) {
-            this.body = this.body.concat(shape);
+            this.children = this.children.concat(shape);
             return this;
         },
         print(content) {

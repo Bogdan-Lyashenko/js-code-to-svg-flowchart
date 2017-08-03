@@ -7,28 +7,31 @@ import {ALIASES} from '../../shared/constants';
 
 
 export const buildSVGObjectsTree = (flowTree) => {
-    const svg = SVGBase(),
-        root = Circle('', {x: 15, y: 15});
+    const svg = SVGBase();
 
-    root.setChildOffsetPoint({x: 20, y: 50});
+    const shapeStructures = buildShapeStructures(flowTree),
+        connections = buildConnections(shapeStructures.root);
 
-    const blocks = buildBlocks(root, flowTree),
-        connections = buildConnections(root, flowTree, blocks);
-
-    svg.add(connections).add(blocks).add(root);
+    svg.add(connections).add(shapeStructures.list).add(shapeStructures.root);
 
     return svg;
 };
 
-export const buildBlocks = (root, flowTree) => {
+export const buildShapeStructures = (flowTree) => {
+    const root = Circle(flowTree, {x: 15, y: 15});
+    root.setChildOffsetPoint({x: 20, y: 50});
+
     const position = {...root.getChildOffsetPoint()};
-    const blocks = [];
+    const shapesList = [];
+
 
     complexTraversal(flowTree, root, (parentNode, parentShape) => {
         position.x += parentShape.getChildOffsetPoint().x;
-    }, (node) => {
+    }, (node, parentShape) => {
         const shape = getShapeForNode(node, position.x, position.y);
-        blocks.push(shape);
+
+        shapesList.push(shape);
+        parentShape.body.push(shape);
         position.y += shape.getChildOffsetPoint().y;
 
         return shape;
@@ -36,29 +39,33 @@ export const buildBlocks = (root, flowTree) => {
         position.x = parentShape.getPosition().x;
     });
 
-    return blocks;
+    return {
+        list: shapesList,
+        root: root
+    };
 };
 
-export const buildConnections = (root, flowTree, blocks) => {
+export const buildConnections = (shapesTree) => {
     const connections = [];
-    let blocksIndex = 0;
+    let latestShape = null;
 
-    complexTraversal(flowTree, root, (parentNode, parentShape) => {
+    complexTraversal(shapesTree, shapesTree, (parentShape) => {
 
-    }, (node, parentShape) => {
-        const block = blocks[blocksIndex];
+    }, (shape, parentShape) => {
+        latestShape = shape;
+
         connections.push(ConnectionArrow(
-            getConnectionConfig(parentShape.getFromPoint(), block.getToPoint())
+            getConnectionConfig(parentShape.getFromPoint(), shape.getToPoint())
         ));
 
-        blocksIndex++;
-        return block;
-    }, (parentNode, parentShape) => {
-        if (parentNode.type !== ALIASES.LOOP) return;
+        return shape;
+    }, (parentShape) => {
+        if (parentShape.node.type !== ALIASES.LOOP) return;
 
-        const block = blocks[blocksIndex - 1];
+        const {max} = parentShape.getChildBoundaries();
+
         connections.push(ConnectionArrow(
-            getConnectionConfig(block.getBackPoint(), parentShape.getBackPoint())
+            getConnectionConfig(latestShape.getBackPoint(), parentShape.getBackPoint(), {x: max.x})
         ));
     });
 
@@ -69,8 +76,8 @@ export const render = (tree) => {
     let svgString = ``;
 
     [].concat(tree).forEach((node)=> {
-        if (node.body && node.body.length) {
-            svgString += node.print(render(node.body));
+        if (node.children && node.children.length) {
+            svgString += node.print(render(node.children));
         } else {
             svgString += node.print();
         }

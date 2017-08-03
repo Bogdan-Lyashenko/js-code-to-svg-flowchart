@@ -24,5 +24,5 @@ export const getShapeForNode = (node, x, y) => {
             shape = Rectangle;
     }
 
-    return shape(node.name, {x, y});
+    return shape(node, {x, y});
 };

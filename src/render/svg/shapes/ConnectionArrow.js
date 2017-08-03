@@ -79,7 +79,7 @@ class ConnectionArrow {
 export default (config) => new ConnectionArrow(config);
 
 
-export const getConnectionConfig = (startPoint, endPoint) => {
+export const getConnectionConfig = (startPoint, endPoint, boundaryPoint) => {
     const config = {
         linePoints: [],
         arrowPoint: {x: endPoint.x, y: endPoint.y},
@@ -97,8 +97,8 @@ export const getConnectionConfig = (startPoint, endPoint) => {
     } else if (startPoint.y > endPoint.y) {
         config.linePoints = [
             {x: startPoint.x, y: startPoint.y},
-            {x: startPoint.x + theme.lineTurnOffset, y: startPoint.y},
-            {x: startPoint.x + theme.lineTurnOffset, y: endPoint.y},
+            {x: boundaryPoint.x + theme.lineTurnOffset, y: startPoint.y},
+            {x: boundaryPoint.x + theme.lineTurnOffset, y: endPoint.y},
             {x: endPoint.x - theme.lineTurnOffset, y: endPoint.y}
         ];
         config.arrowType = ARROW_TYPE.LEFT;

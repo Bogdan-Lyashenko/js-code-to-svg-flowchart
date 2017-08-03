@@ -4,8 +4,8 @@ import {getTheme} from '../style/Theme';
 const theme = getTheme().Circle;
 
 class Circle extends Shape {
-    constructor(name, config) {
-        super(name, config);
+    constructor(node, config) {
+        super(node, config);
 
         this.fromPoint = {x: config.x, y: config.y};
     }
