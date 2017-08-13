@@ -63,6 +63,15 @@ export const Themes = {
             fillColor: '#ce93d8',
             thinPartOffset: 15,
             childOffset: 20
+        },
+
+        RootStartPoint: {
+            center: {
+                x: 15, y: 15
+            },
+            childOffset: {
+                x: 20, y: 50
+            }
         }
     }
 };

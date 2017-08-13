@@ -1,14 +1,15 @@
-import Shape from './Shape';
-import {getTheme} from '../style/Theme';
+import Shape, {setupInit} from './Shape';
 
-const theme = getTheme().LoopRhombus;
+const THEME_FIELD_NAME = 'LoopRhombus';
 
-class Rhombus extends Shape {
+class LoopRhombus extends Shape {
     calculateWidth(name) {
+        const theme = this.theme;
         return 2 * theme.horizontalPadding + name.length * theme.symbolWidth + 2 * theme.thinPartOffset;
     }
 
     calculateHeight() {
+        const theme = this.theme;
         return 2 * theme.verticalPadding + theme.symbolHeight + 2*theme.thinPartOffset;
     }
 
@@ -17,10 +18,12 @@ class Rhombus extends Shape {
     }
 
     calculateChildOffsetPoint(x, y, w, h) {
+        const theme = this.theme;
         return {x: w/2 + theme.childOffset, y: h + h/4};
     }
 
     print() {
+        const theme = this.theme;
         const {x, y} = this.position,
             {w, h} = this.dimensions,
             namePosition = {x: x + theme.thinPartOffset, y: y + theme.thinPartOffset},
@@ -42,5 +45,4 @@ class Rhombus extends Shape {
     }
 }
 
-
-export default (name, config) => new Rhombus(name, config);
+export default setupInit(LoopRhombus, THEME_FIELD_NAME);

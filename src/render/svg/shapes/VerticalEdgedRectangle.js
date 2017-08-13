@@ -1,14 +1,15 @@
-import Shape from './Shape';
-import {getTheme} from '../style/Theme';
+import Shape, {setupInit} from './Shape';
 
-const theme = getTheme().VerticalEdgedRectangle;
+const THEME_FIELD_NAME = 'VerticalEdgedRectangle';
 
 class VerticalEdgedRectangle extends Shape {
     calculateWidth(name) {
+        const theme = this.theme;
         return 2 * theme.horizontalPadding + name.length * theme.symbolWidth + 2 * theme.edgeOffset;
     }
 
     print() {
+        const theme = this.theme;
         const {x, y} = this.position,
             {w, h} = this.dimensions,
             namePosition = {x: x + theme.edgeOffset, y};
@@ -31,5 +32,4 @@ class VerticalEdgedRectangle extends Shape {
     }
 }
 
-
-export default (name, config) => new VerticalEdgedRectangle(name, config);
+export default setupInit(VerticalEdgedRectangle, THEME_FIELD_NAME);

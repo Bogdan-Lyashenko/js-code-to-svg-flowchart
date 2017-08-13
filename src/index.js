@@ -41,7 +41,7 @@ const simpleStr = `
 `;
 
 const flowTree = getFlowTree(code),
-    svgRender = createSVGRender(flowTree);
+    svgRender = createSVGRender(flowTree, {Circle: {strokeColor: 'black'}});
 
 document.getElementById('svgImage').innerHTML = svgRender.render();
 

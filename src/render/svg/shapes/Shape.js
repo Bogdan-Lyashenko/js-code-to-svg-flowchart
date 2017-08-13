@@ -1,23 +1,27 @@
-import {getTheme} from '../style/Theme';
 import {generateId} from '../../../shared/utils/string';
 import {flatTree} from '../../../shared/utils/flatten';
 import {getBoundaries} from '../../../shared/utils/geometry';
 
-const theme = getTheme().Shape;
-
 export default class Shape {
-    constructor(node, {x, y}) {
+    constructor(node, {x, y}, theme) {
         this.id = generateId();
         this.body = [];
+        this.theme = theme;
 
         this.setupProperties(node, x, y, this.calculateWidth(node.name), this.calculateHeight());
     }
 
+    overrideTheme(theme) {
+        this.theme = theme;
+    }
+
     calculateWidth(name) {
+        const theme = this.theme;
         return 2 * theme.horizontalPadding + name.length * theme.symbolWidth;
     }
 
     calculateHeight() {
+        const theme = this.theme;
         return 2 * theme.verticalPadding + theme.symbolHeight;
     }
 
@@ -48,6 +52,7 @@ export default class Shape {
     }
 
     calculateFromPoint(x, y, w, h) {
+        const theme = this.theme;
         return {x: x + theme.childOffset / 2, y: y + h/2};
     }
 
@@ -89,10 +94,12 @@ export default class Shape {
     }
 
     calculateChildOffsetPoint(x, y, w, h) {
+        const theme = this.theme;
         return {x: theme.childOffset, y: h + h/4};
     }
 
     printName(position) {
+        const theme = this.theme;
         const {x, y} = position ? position : this.position;
 
         return `<text x="${x + theme.horizontalPadding}" y="${y + 2*theme.verticalPadding}"
@@ -110,3 +117,15 @@ export default class Shape {
         return ``;
     }
 }
+
+export const setupInit = (subShape, themeFieldName) => {
+    function init(name, config, theme) {
+        return new subShape(name, config, theme);
+    }
+
+    init.getThemeFieldName = () => {
+        return themeFieldName;
+    };
+
+    return init;
+};

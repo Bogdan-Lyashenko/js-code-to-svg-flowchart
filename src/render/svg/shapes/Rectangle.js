@@ -1,10 +1,14 @@
-import Shape from './Shape';
-import {getTheme} from '../style/Theme';
+import Shape, {setupInit} from './Shape';
 
-const theme = getTheme().Rectangle;
+const THEME_FIELD_NAME = 'Rectangle';
 
 class Rectangle extends Shape {
+    static getThemeFieldName() {
+        return THEME_FIELD_NAME;
+    }
+
     print() {
+        const theme = this.theme;
         const {x, y} = this.position,
             {w, h} = this.dimensions;
 
@@ -19,5 +23,4 @@ class Rectangle extends Shape {
     }
 }
 
-
-export default (name, config) => new Rectangle(name, config);
+export default setupInit(Rectangle, THEME_FIELD_NAME);
