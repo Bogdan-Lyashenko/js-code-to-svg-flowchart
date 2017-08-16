@@ -11,3 +11,10 @@ export const CONDITIONAL_KEYS = {
     CONSEQUENT: 'consequent',
     ALTERNATE: 'alternate'
 };
+
+export const ARROW_TYPE = {
+    RIGHT: 'RIGHT',
+    LEFT: 'LEFT',
+    UP: 'UP',
+    DOWN: 'DOWN'
+};

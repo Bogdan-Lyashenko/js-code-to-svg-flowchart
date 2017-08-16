@@ -1,16 +1,22 @@
 import {complexTraversal} from '../../shared/utils/traversalWithTreeLevelsPointer';
 import {SVGBase} from './SVGBase';
-import {getShapeForNode, createRootCircle, createConnectionArrow} from './shapesFactory';
+import {createShapeForNode, createRootCircle, createConnectionArrow} from './shapesFactory';
 
-import {ALIASES} from '../../shared/constants';
+import {ALIASES, CONDITIONAL_KEYS, ARROW_TYPE} from '../../shared/constants';
 
 export const buildSVGObjectsTree = (flowTree, customStyleTheme) => {
     const svg = SVGBase();
 
-    const shapeStructures = buildShapeStructures(flowTree, customStyleTheme),
-        connections = buildConnections(shapeStructures.root, customStyleTheme);
+    const shapeStructures = buildShapeStructures(flowTree, customStyleTheme);
+    const connections = buildConnections(shapeStructures.root, customStyleTheme);
 
-    svg.add(connections).add(shapeStructures.list).add(shapeStructures.root);
+
+    //1) fix positioning for condition block
+    //2) fix arrows
+
+    svg.add(shapeStructures.list).add(shapeStructures.root);
+
+    svg.add(connections);
 
     return svg;
 };
@@ -24,7 +30,20 @@ export const buildShapeStructures = (flowTree, customStyleTheme) => {
     complexTraversal(flowTree, root, (parentNode, parentShape) => {
         position.x += parentShape.getChildOffsetPoint().x;
     }, (node, parentShape) => {
-        const shape = getShapeForNode(node, {x: position.x, y: position.y}, customStyleTheme);
+
+        if (parentShape.node.type === ALIASES.CONDITIONAL &&
+            node.key === CONDITIONAL_KEYS.ALTERNATE &&
+            parentShape.isFirstChildByKey(CONDITIONAL_KEYS.ALTERNATE)) {
+
+            const alternatePoint = parentShape.getAlternativeBranchChildOffsetPoint();
+            position.x = alternatePoint.x;
+            position.y = alternatePoint.y;
+        }
+
+        const shape = createShapeForNode(node, {x: position.x, y: position.y}, customStyleTheme);
+
+        position.x = shape.position.x;
+        position.y = shape.position.y;
 
         shapesList.push(shape);
         parentShape.body.push(shape);
@@ -32,6 +51,10 @@ export const buildShapeStructures = (flowTree, customStyleTheme) => {
 
         return shape;
     }, (parentNode, parentShape) => {
+        if (parentNode.type === ALIASES.CONDITIONAL) {
+            position.y = parentShape.getChildBoundaries().max.y + parentShape.getMargin();
+        }
+
         position.x = parentShape.getPosition().x;
     });
 
@@ -52,7 +75,22 @@ export const buildConnections = (shapesTree, customStyleTheme) => {
     }, (shape, parentShape) => {
         latestShape = shape;
 
-        pushArrow({ startPoint: parentShape.getFromPoint(), endPoint: shape.getToPoint() });
+        const config = {
+            endPoint: shape.getToPoint(),
+            arrowType: ARROW_TYPE.RIGHT
+        };
+
+        //TODO: fix else if, counts as a body
+        if (shape.node.key === CONDITIONAL_KEYS.ALTERNATE) {
+            const boundaryPoint = parentShape.getAlternativeBranchChildOffsetPoint();
+
+            config.startPoint = parentShape.getAlternateFromPoint();
+            config.boundaryPoint = {x: boundaryPoint.x - parentShape.getMargin()};
+        } else {
+            config.startPoint = parentShape.getFromPoint();
+        }
+
+        pushArrow(config);
 
         return shape;
     }, (parentShape) => {
@@ -62,8 +100,9 @@ export const buildConnections = (shapesTree, customStyleTheme) => {
 
         pushArrow({
             startPoint: latestShape.getBackPoint(),
-            endPoint: parentShape.getBackPoint(),
-            boundaryPoint: {x: max.x}
+            endPoint: parentShape.getRhombusMidPoint(),
+            boundaryPoint: {x: max.x},
+            arrowType: ARROW_TYPE.DOWN
         });
     });
 

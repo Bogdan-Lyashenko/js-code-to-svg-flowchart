@@ -1,57 +1,11 @@
-const ARROW_TYPE = {
-    RIGHT: 'RIGHT',
-    LEFT: 'LEFT'
-};
+import {ARROW_TYPE} from '../../shared/constants';
 
 
 class ConnectionArrow {
-    constructor({startPoint, endPoint, boundaryPoint}, theme) {
+    constructor(config, theme) {
         this.theme = theme;
 
-        this.config = this.getConnectionConfig(startPoint, endPoint, boundaryPoint);
-    }
-
-    getArrowConfig() {
-        const arrowSize = this.theme.arrow.size;
-
-        return {
-            [ARROW_TYPE.RIGHT]: [{x: 0, y: 0}, {x: arrowSize.x, y: arrowSize.y/2}, {x: 0, y: arrowSize.y}],
-            [ARROW_TYPE.LEFT]: [{x: 0, y: arrowSize.y/2}, {x: arrowSize.x, y: 0}, {x: arrowSize.x, y: arrowSize.y}]/*,
-             TOP: [{x: 5, y: 0}, {x: 0, y: 20}, {x: 10, y: 20}],
-             BOTTOM: [{x: 0, y: 0}, {x: 5, y: 20}, {x: 10, y: 0}]*/
-        };
-    }
-
-    getConnectionConfig(startPoint, endPoint, boundaryPoint) {
-        const theme = this.theme;
-
-        const config = {
-            linePoints: [],
-            arrowPoint: {x: endPoint.x, y: endPoint.y},
-            arrowType: {x: 0, y: 0}
-        };
-
-        if (startPoint.x <= endPoint.x && startPoint.y <= endPoint.y) {
-            config.linePoints = [
-                {x: startPoint.x, y: startPoint.y},
-                {x: startPoint.x, y: endPoint.y},
-                {x: endPoint.x, y: endPoint.y}
-            ];
-            config.arrowType = ARROW_TYPE.RIGHT;
-
-        } else if (startPoint.y > endPoint.y) {
-            config.linePoints = [
-                {x: startPoint.x, y: startPoint.y},
-                {x: boundaryPoint.x + theme.lineTurnOffset, y: startPoint.y},
-                {x: boundaryPoint.x + theme.lineTurnOffset, y: endPoint.y},
-                {x: endPoint.x - theme.lineTurnOffset, y: endPoint.y}
-            ];
-            config.arrowType = ARROW_TYPE.LEFT;
-        } else {
-            debugger
-        }
-
-        return config;
+        this.config = config;
     }
 
     printLine(points) {
@@ -75,25 +29,22 @@ class ConnectionArrow {
         Z" fill="${arrow.fillColor}"/>`
     }
 
-    printRightArrow({x, y}) {
+    printArrowByType(type, {x,y}) {
         const arrowSize = this.theme.arrow.size;
-        const point = {x: x - arrowSize.x, y: y - arrowSize.y/2};
-        return this.printArrow(point, this.getArrowConfig().RIGHT);
-    }
+        let point;
 
-    printLeftArrow({x, y}) {
-        const arrowSize = this.theme.arrow.size;
-        const point = {x: x, y: y - arrowSize.y/2};
-        return this.printArrow(point, this.getArrowConfig().LEFT);
-    }
-
-    printArrowByType(type, point) {
         switch (type) {
             case ARROW_TYPE.RIGHT:
-                return this.printRightArrow(point);
+                point = {x: x - arrowSize.x, y: y - arrowSize.y/2};
+                return this.printArrow(point, [{x: 0, y: 0}, {x: arrowSize.x, y: arrowSize.y/2}, {x: 0, y: arrowSize.y}]);
 
             case ARROW_TYPE.LEFT:
-                return this.printLeftArrow(point);
+                point = {x: x, y: y - arrowSize.y/2};
+                return this.printArrow(point, [{x: 0, y: arrowSize.y/2}, {x: arrowSize.x, y: 0}, {x: arrowSize.x, y: arrowSize.y}]);
+
+            case ARROW_TYPE.DOWN:
+                point = {x: x - arrowSize.y/2, y: y - arrowSize.x};
+                return this.printArrow(point, [{x: 0, y: 0}, {x: arrowSize.y/2, y: arrowSize.x}, {x: arrowSize.y, y: 0}]);
 
             default:
                 return '';

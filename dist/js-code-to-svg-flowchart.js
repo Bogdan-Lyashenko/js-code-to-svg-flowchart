@@ -2033,16 +2033,26 @@ var Shape = function () {
             return 2 * theme.verticalPadding + theme.symbolHeight;
         }
     }, {
+        key: 'calculatePosition',
+        value: function calculatePosition(x, y) {
+            return { x: x, y: y };
+        }
+    }, {
         key: 'setupProperties',
-        value: function setupProperties(node, x, y, w, h) {
+        value: function setupProperties(node, initialX, initialY, w, h) {
             this.node = node;
             this.name = node.name;
 
-            this.position = { x: x, y: y };
+            this.position = this.calculatePosition(initialX, initialY);
             this.dimensions = { w: w, h: h };
 
-            this.fromPoint = this.calculateFromPoint(x, y, w, h);
-            this.toPoint = { x: x, y: y + h / 2 };
+            var _position = this.position,
+                x = _position.x,
+                y = _position.y;
+
+            this.fromPoint = this.calculateFromPoint(x, y, w, h); //leave only get with cache check
+            this.alternateFromPoint = this.calculateAlternateFromPoint(x, y, w, h);
+            this.toPoint = this.calculateToPoint(x, y, w, h);
             this.backPoint = { x: x + w, y: y + h / 2 };
             this.childOffsetPoint = this.calculateChildOffsetPoint(x, y, w, h);
         }
@@ -2057,6 +2067,11 @@ var Shape = function () {
             return this.fromPoint;
         }
     }, {
+        key: 'getAlternateFromPoint',
+        value: function getAlternateFromPoint() {
+            return this.alternateFromPoint;
+        }
+    }, {
         key: 'setFromPoint',
         value: function setFromPoint(point) {
             this.fromPoint = point;
@@ -2066,7 +2081,18 @@ var Shape = function () {
         key: 'calculateFromPoint',
         value: function calculateFromPoint(x, y, w, h) {
             var theme = this.theme;
+            return { x: x + theme.childOffset / 2, y: y + h };
+        }
+    }, {
+        key: 'calculateAlternateFromPoint',
+        value: function calculateAlternateFromPoint(x, y, w, h) {
+            var theme = this.theme;
             return { x: x + theme.childOffset / 2, y: y + h / 2 };
+        }
+    }, {
+        key: 'calculateToPoint',
+        value: function calculateToPoint(x, y, w, h) {
+            return { x: x, y: y + h / 2 };
         }
     }, {
         key: 'getToPoint',
@@ -2096,8 +2122,8 @@ var Shape = function () {
         }
     }, {
         key: 'getChildBoundaries',
-        value: function getChildBoundaries() {
-            var list = (0, _flatten.flatTree)(this);
+        value: function getChildBoundaries(filterFn) {
+            var list = filterFn ? (0, _flatten.flatTree)(this).filter(filterFn) : (0, _flatten.flatTree)(this);
 
             return (0, _geometry.getBoundaries)(list.map(function (item) {
                 return item.getBoundaries();
@@ -2106,9 +2132,9 @@ var Shape = function () {
     }, {
         key: 'getBoundaries',
         value: function getBoundaries() {
-            var _position = this.position,
-                x = _position.x,
-                y = _position.y,
+            var _position2 = this.position,
+                x = _position2.x,
+                y = _position2.y,
                 _dimensions = this.dimensions,
                 w = _dimensions.w,
                 h = _dimensions.h;
@@ -2124,6 +2150,11 @@ var Shape = function () {
         value: function calculateChildOffsetPoint(x, y, w, h) {
             var theme = this.theme;
             return { x: theme.childOffset, y: h + h / 4 };
+        }
+    }, {
+        key: 'getMargin',
+        value: function getMargin() {
+            return this.theme.margin;
         }
     }, {
         key: 'printName',
@@ -3934,6 +3965,13 @@ var ALIASES = exports.ALIASES = {
 var CONDITIONAL_KEYS = exports.CONDITIONAL_KEYS = {
     CONSEQUENT: 'consequent',
     ALTERNATE: 'alternate'
+};
+
+var ARROW_TYPE = exports.ARROW_TYPE = {
+    RIGHT: 'RIGHT',
+    LEFT: 'LEFT',
+    UP: 'UP',
+    DOWN: 'DOWN'
 };
 
 /***/ }),
@@ -16528,9 +16566,9 @@ var _SVGRender = __webpack_require__(170);
 
 var _FlowTreeBuilder = __webpack_require__(185);
 
-var code = '\n    function myMethod(test) {\n        const list = app2.getInitList(d, e),\n            varcns = 12;\n        let res;\n        \n        for (let i = 0; i < list.length; i++) {\n            if (list[i].id === test) {\n                res = list[i];\n                c = 0;\n            } else {\n                d = 123;\n            }\n            \n            const abc = 2 + 2 - childCall();\n        }\n        \n        c = 12+b;\n        \n        methodCall();\n        \n        return res;\n    }\n    \n    function childCall() { }\n';
+var code = '\n    function myMethod(test) {\n        let list = app2.getInitList(d, e),\n            varcns = 12,\n            empty = 0;\n            \n        const res = 1 + 2 + 3 + 4;\n        \n        for (let i = 0; i < list.length; i++) {\n            if (list[i].id === test) {\n                res = list[i];\n                c = 0;\n            } else {\n            //TODO: fix else if, counts as a body\n                d = 123;\n                d = 123;\n                d = 123;\n            }\n            \n            const abc = 2 + 2 - childCall();\n        }\n        \n        c = 12+b;\n        \n        methodCall();\n        \n        return res;\n    }\n    \n    function childCall() { }\n';
 
-var simpleStr = '\n    function Test() {\n        if (list[i].id === test) {\n            res = list[i];\n        } else {\n            res = 1;\n        }\n    }\n';
+var simpleStr = '\n    function Test() {\n        if (list[i].id === test) {\n            res = list[i];\n            a=9;\n        } else {\n            res = 1;\n        }\n        \n        a = 56;\n    }\n';
 
 var flowTree = (0, _FlowTreeBuilder.getFlowTree)(code),
     svgRender = (0, _SVGRender.createSVGRender)(flowTree, { Circle: { strokeColor: 'black' } });
@@ -16571,10 +16609,15 @@ var _constants = __webpack_require__(66);
 var buildSVGObjectsTree = exports.buildSVGObjectsTree = function buildSVGObjectsTree(flowTree, customStyleTheme) {
     var svg = (0, _SVGBase.SVGBase)();
 
-    var shapeStructures = buildShapeStructures(flowTree, customStyleTheme),
-        connections = buildConnections(shapeStructures.root, customStyleTheme);
+    var shapeStructures = buildShapeStructures(flowTree, customStyleTheme);
+    var connections = buildConnections(shapeStructures.root, customStyleTheme);
 
-    svg.add(connections).add(shapeStructures.list).add(shapeStructures.root);
+    //1) fix positioning for condition block
+    //2) fix arrows
+
+    svg.add(shapeStructures.list).add(shapeStructures.root);
+
+    svg.add(connections);
 
     return svg;
 };
@@ -16588,7 +16631,18 @@ var buildShapeStructures = exports.buildShapeStructures = function buildShapeStr
     (0, _traversalWithTreeLevelsPointer.complexTraversal)(flowTree, root, function (parentNode, parentShape) {
         position.x += parentShape.getChildOffsetPoint().x;
     }, function (node, parentShape) {
-        var shape = (0, _shapesFactory.getShapeForNode)(node, { x: position.x, y: position.y }, customStyleTheme);
+
+        if (parentShape.node.type === _constants.ALIASES.CONDITIONAL && node.key === _constants.CONDITIONAL_KEYS.ALTERNATE && parentShape.isFirstChildByKey(_constants.CONDITIONAL_KEYS.ALTERNATE)) {
+
+            var alternatePoint = parentShape.getAlternativeBranchChildOffsetPoint();
+            position.x = alternatePoint.x;
+            position.y = alternatePoint.y;
+        }
+
+        var shape = (0, _shapesFactory.createShapeForNode)(node, { x: position.x, y: position.y }, customStyleTheme);
+
+        position.x = shape.position.x;
+        position.y = shape.position.y;
 
         shapesList.push(shape);
         parentShape.body.push(shape);
@@ -16596,6 +16650,10 @@ var buildShapeStructures = exports.buildShapeStructures = function buildShapeStr
 
         return shape;
     }, function (parentNode, parentShape) {
+        if (parentNode.type === _constants.ALIASES.CONDITIONAL) {
+            position.y = parentShape.getChildBoundaries().max.y + parentShape.getMargin();
+        }
+
         position.x = parentShape.getPosition().x;
     });
 
@@ -16616,7 +16674,22 @@ var buildConnections = exports.buildConnections = function buildConnections(shap
     (0, _traversalWithTreeLevelsPointer.complexTraversal)(shapesTree, shapesTree, function (parentShape) {}, function (shape, parentShape) {
         latestShape = shape;
 
-        pushArrow({ startPoint: parentShape.getFromPoint(), endPoint: shape.getToPoint() });
+        var config = {
+            endPoint: shape.getToPoint(),
+            arrowType: _constants.ARROW_TYPE.RIGHT
+        };
+
+        //TODO: fix else if, counts as a body
+        if (shape.node.key === _constants.CONDITIONAL_KEYS.ALTERNATE) {
+            var boundaryPoint = parentShape.getAlternativeBranchChildOffsetPoint();
+
+            config.startPoint = parentShape.getAlternateFromPoint();
+            config.boundaryPoint = { x: boundaryPoint.x - parentShape.getMargin() };
+        } else {
+            config.startPoint = parentShape.getFromPoint();
+        }
+
+        pushArrow(config);
 
         return shape;
     }, function (parentShape) {
@@ -16627,8 +16700,9 @@ var buildConnections = exports.buildConnections = function buildConnections(shap
 
         pushArrow({
             startPoint: latestShape.getBackPoint(),
-            endPoint: parentShape.getBackPoint(),
-            boundaryPoint: { x: max.x }
+            endPoint: parentShape.getRhombusMidPoint(),
+            boundaryPoint: { x: max.x },
+            arrowType: _constants.ARROW_TYPE.DOWN
         });
     });
 
@@ -16762,7 +16836,7 @@ var SVGBase = exports.SVGBase = function SVGBase() {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.buildShapesFactory = exports.createConnectionArrow = exports.createRootCircle = exports.getShapeForNode = undefined;
+exports.getConnectionConfig = exports.createConnectionArrow = exports.createRootCircle = exports.createShapeForNode = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -16796,7 +16870,7 @@ var _ConnectionArrow2 = _interopRequireDefault(_ConnectionArrow);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node, position) {
+var createShapeForNode = exports.createShapeForNode = function createShapeForNode(node, position) {
     var customStyleTheme = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
     var shape = void 0;
@@ -16842,14 +16916,46 @@ var createConnectionArrow = exports.createConnectionArrow = function createConne
     var customStyleTheme = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     var DefaultTheme = (0, _Theme.getTheme)();
-    return (0, _ConnectionArrow2.default)(config, _extends({}, DefaultTheme.ConnectionArrow, customStyleTheme.ConnectionArrow || {}));
+    return (0, _ConnectionArrow2.default)(getConnectionConfig(config), _extends({}, DefaultTheme.ConnectionArrow, customStyleTheme.ConnectionArrow || {}));
 };
 
-var buildShapesFactory = exports.buildShapesFactory = function buildShapesFactory(customStyleTheme) {
-    return {
-        getShapeForNode: getShapeForNode
+var getConnectionConfig = exports.getConnectionConfig = function getConnectionConfig(_ref) {
+    var startPoint = _ref.startPoint,
+        endPoint = _ref.endPoint,
+        boundaryPoint = _ref.boundaryPoint,
+        arrowType = _ref.arrowType;
 
+    var DefaultTheme = (0, _Theme.getTheme)(); //TODO: refactor redundant calls for building Theme
+    var theme = DefaultTheme.ConnectionArrow;
+
+    var config = {
+        linePoints: [],
+        arrowPoint: { x: endPoint.x, y: endPoint.y },
+        arrowType: arrowType
     };
+
+    switch (arrowType) {
+        case _constants.ARROW_TYPE.RIGHT:
+            config.linePoints = [{ x: startPoint.x, y: startPoint.y }];
+
+            if (boundaryPoint) {
+                config.linePoints = config.linePoints.concat([{ x: boundaryPoint.x, y: startPoint.y }, { x: boundaryPoint.x, y: endPoint.y }, { x: endPoint.x, y: endPoint.y }]);
+            } else {
+                config.linePoints = config.linePoints.concat([{ x: startPoint.x, y: endPoint.y }, { x: endPoint.x, y: endPoint.y }]);
+            }
+            break;
+
+        case _constants.ARROW_TYPE.LEFT:
+            config.linePoints = [{ x: startPoint.x, y: startPoint.y }, { x: boundaryPoint.x + theme.lineTurnOffset, y: startPoint.y }, { x: boundaryPoint.x + theme.lineTurnOffset, y: endPoint.y }, { x: endPoint.x - theme.lineTurnOffset, y: endPoint.y }];
+            break;
+
+        case _constants.ARROW_TYPE.DOWN:
+            config.linePoints = [{ x: startPoint.x, y: startPoint.y }, { x: boundaryPoint.x + theme.lineTurnOffset, y: startPoint.y }, { x: boundaryPoint.x + theme.lineTurnOffset, y: endPoint.y - theme.lineTurnOffset }, { x: endPoint.x, y: endPoint.y - theme.lineTurnOffset }, { x: endPoint.x, y: endPoint.y }];
+            break;
+
+    }
+
+    return config;
 };
 
 /***/ }),
@@ -17088,6 +17194,8 @@ var _Shape2 = __webpack_require__(30);
 
 var _Shape3 = _interopRequireDefault(_Shape2);
 
+var _constants = __webpack_require__(66);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -17122,7 +17230,17 @@ var ConditionRhombus = function (_Shape) {
     }, {
         key: 'calculateFromPoint',
         value: function calculateFromPoint(x, y, w, h) {
-            return { x: x + w / 2, y: y + h / 2 };
+            return { x: x + w / 2, y: y + h };
+        }
+    }, {
+        key: 'calculateAlternateFromPoint',
+        value: function calculateAlternateFromPoint(x, y, w, h) {
+            return { x: x + w, y: y + h / 2 };
+        }
+    }, {
+        key: 'calculateToPoint',
+        value: function calculateToPoint(x, y, w, h) {
+            return { x: x, y: y + h / 2 };
         }
     }, {
         key: 'calculateChildOffsetPoint',
@@ -17131,19 +17249,65 @@ var ConditionRhombus = function (_Shape) {
             return { x: w / 2 + theme.childOffset, y: h + h / 4 };
         }
     }, {
-        key: 'print',
-        value: function print() {
+        key: 'getConsequentBranchChildBoundary',
+        value: function getConsequentBranchChildBoundary() {
+            return this.getChildBoundaries(function (child) {
+                return child.node.key === _constants.CONDITIONAL_KEYS.CONSEQUENT;
+            });
+        }
+    }, {
+        key: 'getAlternativeBranchChildOffsetPoint',
+        value: function getAlternativeBranchChildOffsetPoint() {
+            var theme = this.theme,
+                position = {};
+
+            position.y = this.getPosition().y + this.getChildOffsetPoint().y;
+
+            position.x = this.getConsequentBranchChildBoundary().max.x;
+            position.x += theme.alternateBranchOffset;
+
+            var rightLimit = this.getPosition().x + this.getDimensions().w + theme.childOffset;
+            if (position.x <= rightLimit) {
+                position.x = rightLimit;
+            }
+
+            return position;
+        }
+    }, {
+        key: 'isFirstChildByKey',
+        value: function isFirstChildByKey(key) {
+            return !this.body.filter(function (shape) {
+                return shape.node.key === key;
+            }).length;
+        }
+    }, {
+        key: 'printConditionMarks',
+        value: function printConditionMarks() {
             var theme = this.theme;
             var _position = this.position,
                 x = _position.x,
                 y = _position.y,
                 _dimensions = this.dimensions,
                 w = _dimensions.w,
-                h = _dimensions.h,
+                h = _dimensions.h;
+
+
+            return '<text x="' + (x + w - theme.markOffset.x) + '" y="' + (y + h / 2 - theme.markOffset.y) + '"\n            font-family="' + theme.fontFamily + '" font-size="' + theme.fontSize + '" fill="' + theme.textColor + '"> - </text>\n            \n            <text x="' + (x + w / 2 - 2 * theme.markOffset.x) + '" y="' + (y + h + 2 * theme.markOffset.y) + '"\n            font-family="' + theme.fontFamily + '" font-size="' + theme.fontSize + '" fill="' + theme.textColor + '"> + </text>';
+        }
+    }, {
+        key: 'print',
+        value: function print() {
+            var theme = this.theme;
+            var _position2 = this.position,
+                x = _position2.x,
+                y = _position2.y,
+                _dimensions2 = this.dimensions,
+                w = _dimensions2.w,
+                h = _dimensions2.h,
                 namePosition = { x: x + theme.thinPartOffset, y: y + theme.thinPartOffset };
 
 
-            return '<g>\n            <polygon points="' + x + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + y + ' ' + (x + w) + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + (y + h) + '"\n                style="fill:' + theme.fillColor + ';stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />\n                \n            ' + this.printName(namePosition) + '\n        </g>';
+            return '<g>\n            <polygon points="' + x + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + y + ' ' + (x + w) + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + (y + h) + '"\n                style="fill:' + theme.fillColor + ';stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />\n                \n            ' + this.printName(namePosition) + '\n            ' + this.printConditionMarks() + '\n        </g>';
         }
     }]);
 
@@ -17190,6 +17354,12 @@ var LoopRhombus = function (_Shape) {
     }
 
     _createClass(LoopRhombus, [{
+        key: 'calculatePosition',
+        value: function calculatePosition(x, y) {
+            var theme = this.theme;
+            return { x: x, y: y + theme.positionTopShift };
+        }
+    }, {
         key: 'calculateWidth',
         value: function calculateWidth(name) {
             var theme = this.theme;
@@ -17204,7 +17374,7 @@ var LoopRhombus = function (_Shape) {
     }, {
         key: 'calculateFromPoint',
         value: function calculateFromPoint(x, y, w, h) {
-            return { x: x + w / 2, y: y + h / 2 };
+            return { x: x + w / 2, y: y + h };
         }
     }, {
         key: 'calculateChildOffsetPoint',
@@ -17213,15 +17383,28 @@ var LoopRhombus = function (_Shape) {
             return { x: w / 2 + theme.childOffset, y: h + h / 4 };
         }
     }, {
+        key: 'getRhombusMidPoint',
+        value: function getRhombusMidPoint() {
+            var _dimensions = this.dimensions,
+                w = _dimensions.w,
+                h = _dimensions.h,
+                _position = this.position,
+                x = _position.x,
+                y = _position.y;
+
+
+            return { x: x + w / 2, y: y };
+        }
+    }, {
         key: 'print',
         value: function print() {
             var theme = this.theme;
-            var _position = this.position,
-                x = _position.x,
-                y = _position.y,
-                _dimensions = this.dimensions,
-                w = _dimensions.w,
-                h = _dimensions.h,
+            var _position2 = this.position,
+                x = _position2.x,
+                y = _position2.y,
+                _dimensions2 = this.dimensions,
+                w = _dimensions2.w,
+                h = _dimensions2.h,
                 namePosition = { x: x + theme.thinPartOffset, y: y + theme.thinPartOffset },
                 doubleLayerOffset = theme.doubleLayerOffset,
                 fillColor = theme.fillColor,
@@ -17274,19 +17457,27 @@ var Circle = function (_Shape) {
     function Circle(node, config, theme) {
         _classCallCheck(this, Circle);
 
-        var _this = _possibleConstructorReturn(this, (Circle.__proto__ || Object.getPrototypeOf(Circle)).call(this, node, config, theme));
-
-        _this.fromPoint = { x: config.x, y: config.y };
-        return _this;
+        return _possibleConstructorReturn(this, (Circle.__proto__ || Object.getPrototypeOf(Circle)).call(this, node, config, theme));
     }
 
     _createClass(Circle, [{
-        key: 'print',
-        value: function print() {
-            var theme = this.theme;
+        key: 'calculateFromPoint',
+        value: function calculateFromPoint() {
             var _position = this.position,
                 x = _position.x,
                 y = _position.y,
+                r = this.dimensions.w / 2;
+
+
+            return { x: x, y: y + r };
+        }
+    }, {
+        key: 'print',
+        value: function print() {
+            var theme = this.theme;
+            var _position2 = this.position,
+                x = _position2.x,
+                y = _position2.y,
                 r = this.dimensions.w / 2;
 
 
@@ -36509,61 +36700,20 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var _constants = __webpack_require__(66);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var ARROW_TYPE = {
-    RIGHT: 'RIGHT',
-    LEFT: 'LEFT'
-};
-
 var ConnectionArrow = function () {
-    function ConnectionArrow(_ref, theme) {
-        var startPoint = _ref.startPoint,
-            endPoint = _ref.endPoint,
-            boundaryPoint = _ref.boundaryPoint;
-
+    function ConnectionArrow(config, theme) {
         _classCallCheck(this, ConnectionArrow);
 
         this.theme = theme;
 
-        this.config = this.getConnectionConfig(startPoint, endPoint, boundaryPoint);
+        this.config = config;
     }
 
     _createClass(ConnectionArrow, [{
-        key: 'getArrowConfig',
-        value: function getArrowConfig() {
-            var _ref2;
-
-            var arrowSize = this.theme.arrow.size;
-
-            return _ref2 = {}, _defineProperty(_ref2, ARROW_TYPE.RIGHT, [{ x: 0, y: 0 }, { x: arrowSize.x, y: arrowSize.y / 2 }, { x: 0, y: arrowSize.y }]), _defineProperty(_ref2, ARROW_TYPE.LEFT, [{ x: 0, y: arrowSize.y / 2 }, { x: arrowSize.x, y: 0 }, { x: arrowSize.x, y: arrowSize.y }]), _ref2;
-        }
-    }, {
-        key: 'getConnectionConfig',
-        value: function getConnectionConfig(startPoint, endPoint, boundaryPoint) {
-            var theme = this.theme;
-
-            var config = {
-                linePoints: [],
-                arrowPoint: { x: endPoint.x, y: endPoint.y },
-                arrowType: { x: 0, y: 0 }
-            };
-
-            if (startPoint.x <= endPoint.x && startPoint.y <= endPoint.y) {
-                config.linePoints = [{ x: startPoint.x, y: startPoint.y }, { x: startPoint.x, y: endPoint.y }, { x: endPoint.x, y: endPoint.y }];
-                config.arrowType = ARROW_TYPE.RIGHT;
-            } else if (startPoint.y > endPoint.y) {
-                config.linePoints = [{ x: startPoint.x, y: startPoint.y }, { x: boundaryPoint.x + theme.lineTurnOffset, y: startPoint.y }, { x: boundaryPoint.x + theme.lineTurnOffset, y: endPoint.y }, { x: endPoint.x - theme.lineTurnOffset, y: endPoint.y }];
-                config.arrowType = ARROW_TYPE.LEFT;
-            } else {
-                debugger;
-            }
-
-            return config;
-        }
-    }, {
         key: 'printLine',
         value: function printLine(points) {
             var pointStr = points.map(function (point) {
@@ -36587,34 +36737,26 @@ var ConnectionArrow = function () {
             return '<path d=" \n            M' + (M.x + point.x) + ' ' + (M.y + point.y) + ' \n            L' + (L1.x + point.x) + ' ' + (L1.y + point.y) + ' \n            L' + (L2.x + point.x) + ' ' + (L2.y + point.y) + ' \n        Z" fill="' + arrow.fillColor + '"/>';
         }
     }, {
-        key: 'printRightArrow',
-        value: function printRightArrow(_ref3) {
-            var x = _ref3.x,
-                y = _ref3.y;
-
-            var arrowSize = this.theme.arrow.size;
-            var point = { x: x - arrowSize.x, y: y - arrowSize.y / 2 };
-            return this.printArrow(point, this.getArrowConfig().RIGHT);
-        }
-    }, {
-        key: 'printLeftArrow',
-        value: function printLeftArrow(_ref4) {
-            var x = _ref4.x,
-                y = _ref4.y;
-
-            var arrowSize = this.theme.arrow.size;
-            var point = { x: x, y: y - arrowSize.y / 2 };
-            return this.printArrow(point, this.getArrowConfig().LEFT);
-        }
-    }, {
         key: 'printArrowByType',
-        value: function printArrowByType(type, point) {
-            switch (type) {
-                case ARROW_TYPE.RIGHT:
-                    return this.printRightArrow(point);
+        value: function printArrowByType(type, _ref) {
+            var x = _ref.x,
+                y = _ref.y;
 
-                case ARROW_TYPE.LEFT:
-                    return this.printLeftArrow(point);
+            var arrowSize = this.theme.arrow.size;
+            var point = void 0;
+
+            switch (type) {
+                case _constants.ARROW_TYPE.RIGHT:
+                    point = { x: x - arrowSize.x, y: y - arrowSize.y / 2 };
+                    return this.printArrow(point, [{ x: 0, y: 0 }, { x: arrowSize.x, y: arrowSize.y / 2 }, { x: 0, y: arrowSize.y }]);
+
+                case _constants.ARROW_TYPE.LEFT:
+                    point = { x: x, y: y - arrowSize.y / 2 };
+                    return this.printArrow(point, [{ x: 0, y: arrowSize.y / 2 }, { x: arrowSize.x, y: 0 }, { x: arrowSize.x, y: arrowSize.y }]);
+
+                case _constants.ARROW_TYPE.DOWN:
+                    point = { x: x - arrowSize.y / 2, y: y - arrowSize.x };
+                    return this.printArrow(point, [{ x: 0, y: 0 }, { x: arrowSize.y / 2, y: arrowSize.x }, { x: arrowSize.y, y: 0 }]);
 
                 default:
                     return '';
@@ -36667,7 +36809,8 @@ var DefaultShape = {
     symbolWidth: 7.8,
     horizontalPadding: 10,
     verticalPadding: 10,
-    childOffset: 40
+    childOffset: 40,
+    margin: 10
 };
 
 var Themes = exports.Themes = {
@@ -36707,13 +36850,20 @@ var Themes = exports.Themes = {
             fillColor: '#90CAF9',
             thinPartOffset: 15,
             doubleLayerOffset: 4,
-            childOffset: 20
+            childOffset: 20,
+            positionTopShift: 20
         }),
 
         ConditionRhombus: _extends({}, DefaultShape, {
             fillColor: '#ce93d8',
             thinPartOffset: 15,
-            childOffset: 20
+            childOffset: 20,
+            alternateBranchOffset: 40,
+            markOffset: {
+                x: 5,
+                y: 5
+            },
+            margin: 20
         }),
 
         RootStartPoint: {

@@ -4,15 +4,20 @@ import {getFlowTree} from './builder/FlowTreeBuilder';
 
 var code = `
     function myMethod(test) {
-        const list = app2.getInitList(d, e),
-            varcns = 12;
-        let res;
+        let list = app2.getInitList(d, e),
+            varcns = 12,
+            empty = 0;
+            
+        const res = 1 + 2 + 3 + 4;
         
         for (let i = 0; i < list.length; i++) {
             if (list[i].id === test) {
                 res = list[i];
                 c = 0;
             } else {
+            //TODO: fix else if, counts as a body
+                d = 123;
+                d = 123;
                 d = 123;
             }
             
@@ -34,9 +39,12 @@ const simpleStr = `
     function Test() {
         if (list[i].id === test) {
             res = list[i];
+            a=9;
         } else {
             res = 1;
         }
+        
+        a = 56;
     }
 `;
 

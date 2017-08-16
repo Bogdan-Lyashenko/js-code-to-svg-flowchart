@@ -5,8 +5,13 @@ const THEME_FIELD_NAME = 'Circle';
 class Circle extends Shape {
     constructor(node, config, theme) {
         super(node, config, theme);
+    }
 
-        this.fromPoint = {x: config.x, y: config.y};
+    calculateFromPoint() {
+        const {x, y} = this.position,
+            r = this.dimensions.w / 2;
+
+        return {x: x, y: y + r};
     }
 
     print() {

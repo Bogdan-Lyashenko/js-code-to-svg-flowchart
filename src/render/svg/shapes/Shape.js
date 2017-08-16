@@ -25,15 +25,21 @@ export default class Shape {
         return 2 * theme.verticalPadding + theme.symbolHeight;
     }
 
-    setupProperties(node, x, y, w, h) {
+    calculatePosition(x, y) {
+        return {x, y};
+    }
+
+    setupProperties(node, initialX, initialY, w, h) {
         this.node = node;
         this.name = node.name;
 
-        this.position = {x, y};
+        this.position = this.calculatePosition(initialX, initialY);
         this.dimensions = {w, h};
 
-        this.fromPoint = this.calculateFromPoint(x, y, w, h);
-        this.toPoint = {x, y: y + h/2};
+        const {x, y} = this.position;
+        this.fromPoint = this.calculateFromPoint(x, y, w, h);//leave only get with cache check
+        this.alternateFromPoint = this.calculateAlternateFromPoint(x, y, w, h);
+        this.toPoint = this.calculateToPoint(x, y, w, h);
         this.backPoint = {x: x  + w, y: y + h/2};
         this.childOffsetPoint = this.calculateChildOffsetPoint(x, y, w, h);
     }
@@ -46,6 +52,10 @@ export default class Shape {
         return this.fromPoint;
     }
 
+    getAlternateFromPoint() {
+        return this.alternateFromPoint;
+    }
+
     setFromPoint(point) {
         this.fromPoint = point;
         return this;
@@ -53,7 +63,16 @@ export default class Shape {
 
     calculateFromPoint(x, y, w, h) {
         const theme = this.theme;
+        return {x: x + theme.childOffset / 2, y: y + h};
+    }
+
+    calculateAlternateFromPoint(x, y, w, h) {
+        const theme = this.theme;
         return {x: x + theme.childOffset / 2, y: y + h/2};
+    }
+
+    calculateToPoint(x, y, w, h) {
+        return {x, y: y + h/2};
     }
 
     getToPoint() {
@@ -77,8 +96,8 @@ export default class Shape {
         return this;
     }
 
-    getChildBoundaries() {
-        const list = flatTree(this);
+    getChildBoundaries(filterFn) {
+        const list = filterFn ? flatTree(this).filter(filterFn) : flatTree(this);
 
         return getBoundaries(list.map(item => item.getBoundaries()));
     }
@@ -96,6 +115,10 @@ export default class Shape {
     calculateChildOffsetPoint(x, y, w, h) {
         const theme = this.theme;
         return {x: theme.childOffset, y: h + h/4};
+    }
+
+    getMargin() {
+        return this.theme.margin;
     }
 
     printName(position) {
