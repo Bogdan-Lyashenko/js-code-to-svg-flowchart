@@ -1,6 +1,6 @@
 import {generateId} from '../../../shared/utils/string';
 import {flatTree} from '../../../shared/utils/flatten';
-import {getBoundaries} from '../../../shared/utils/geometry';
+import {calculateShapesBoundaries} from '../../../shared/utils/geometry';
 
 export default class Shape {
     constructor(node, {x, y}, theme) {
@@ -9,6 +9,11 @@ export default class Shape {
         this.theme = theme;
 
         this.setupProperties(node, x, y, this.calculateWidth(node.name), this.calculateHeight());
+    }
+
+    connectChild(child) {
+        this.body.push(child);
+        child.parent = this;
     }
 
     overrideTheme(theme) {
@@ -97,9 +102,16 @@ export default class Shape {
     }
 
     getChildBoundaries(filterFn) {
-        const list = filterFn ? flatTree(this).filter(filterFn) : flatTree(this);
+        if (!this.body.length) {
+            return this.getBoundaries();
+        }
 
-        return getBoundaries(list.map(item => item.getBoundaries()));
+        const tree = {
+            body: filterFn ? this.body.filter(filterFn) : this.body,
+            getBoundaries: () => this.getBoundaries()
+        };
+
+        return calculateShapesBoundaries(flatTree(tree).map(item => item.getBoundaries()));
     }
 
     getBoundaries() {

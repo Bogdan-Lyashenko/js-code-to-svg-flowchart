@@ -1,4 +1,6 @@
-export  const buildVisitor = (definitionsMap, pointer) => {
+import {ALIASES} from '../shared/constants';
+
+export const buildVisitor = (definitionsMap, pointer) => {
     return definitionsMap.reduce((acc, item) => {
         if (!item.body) {
             acc[item.type] = visitSimpleEntry(item, pointer);
@@ -18,10 +20,9 @@ const visitSimpleEntry = (item, pointer) => (path) => {
         return;
     }
 
-    const statementParent = path.find((path) => path.isStatementOrBlock());
     const entryConfig = {
         ...getBasicEntryConfig(item, path),
-        key: statementParent && statementParent.key
+        key: getStatementParentKey(path)
     };
 
     pointer.getCurrent().push(entryConfig);
@@ -34,11 +35,17 @@ const enterComplexEntry = (item, pointer) => (path) => {
 
     const entryConfig = {
         ...getBasicEntryConfig(item, path),
+        key: getStatementParentKey(path),
         body: []
     };
 
     pointer.getCurrent().push(entryConfig);
     pointer.stepIn(entryConfig.body);
+};
+
+const getStatementParentKey = (path) => {
+    const statementParent = path.find((path) => path.parentKey === ALIASES.PROGRAM || path.isStatementOrBlock()) || {};
+    return statementParent.key;
 };
 
 const exitComplexEntry = (item, pointer) => (path) => {

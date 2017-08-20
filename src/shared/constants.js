@@ -4,7 +4,8 @@ export const ALIASES = {
     ASSIGNMENT_EXPRESSION: 'AssignmentExpression',
     CALL_EXPRESSION: 'CallExpression',
     LOOP: 'Loop',
-    CONDITIONAL: 'Conditional'
+    CONDITIONAL: 'Conditional',
+    PROGRAM: 'program'
 };
 
 export const CONDITIONAL_KEYS = {

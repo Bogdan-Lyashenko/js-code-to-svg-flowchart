@@ -14,11 +14,14 @@ var code = `
             if (list[i].id === test) {
                 res = list[i];
                 c = 0;
-            } else {
-            //TODO: fix else if, counts as a body
+                
+                for ( k; b < 8; ++b) a += count;
+                
+            } else if (b === a[8] && isFlag) {
                 d = 123;
-                d = 123;
-                d = 123;
+                e = 456 + d;
+                e = 456 + d;
+                e = 456 + d;
             }
             
             const abc = 2 + 2 - childCall();
@@ -38,13 +41,15 @@ var code = `
 const simpleStr = `
     function Test() {
         if (list[i].id === test) {
+            a = 12;
             res = list[i];
-            a=9;
-        } else {
+        } else if (a ==2 ) {
             res = 1;
+        } else if (b === 5) {
+            c = 2;
+        } else {
+            d = b + k;
         }
-        
-        a = 56;
     }
 `;
 

@@ -10,12 +10,7 @@ export const buildSVGObjectsTree = (flowTree, customStyleTheme) => {
     const shapeStructures = buildShapeStructures(flowTree, customStyleTheme);
     const connections = buildConnections(shapeStructures.root, customStyleTheme);
 
-
-    //1) fix positioning for condition block
-    //2) fix arrows
-
     svg.add(shapeStructures.list).add(shapeStructures.root);
-
     svg.add(connections);
 
     return svg;
@@ -46,7 +41,7 @@ export const buildShapeStructures = (flowTree, customStyleTheme) => {
         position.y = shape.position.y;
 
         shapesList.push(shape);
-        parentShape.body.push(shape);
+        parentShape.connectChild(shape);
         position.y += shape.getChildOffsetPoint().y;
 
         return shape;
@@ -80,7 +75,6 @@ export const buildConnections = (shapesTree, customStyleTheme) => {
             arrowType: ARROW_TYPE.RIGHT
         };
 
-        //TODO: fix else if, counts as a body
         if (shape.node.key === CONDITIONAL_KEYS.ALTERNATE) {
             const boundaryPoint = parentShape.getAlternativeBranchChildOffsetPoint();
 

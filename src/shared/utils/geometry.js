@@ -1,4 +1,4 @@
-export const getBoundaries = (list) => {
+export const calculateShapesBoundaries = (list) => {
     if (!list || !list.length) {
         throw new Error('List is not specified.');
     }
