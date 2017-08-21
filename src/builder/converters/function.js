@@ -9,3 +9,7 @@ export default (path) => {
 export const getParametersCode = (params) => {
     return `(${ params.map(p => p.name).join(', ') })`
 };
+
+export const returnConverter = (path) => {
+    return path.node.argument ? `return ${generate(path.node.argument).code}` : 'return';
+};

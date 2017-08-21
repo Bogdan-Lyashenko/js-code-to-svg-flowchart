@@ -38,22 +38,37 @@ var code = `
 `;
 
 
-const simpleStr = `
-    function Test() {
-        if (list[i].id === test) {
-            a = 12;
-            res = list[i];
-        } else if (a ==2 ) {
-            res = 1;
-        } else if (b === 5) {
-            c = 2;
-        } else {
-            d = b + k;
+const simpleStrSwitch = `
+    function Test(a) {
+        var b;
+        
+        switch (a) {
+            case 1:
+                b = 0;
+                break;
+            case 2:
+                b = 2;
+                return;
+            default:
+                b = 3;
+                break;
         }
+        
+        return a + 2;
     }
 `;
 
-const flowTree = getFlowTree(code),
+const simpleStr = `function Test() {
+    try {
+        abcdMethod();
+    } catch(e) {
+        console.log('error ' + e.message);
+    } finally {
+        b = 1234567;
+    }
+}`;
+
+const flowTree = getFlowTree(simpleStr),
     svgRender = createSVGRender(flowTree, {Circle: {strokeColor: 'black'}});
 
 document.getElementById('svgImage').innerHTML = svgRender.render();

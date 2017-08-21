@@ -1995,7 +1995,13 @@ var ALIASES = exports.ALIASES = {
     CALL_EXPRESSION: 'CallExpression',
     LOOP: 'Loop',
     CONDITIONAL: 'Conditional',
-    PROGRAM: 'program'
+    SWITCH_CASE: 'SwitchCase',
+    SWITCH_STATEMENT: 'SwitchStatement',
+    PROGRAM: 'program',
+    RETURN: 'ReturnStatement',
+    BREAK: 'BreakStatement',
+    TRY_STATEMENT: 'TryStatement',
+    CATCH_CLAUSE: 'CatchClause'
 };
 
 var CONDITIONAL_KEYS = exports.CONDITIONAL_KEYS = {
@@ -16585,9 +16591,11 @@ var _FlowTreeBuilder = __webpack_require__(184);
 
 var code = '\n    function myMethod(test) {\n        let list = app2.getInitList(d, e),\n            varcns = 12,\n            empty = 0;\n            \n        const res = 1 + 2 + 3 + 4;\n        \n        for (let i = 0; i < list.length; i++) {\n            if (list[i].id === test) {\n                res = list[i];\n                c = 0;\n                \n                for ( k; b < 8; ++b) a += count;\n                \n            } else if (b === a[8] && isFlag) {\n                d = 123;\n                e = 456 + d;\n                e = 456 + d;\n                e = 456 + d;\n            }\n            \n            const abc = 2 + 2 - childCall();\n        }\n        \n        c = 12+b;\n        \n        methodCall();\n        \n        return res;\n    }\n    \n    function childCall() { }\n';
 
-var simpleStr = '\n    function Test() {\n        if (list[i].id === test) {\n            a = 12;\n            res = list[i];\n        } else if (a ==2 ) {\n            res = 1;\n        } else if (b === 5) {\n            c = 2;\n        } else {\n            d = b + k;\n        }\n    }\n';
+var simpleStrSwitch = '\n    function Test(a) {\n        var b;\n        \n        switch (a) {\n            case 1:\n                b = 0;\n                break;\n            case 2:\n                b = 2;\n                return;\n            default:\n                b = 3;\n                break;\n        }\n        \n        return a + 2;\n    }\n';
 
-var flowTree = (0, _FlowTreeBuilder.getFlowTree)(code),
+var simpleStr = 'function Test() {\n    try {\n        abcdMethod();\n    } catch(e) {\n        console.log(\'error \' + e.message);\n    } finally {\n        b = 1234567;\n    }\n}';
+
+var flowTree = (0, _FlowTreeBuilder.getFlowTree)(simpleStr),
     svgRender = (0, _SVGRender.createSVGRender)(flowTree, { Circle: { strokeColor: 'black' } });
 
 document.getElementById('svgImage').innerHTML = svgRender.render();
@@ -29788,11 +29796,19 @@ var _idle = __webpack_require__(446);
 
 var _idle2 = _interopRequireDefault(_idle);
 
+var _switch = __webpack_require__(448);
+
+var _try = __webpack_require__(449);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var DefinitionsMap = exports.DefinitionsMap = [{
     type: _constants.ALIASES.FUNCTION,
     getName: _function2.default,
+    body: true
+}, {
+    type: _constants.ALIASES.RETURN,
+    getName: _function.returnConverter,
     body: true
 }, {
     type: _constants.ALIASES.VARIABLE_DECLARATOR,
@@ -29814,7 +29830,58 @@ var DefinitionsMap = exports.DefinitionsMap = [{
     type: _constants.ALIASES.CONDITIONAL,
     getName: _conditional2.default,
     body: true
+}, {
+    type: _constants.ALIASES.SWITCH_STATEMENT,
+    getName: _switch.switchStatementConverter,
+    body: true
+}, {
+    type: _constants.ALIASES.SWITCH_CASE,
+    getName: _switch.caseConverter,
+    body: true
+}, {
+    type: _constants.ALIASES.BREAK,
+    getName: _switch.breakConverter,
+    body: true
+}, {
+    type: _constants.ALIASES.TRY_STATEMENT,
+    getName: _try.tryConverter,
+    body: true
+}, {
+    type: _constants.ALIASES.CATCH_CLAUSE,
+    getName: _try.catchConverter,
+    body: true
 }];
+
+/*
+*
+* Core:
+*
+* SwitchStatement +
+*
+* TryStatement
+*
+* WhileStatement
+*
+* DoWhileStatement
+*
+* ForInStatement
+*
+* ReturnStatement
+*
+* WithStatement
+*
+* ContinueStatement
+*
+* Program
+*
+* RegExpLiteral
+*
+* -- core end --
+*
+*
+*
+ *
+* */
 
 /***/ }),
 /* 373 */
@@ -29826,7 +29893,7 @@ var DefinitionsMap = exports.DefinitionsMap = [{
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.getParametersCode = undefined;
+exports.returnConverter = exports.getParametersCode = undefined;
 
 var _babelGenerator = __webpack_require__(63);
 
@@ -29845,6 +29912,10 @@ var getParametersCode = exports.getParametersCode = function getParametersCode(p
     return '(' + params.map(function (p) {
         return p.name;
     }).join(', ') + ')';
+};
+
+var returnConverter = exports.returnConverter = function returnConverter(path) {
+    return path.node.argument ? 'return ' + (0, _babelGenerator2.default)(path.node.argument).code : 'return';
 };
 
 /***/ }),
@@ -36900,6 +36971,66 @@ var getBasicEntryConfig = function getBasicEntryConfig(item, path) {
 
     return config;
 };
+
+/***/ }),
+/* 448 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.breakConverter = exports.caseConverter = exports.switchStatementConverter = undefined;
+
+var _babelGenerator = __webpack_require__(63);
+
+var _babelGenerator2 = _interopRequireDefault(_babelGenerator);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var switchStatementConverter = exports.switchStatementConverter = function switchStatementConverter(path) {
+    return 'switch (' + (0, _babelGenerator2.default)(path.node.discriminant).code + ')';
+};
+
+var caseConverter = exports.caseConverter = function caseConverter(path) {
+    return path.node.test ? 'case ' + (0, _babelGenerator2.default)(path.node.test).code + ':' : 'default:';
+};
+
+var breakConverter = exports.breakConverter = function breakConverter(path) {
+    return path.node.label ? 'break ' + (0, _babelGenerator2.default)(path.node.label).code + ':' : 'break';
+};
+
+/***/ }),
+/* 449 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.catchConverter = exports.tryConverter = undefined;
+
+var _babelGenerator = __webpack_require__(63);
+
+var _babelGenerator2 = _interopRequireDefault(_babelGenerator);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var tryConverter = exports.tryConverter = function tryConverter(path) {
+    return 'try';
+};
+
+var catchConverter = exports.catchConverter = function catchConverter(path) {
+    return path.node.param ? 'catch (' + (0, _babelGenerator2.default)(path.node.param).code + ')' : '??? (catchConverter)';
+};
+
+//TODO: fix `finally`, not implemented yet because it presents only as a part of parent,
+//TODO: there is no `finally` visitor as it exist for `catch`
+//TODO: seems like to do that each try-catch block should be handled in a different way
 
 /***/ })
 /******/ ]);

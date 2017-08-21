@@ -5,7 +5,13 @@ export const ALIASES = {
     CALL_EXPRESSION: 'CallExpression',
     LOOP: 'Loop',
     CONDITIONAL: 'Conditional',
-    PROGRAM: 'program'
+    SWITCH_CASE: 'SwitchCase',
+    SWITCH_STATEMENT: 'SwitchStatement',
+    PROGRAM: 'program',
+    RETURN: 'ReturnStatement',
+    BREAK: 'BreakStatement',
+    TRY_STATEMENT: 'TryStatement',
+    CATCH_CLAUSE: 'CatchClause'
 };
 
 export const CONDITIONAL_KEYS = {
