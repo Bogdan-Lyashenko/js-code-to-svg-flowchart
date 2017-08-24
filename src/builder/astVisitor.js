@@ -1,4 +1,4 @@
-import {ALIASES} from '../shared/constants';
+import {TOKEN_KEYS} from '../shared/constants';
 
 export const buildVisitor = (definitionsMap, pointer) => {
     return definitionsMap.reduce((acc, item) => {
@@ -44,7 +44,7 @@ const enterComplexEntry = (item, pointer) => (path) => {
 };
 
 const getStatementParentKey = (path) => {
-    const statementParent = path.find((path) => path.parentKey === ALIASES.PROGRAM || path.isStatementOrBlock()) || {};
+    const statementParent = path.find((path) => path.parentKey === TOKEN_KEYS.PROGRAM || path.isStatementOrBlock()) || {};
     return statementParent.key;
 };
 

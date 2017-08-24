@@ -1,87 +1,117 @@
-import {ALIASES} from '../shared/constants'
-import functionConverter, {returnConverter} from './converters/function';
-import loopConverter from './converters/loop';
-import conditionalConverter from './converters/conditional';
-import idleConverter from './converters/idle';
-import {switchStatementConverter, caseConverter, breakConverter} from './converters/switch';
-import {catchConverter, tryConverter} from './converters/try';
-
+import {TOKEN_TYPES} from '../shared/constants'
+import {
+    idleConverter,
+    functionConverter,
+    returnConverter,
+    variableDeclaratorConverter,
+    assignmentExpressionConverter,
+    callExpressionConverter,
+    loopConverter,
+    continueConverter,
+    conditionalConverter,
+    catchConverter,
+    tryConverter,
+    switchStatementConverter,
+    caseConverter,
+    breakConverter,
+    withStatementConverter,
+    programConverter,
+    throwStatementConverter,
+    debuggerConverter
+} from './converters/core';
 
 export const DefinitionsMap = [{
-    type: ALIASES.FUNCTION,
+    type: TOKEN_TYPES.FUNCTION,
     getName: functionConverter,
     body: true
 },{
-    type: ALIASES.RETURN,
+    type: TOKEN_TYPES.RETURN, //TODO: visual
     getName: returnConverter,
     body: true
 },{
-    type: ALIASES.VARIABLE_DECLARATOR,
-    getName: idleConverter
+    type: TOKEN_TYPES.VARIABLE_DECLARATOR,
+    getName: variableDeclaratorConverter
 },{
-    type: ALIASES.ASSIGNMENT_EXPRESSION,
-    getName: idleConverter
+    type: TOKEN_TYPES.ASSIGNMENT_EXPRESSION,
+    getName: assignmentExpressionConverter,
+    ignore: path => path.getStatementParent().isVariableDeclaration()
 },{
-    type: ALIASES.CALL_EXPRESSION,
+    type: TOKEN_TYPES.CALL_EXPRESSION,
+    getName: callExpressionConverter,
+    ignore: path => path.getStatementParent().isVariableDeclaration() ||
+            path.parent.type === TOKEN_TYPES.ASSIGNMENT_EXPRESSION
+
+},{
+    type: TOKEN_TYPES.UPDATE_EXPRESSION,
     getName: idleConverter,
     ignore: path => path.getStatementParent().isVariableDeclaration()
 },{
-    type: ALIASES.LOOP,
+    type: TOKEN_TYPES.NEW_EXPRESSION,
+    getName: idleConverter,
+    ignore: path => path.getStatementParent().isVariableDeclaration() ||
+        path.parent.type === TOKEN_TYPES.ASSIGNMENT_EXPRESSION
+},{
+    type: TOKEN_TYPES.LOOP,
     getName: loopConverter,
     body: true
 },{
-    type: ALIASES.CONDITIONAL,
+    type: TOKEN_TYPES.CONTINUE, //TODO: visual (breaks flow because of iteration skip)
+    getName: continueConverter,
+    body: true
+},{
+    type: TOKEN_TYPES.CONDITIONAL,
     getName: conditionalConverter,
     body: true
 },{
-    type: ALIASES.SWITCH_STATEMENT,
+    type: TOKEN_TYPES.SWITCH_STATEMENT,//TODO: visual
     getName: switchStatementConverter,
     body: true
 },{
-    type: ALIASES.SWITCH_CASE,
+    type: TOKEN_TYPES.SWITCH_CASE,//TODO: visual
     getName: caseConverter,
     body: true
 },{
-    type: ALIASES.BREAK,
+    type: TOKEN_TYPES.BREAK,//TODO: visual
     getName: breakConverter,
     body: true
 },{
-    type: ALIASES.TRY_STATEMENT,
+    type: TOKEN_TYPES.TRY_STATEMENT,//TODO: visual
     getName: tryConverter,
     body: true
 },{
-    type: ALIASES.CATCH_CLAUSE,
+    type: TOKEN_TYPES.CATCH_CLAUSE,//TODO: visual
     getName: catchConverter,
+    body: true
+},{
+    type: TOKEN_TYPES.WITH_STATEMENT,//TODO: visual
+    getName: withStatementConverter,
+    body: true
+},{
+    type: TOKEN_TYPES.PROGRAM,//TODO: visual
+    getName: programConverter,
+    body: true
+},{
+    type: TOKEN_TYPES.THROW_STATEMENT,//TODO: visual (breaks flow because of error)
+    getName: throwStatementConverter,
+    body: true
+},{
+    type: TOKEN_TYPES.DEBUGGER_STATEMENT,//TODO: visual (makes it RED!)
+    getName: debuggerConverter,
     body: true
 }];
 
 /*
 *
-* Core:
+* TODO: finish declarations
+* ES5:
 *
-* SwitchStatement +
-*
-* TryStatement
-*
-* WhileStatement
-*
-* DoWhileStatement
-*
-* ForInStatement
-*
-* ReturnStatement
-*
-* WithStatement
-*
-* ContinueStatement
-*
-* Program
-*
-* RegExpLiteral
-*
-* -- core end --
+* - arrow function
+* - import
+* - export
+* - class
+* - for of
 *
 *
-*
- *
+* TODO:
+* start with visual for each new token
 * */

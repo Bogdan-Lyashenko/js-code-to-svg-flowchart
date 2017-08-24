@@ -1988,23 +1988,32 @@ module.exports = copyObject;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-var ALIASES = exports.ALIASES = {
+var TOKEN_TYPES = exports.TOKEN_TYPES = {
     FUNCTION: 'Function',
     VARIABLE_DECLARATOR: 'VariableDeclarator',
     ASSIGNMENT_EXPRESSION: 'AssignmentExpression',
+    UPDATE_EXPRESSION: 'UpdateExpression',
     CALL_EXPRESSION: 'CallExpression',
+    NEW_EXPRESSION: 'NewExpression',
     LOOP: 'Loop',
+    CONTINUE: 'ContinueStatement',
     CONDITIONAL: 'Conditional',
     SWITCH_CASE: 'SwitchCase',
     SWITCH_STATEMENT: 'SwitchStatement',
-    PROGRAM: 'program',
+    PROGRAM: 'Program',
     RETURN: 'ReturnStatement',
     BREAK: 'BreakStatement',
     TRY_STATEMENT: 'TryStatement',
-    CATCH_CLAUSE: 'CatchClause'
+    CATCH_CLAUSE: 'CatchClause',
+    WITH_STATEMENT: 'WithStatement',
+    THROW_STATEMENT: 'ThrowStatement',
+    DEBUGGER_STATEMENT: 'DebuggerStatement',
+    ARROW_FUNCTION_EXPRESSION: 'ArrowFunctionExpression',
+    FUNCTION_EXPRESSION: 'FunctionExpression'
 };
 
-var CONDITIONAL_KEYS = exports.CONDITIONAL_KEYS = {
+var TOKEN_KEYS = exports.TOKEN_KEYS = {
+    PROGRAM: 'program',
     CONSEQUENT: 'consequent',
     ALTERNATE: 'alternate'
 };
@@ -16593,9 +16602,13 @@ var code = '\n    function myMethod(test) {\n        let list = app2.getInitList
 
 var simpleStrSwitch = '\n    function Test(a) {\n        var b;\n        \n        switch (a) {\n            case 1:\n                b = 0;\n                break;\n            case 2:\n                b = 2;\n                return;\n            default:\n                b = 3;\n                break;\n        }\n        \n        return a + 2;\n    }\n';
 
-var simpleStr = 'function Test() {\n    try {\n        abcdMethod();\n    } catch(e) {\n        console.log(\'error \' + e.message);\n    } finally {\n        b = 1234567;\n    }\n}';
+var simpleStrTry = 'function Test() {\n    try {\n        abcdMethod();\n    } catch(e) {\n        console.log(\'error \' + e.message);\n    } finally {\n        b = 1234567;\n    }\n}';
 
-var flowTree = (0, _FlowTreeBuilder.getFlowTree)(simpleStr),
+var simpleStrContinue = '\nfunction Test() {\n    for (; i < obj.length; i++) {\n        c = 12;\n        if (c == 2) {\n            continue;\n        }\n        \n        b = 12;\n    } \n}\n';
+
+var simpleStr = 'function myMethod(b) {\n    \n   let clickFn;\n   \n   (item) => {\n        list.push(item.id);\n        list.push(item.id);\n        list.push(item.id);\n   };\n}';
+
+var flowTree = (0, _FlowTreeBuilder.getFlowTree)(code),
     svgRender = (0, _SVGRender.createSVGRender)(flowTree, { Circle: { strokeColor: 'black' } });
 
 document.getElementById('svgImage').innerHTML = svgRender.render();
@@ -16653,7 +16666,7 @@ var buildShapeStructures = exports.buildShapeStructures = function buildShapeStr
         position.x += parentShape.getChildOffsetPoint().x;
     }, function (node, parentShape) {
 
-        if (parentShape.node.type === _constants.ALIASES.CONDITIONAL && node.key === _constants.CONDITIONAL_KEYS.ALTERNATE && parentShape.isFirstChildByKey(_constants.CONDITIONAL_KEYS.ALTERNATE)) {
+        if (parentShape.node.type === _constants.TOKEN_TYPES.CONDITIONAL && node.key === _constants.TOKEN_KEYS.ALTERNATE && parentShape.isFirstChildByKey(_constants.TOKEN_KEYS.ALTERNATE)) {
 
             var alternatePoint = parentShape.getAlternativeBranchChildOffsetPoint();
             position.x = alternatePoint.x;
@@ -16671,7 +16684,7 @@ var buildShapeStructures = exports.buildShapeStructures = function buildShapeStr
 
         return shape;
     }, function (parentNode, parentShape) {
-        if (parentNode.type === _constants.ALIASES.CONDITIONAL) {
+        if (parentNode.type === _constants.TOKEN_TYPES.CONDITIONAL) {
             position.y = parentShape.getChildBoundaries().max.y + parentShape.getMargin();
         }
 
@@ -16695,12 +16708,15 @@ var buildConnections = exports.buildConnections = function buildConnections(shap
     (0, _traversalWithTreeLevelsPointer.complexTraversal)(shapesTree, shapesTree, function (parentShape) {}, function (shape, parentShape) {
         latestShape = shape;
 
+        //TODO: add const startShape = ; because it's not always parent (like `continue` in loop actually change flow)
+
+
         var config = {
             endPoint: shape.getToPoint(),
             arrowType: _constants.ARROW_TYPE.RIGHT
         };
 
-        if (shape.node.key === _constants.CONDITIONAL_KEYS.ALTERNATE) {
+        if (shape.node.key === _constants.TOKEN_KEYS.ALTERNATE) {
             var boundaryPoint = parentShape.getAlternativeBranchChildOffsetPoint();
 
             config.startPoint = parentShape.getAlternateFromPoint();
@@ -16713,7 +16729,7 @@ var buildConnections = exports.buildConnections = function buildConnections(shap
 
         return shape;
     }, function (parentShape) {
-        if (parentShape.node.type !== _constants.ALIASES.LOOP) return;
+        if (parentShape.node.type !== _constants.TOKEN_TYPES.LOOP) return;
 
         var _parentShape$getChild = parentShape.getChildBoundaries(),
             max = _parentShape$getChild.max;
@@ -16896,15 +16912,15 @@ var createShapeForNode = exports.createShapeForNode = function createShapeForNod
     var shape = void 0;
 
     switch (node.type) {
-        case _constants.ALIASES.FUNCTION:
+        case _constants.TOKEN_TYPES.FUNCTION:
             shape = _VerticalEdgedRectangle2.default;
             break;
 
-        case _constants.ALIASES.LOOP:
+        case _constants.TOKEN_TYPES.LOOP:
             shape = _LoopRhombus2.default;
             break;
 
-        case _constants.ALIASES.CONDITIONAL:
+        case _constants.TOKEN_TYPES.CONDITIONAL:
             shape = _ConditionRhombus2.default;
             break;
 
@@ -17371,7 +17387,7 @@ var ConditionRhombus = function (_Shape) {
         key: 'getConsequentBranchChildBoundary',
         value: function getConsequentBranchChildBoundary() {
             return this.getChildBoundaries(function (child) {
-                return child.node.key === _constants.CONDITIONAL_KEYS.CONSEQUENT;
+                return child.node.key === _constants.TOKEN_KEYS.CONSEQUENT;
             });
         }
     }, {
@@ -17746,6 +17762,17 @@ var getFlowTree = exports.getFlowTree = function getFlowTree(code, config) {
 };
 
 var getAST = exports.getAST = function getAST(code, config) {
+    //TODO: remove when finish with defining types
+    /*const c = babylon.parse(code);
+     traverse(c, {
+        enter(path) {
+            if (path.node.type === '') {
+               debugger;
+            }
+            console.log(path.node.type, path.node.name);
+        }
+    });*/
+
     return babylon.parse(code, {
         plugins: ['objectRestSpread']
     });
@@ -29780,145 +29807,112 @@ exports.DefinitionsMap = undefined;
 
 var _constants = __webpack_require__(29);
 
-var _function = __webpack_require__(373);
-
-var _function2 = _interopRequireDefault(_function);
-
-var _loop = __webpack_require__(444);
-
-var _loop2 = _interopRequireDefault(_loop);
-
-var _conditional = __webpack_require__(445);
-
-var _conditional2 = _interopRequireDefault(_conditional);
-
-var _idle = __webpack_require__(446);
-
-var _idle2 = _interopRequireDefault(_idle);
-
-var _switch = __webpack_require__(448);
-
-var _try = __webpack_require__(449);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _core = __webpack_require__(450);
 
 var DefinitionsMap = exports.DefinitionsMap = [{
-    type: _constants.ALIASES.FUNCTION,
-    getName: _function2.default,
+    type: _constants.TOKEN_TYPES.FUNCTION,
+    getName: _core.functionConverter,
     body: true
 }, {
-    type: _constants.ALIASES.RETURN,
-    getName: _function.returnConverter,
+    type: _constants.TOKEN_TYPES.RETURN, //TODO: visual
+    getName: _core.returnConverter,
     body: true
 }, {
-    type: _constants.ALIASES.VARIABLE_DECLARATOR,
-    getName: _idle2.default
+    type: _constants.TOKEN_TYPES.VARIABLE_DECLARATOR,
+    getName: _core.variableDeclaratorConverter
 }, {
-    type: _constants.ALIASES.ASSIGNMENT_EXPRESSION,
-    getName: _idle2.default
-}, {
-    type: _constants.ALIASES.CALL_EXPRESSION,
-    getName: _idle2.default,
+    type: _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION,
+    getName: _core.assignmentExpressionConverter,
     ignore: function ignore(path) {
         return path.getStatementParent().isVariableDeclaration();
     }
 }, {
-    type: _constants.ALIASES.LOOP,
-    getName: _loop2.default,
+    type: _constants.TOKEN_TYPES.CALL_EXPRESSION,
+    getName: _core.callExpressionConverter,
+    ignore: function ignore(path) {
+        return path.getStatementParent().isVariableDeclaration() || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION;
+    }
+
+}, {
+    type: _constants.TOKEN_TYPES.UPDATE_EXPRESSION,
+    getName: _core.idleConverter,
+    ignore: function ignore(path) {
+        return path.getStatementParent().isVariableDeclaration();
+    }
+}, {
+    type: _constants.TOKEN_TYPES.NEW_EXPRESSION,
+    getName: _core.idleConverter,
+    ignore: function ignore(path) {
+        return path.getStatementParent().isVariableDeclaration() || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION;
+    }
+}, {
+    type: _constants.TOKEN_TYPES.LOOP,
+    getName: _core.loopConverter,
     body: true
 }, {
-    type: _constants.ALIASES.CONDITIONAL,
-    getName: _conditional2.default,
+    type: _constants.TOKEN_TYPES.CONTINUE, //TODO: visual (breaks flow because of iteration skip)
+    getName: _core.continueConverter,
     body: true
 }, {
-    type: _constants.ALIASES.SWITCH_STATEMENT,
-    getName: _switch.switchStatementConverter,
+    type: _constants.TOKEN_TYPES.CONDITIONAL,
+    getName: _core.conditionalConverter,
     body: true
 }, {
-    type: _constants.ALIASES.SWITCH_CASE,
-    getName: _switch.caseConverter,
+    type: _constants.TOKEN_TYPES.SWITCH_STATEMENT, //TODO: visual
+    getName: _core.switchStatementConverter,
     body: true
 }, {
-    type: _constants.ALIASES.BREAK,
-    getName: _switch.breakConverter,
+    type: _constants.TOKEN_TYPES.SWITCH_CASE, //TODO: visual
+    getName: _core.caseConverter,
     body: true
 }, {
-    type: _constants.ALIASES.TRY_STATEMENT,
-    getName: _try.tryConverter,
+    type: _constants.TOKEN_TYPES.BREAK, //TODO: visual
+    getName: _core.breakConverter,
     body: true
 }, {
-    type: _constants.ALIASES.CATCH_CLAUSE,
-    getName: _try.catchConverter,
+    type: _constants.TOKEN_TYPES.TRY_STATEMENT, //TODO: visual
+    getName: _core.tryConverter,
+    body: true
+}, {
+    type: _constants.TOKEN_TYPES.CATCH_CLAUSE, //TODO: visual
+    getName: _core.catchConverter,
+    body: true
+}, {
+    type: _constants.TOKEN_TYPES.WITH_STATEMENT, //TODO: visual
+    getName: _core.withStatementConverter,
+    body: true
+}, {
+    type: _constants.TOKEN_TYPES.PROGRAM, //TODO: visual
+    getName: _core.programConverter,
+    body: true
+}, {
+    type: _constants.TOKEN_TYPES.THROW_STATEMENT, //TODO: visual (breaks flow because of error)
+    getName: _core.throwStatementConverter,
+    body: true
+}, {
+    type: _constants.TOKEN_TYPES.DEBUGGER_STATEMENT, //TODO: visual (makes it RED!)
+    getName: _core.debuggerConverter,
     body: true
 }];
 
 /*
 *
-* Core:
+* TODO: finish declarations
+* ES5:
 *
-* SwitchStatement +
-*
-* TryStatement
-*
-* WhileStatement
-*
-* DoWhileStatement
-*
-* ForInStatement
-*
-* ReturnStatement
-*
-* WithStatement
-*
-* ContinueStatement
-*
-* Program
-*
-* RegExpLiteral
-*
-* -- core end --
+* - arrow function
+* - import
+* - export
+* - class
+* - for of
 *
 *
-*
- *
+* TODO:
+* start with visual for each new token
 * */
 
 /***/ }),
-/* 373 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.returnConverter = exports.getParametersCode = undefined;
-
-var _babelGenerator = __webpack_require__(63);
-
-var _babelGenerator2 = _interopRequireDefault(_babelGenerator);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = function (path) {
-    var node = path.node;
-    //FunctionExpression doesn't have id
-
-    return (node.id ? node.id.name : 'function') + getParametersCode(node.params);
-};
-
-var getParametersCode = exports.getParametersCode = function getParametersCode(params) {
-    return '(' + params.map(function (p) {
-        return p.name;
-    }).join(', ') + ')';
-};
-
-var returnConverter = exports.returnConverter = function returnConverter(path) {
-    return path.node.argument ? 'return ' + (0, _babelGenerator2.default)(path.node.argument).code : 'return';
-};
-
-/***/ }),
+/* 373 */,
 /* 374 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -36812,76 +36806,9 @@ function JSXClosingElement(node) {
 function JSXEmptyExpression() {}
 
 /***/ }),
-/* 444 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _babelGenerator = __webpack_require__(63);
-
-var _babelGenerator2 = _interopRequireDefault(_babelGenerator);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = function (path) {
-    //ForIn doesn't have test
-    return path.node.test ? (0, _babelGenerator2.default)(path.node.test).code : 'for in loop';
-};
-
-module.exports = exports['default'];
-
-/***/ }),
-/* 445 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _babelGenerator = __webpack_require__(63);
-
-var _babelGenerator2 = _interopRequireDefault(_babelGenerator);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = function (path) {
-    return (0, _babelGenerator2.default)(path.node.test).code;
-};
-
-module.exports = exports['default'];
-
-/***/ }),
-/* 446 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _babelGenerator = __webpack_require__(63);
-
-var _babelGenerator2 = _interopRequireDefault(_babelGenerator);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = function (path) {
-    return (0, _babelGenerator2.default)(path.node).code;
-};
-
-module.exports = exports['default'];
-
-/***/ }),
+/* 444 */,
+/* 445 */,
+/* 446 */,
 /* 447 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -36944,7 +36871,7 @@ var enterComplexEntry = function enterComplexEntry(item, pointer) {
 
 var getStatementParentKey = function getStatementParentKey(path) {
     var statementParent = path.find(function (path) {
-        return path.parentKey === _constants.ALIASES.PROGRAM || path.isStatementOrBlock();
+        return path.parentKey === _constants.TOKEN_KEYS.PROGRAM || path.isStatementOrBlock();
     }) || {};
     return statementParent.key;
 };
@@ -36973,7 +36900,9 @@ var getBasicEntryConfig = function getBasicEntryConfig(item, path) {
 };
 
 /***/ }),
-/* 448 */
+/* 448 */,
+/* 449 */,
+/* 450 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36982,14 +36911,87 @@ var getBasicEntryConfig = function getBasicEntryConfig(item, path) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.breakConverter = exports.caseConverter = exports.switchStatementConverter = undefined;
+exports.isNodeContainsFunc = exports.callExpressionConverter = exports.assignmentExpressionConverter = exports.variableDeclaratorConverter = exports.debuggerConverter = exports.throwStatementConverter = exports.programConverter = exports.withStatementConverter = exports.breakConverter = exports.caseConverter = exports.switchStatementConverter = exports.finallyConverter = exports.catchConverter = exports.tryConverter = exports.conditionalConverter = exports.continueConverter = exports.loopConverter = exports.returnConverter = exports.getFunctionParametersCode = exports.functionConverter = exports.idleConverter = undefined;
 
 var _babelGenerator = __webpack_require__(63);
 
 var _babelGenerator2 = _interopRequireDefault(_babelGenerator);
 
+var _constants = __webpack_require__(29);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var idleConverter = exports.idleConverter = function idleConverter(path) {
+    return (0, _babelGenerator2.default)(path.node).code;
+};
+
+/* function */
+var functionConverter = exports.functionConverter = function functionConverter(_ref) {
+    var node = _ref.node;
+
+    var paramsCode = getFunctionParametersCode(node.params);
+
+    if (node.id) {
+        return node.id.name + paramsCode;
+    }
+
+    if (node.type === _constants.TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION) {
+        return paramsCode + ' =>';
+    }
+
+    return 'function' + paramsCode;
+};
+
+var getFunctionParametersCode = exports.getFunctionParametersCode = function getFunctionParametersCode(params) {
+    return '(' + params.map(function (p) {
+        return p.name;
+    }).join(', ') + ')';
+};
+
+var returnConverter = exports.returnConverter = function returnConverter(path) {
+    return path.node.argument ? 'return ' + (0, _babelGenerator2.default)(path.node.argument).code : 'return';
+};
+/* end function */
+
+/* loop */
+var loopConverter = exports.loopConverter = function loopConverter(path) {
+    if (path.node.test) {
+        return (0, _babelGenerator2.default)(path.node.test).code;
+    }
+
+    if (path.node.left && path.node.right) {
+        return (0, _babelGenerator2.default)(path.node.left).code + ' in ' + (0, _babelGenerator2.default)(path.node.right).code;
+    }
+};
+
+var continueConverter = exports.continueConverter = function continueConverter(path) {
+    return path.node.label ? 'continue ' + (0, _babelGenerator2.default)(path.node.label).code : 'continue';
+};
+/* end loop */
+
+var conditionalConverter = exports.conditionalConverter = function conditionalConverter(path) {
+    return (0, _babelGenerator2.default)(path.node.test).code;
+};
+
+/* try-catch */
+var tryConverter = exports.tryConverter = function tryConverter(path) {
+    return 'try';
+};
+
+var catchConverter = exports.catchConverter = function catchConverter(path) {
+    return path.node.param ? 'catch (' + (0, _babelGenerator2.default)(path.node.param).code + ')' : '*catchConverter*';
+};
+
+var finallyConverter = exports.finallyConverter = function finallyConverter(path) {
+    //TODO: fix `finally`, not implemented yet because it presents only as a part of parent,
+    //TODO: there is no `finally` visitor as it exist for `catch`
+    //TODO: seems like to do that each try-catch block should be handled in a different way
+
+    return '*finallyConverter*';
+};
+/* end try-catch */
+
+/* switch-case */
 var switchStatementConverter = exports.switchStatementConverter = function switchStatementConverter(path) {
     return 'switch (' + (0, _babelGenerator2.default)(path.node.discriminant).code + ')';
 };
@@ -37001,36 +37003,75 @@ var caseConverter = exports.caseConverter = function caseConverter(path) {
 var breakConverter = exports.breakConverter = function breakConverter(path) {
     return path.node.label ? 'break ' + (0, _babelGenerator2.default)(path.node.label).code + ':' : 'break';
 };
+/* end switch - case */
 
-/***/ }),
-/* 449 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.catchConverter = exports.tryConverter = undefined;
-
-var _babelGenerator = __webpack_require__(63);
-
-var _babelGenerator2 = _interopRequireDefault(_babelGenerator);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var tryConverter = exports.tryConverter = function tryConverter(path) {
-    return 'try';
+var withStatementConverter = exports.withStatementConverter = function withStatementConverter(path) {
+    return 'with (' + (0, _babelGenerator2.default)(path.node.object).code + ')';
 };
 
-var catchConverter = exports.catchConverter = function catchConverter(path) {
-    return path.node.param ? 'catch (' + (0, _babelGenerator2.default)(path.node.param).code + ')' : '??? (catchConverter)';
+var programConverter = exports.programConverter = function programConverter(path) {
+    return path.node.type + ': source ' + path.node.sourceType;
 };
 
-//TODO: fix `finally`, not implemented yet because it presents only as a part of parent,
-//TODO: there is no `finally` visitor as it exist for `catch`
-//TODO: seems like to do that each try-catch block should be handled in a different way
+var throwStatementConverter = exports.throwStatementConverter = function throwStatementConverter(path) {
+    return 'throw ' + (0, _babelGenerator2.default)(path.node.argument).code;
+};
+
+var debuggerConverter = exports.debuggerConverter = function debuggerConverter(path) {
+    return 'debugger';
+};
+
+var variableDeclaratorConverter = exports.variableDeclaratorConverter = function variableDeclaratorConverter(_ref2) {
+    var node = _ref2.node;
+
+    if (isNodeContainsFunc(node.init)) {
+        return node.id.name + ' = ';
+    }
+
+    return (0, _babelGenerator2.default)(node).code;
+};
+
+var assignmentExpressionConverter = exports.assignmentExpressionConverter = function assignmentExpressionConverter(_ref3) {
+    var node = _ref3.node;
+
+    if (isNodeContainsFunc(node.right)) {
+        return node.left.name + ' ' + node.operator + ' ';
+    }
+
+    return (0, _babelGenerator2.default)(node).code;
+};
+
+var callExpressionConverter = exports.callExpressionConverter = function callExpressionConverter(_ref4) {
+    var node = _ref4.node;
+
+    var isFunctionPassed = !!node.arguments.find(isNodeContainsFunc);
+    if (!isFunctionPassed) {
+        return (0, _babelGenerator2.default)(node).code;
+    }
+
+    var argumentsCode = node.arguments.map(function (argument) {
+        return isNodeContainsFunc(argument) ? '*' : argument.name || argument.value;
+    }).join(', ');
+
+    return (0, _babelGenerator2.default)(node.callee).code + '(' + argumentsCode + ')';
+};
+
+//TODO: node.properties, case when function is property.value of object
+/* c = {
+    a: function (b) {
+        list.push(b.id);
+    }
+};*/
+var isNodeContainsFunc = exports.isNodeContainsFunc = function isNodeContainsFunc(node) {
+    var functions = [_constants.TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION_EXPRESSION];
+
+    return node && functions.indexOf(node.type) !== -1;
+};
+//TODO: render arrow function/anonymous function on the same Y position shifted to the right.
+//const func = (c,d)=> {c++; d++;}
+//|func| |(c,d)=>|
+//       |c++|
+//       |d++|
 
 /***/ })
 /******/ ]);

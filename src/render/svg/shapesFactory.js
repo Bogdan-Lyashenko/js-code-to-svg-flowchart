@@ -1,4 +1,4 @@
-import {ALIASES, ARROW_TYPE} from '../../shared/constants';
+import {TOKEN_TYPES, ARROW_TYPE} from '../../shared/constants';
 import {getTheme} from './style/Theme';
 import VerticalEdgedRectangle from './shapes/VerticalEdgedRectangle';
 import Rectangle from './shapes/Rectangle';
@@ -11,15 +11,15 @@ export const createShapeForNode = (node, position, customStyleTheme = {}) => {
     let shape;
 
     switch (node.type) {
-        case ALIASES.FUNCTION:
+        case TOKEN_TYPES.FUNCTION:
             shape = VerticalEdgedRectangle;
             break;
 
-        case ALIASES.LOOP:
+        case TOKEN_TYPES.LOOP:
             shape = LoopRhombus;
             break;
 
-        case ALIASES.CONDITIONAL:
+        case TOKEN_TYPES.CONDITIONAL:
             shape = ConditionRhombus;
             break;
 

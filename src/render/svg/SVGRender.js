@@ -2,7 +2,7 @@ import {complexTraversal} from '../../shared/utils/traversalWithTreeLevelsPointe
 import {SVGBase} from './SVGBase';
 import {createShapeForNode, createRootCircle, createConnectionArrow} from './shapesFactory';
 
-import {ALIASES, CONDITIONAL_KEYS, ARROW_TYPE} from '../../shared/constants';
+import {TOKEN_TYPES, TOKEN_KEYS, ARROW_TYPE} from '../../shared/constants';
 
 export const buildSVGObjectsTree = (flowTree, customStyleTheme) => {
     const svg = SVGBase();
@@ -26,9 +26,9 @@ export const buildShapeStructures = (flowTree, customStyleTheme) => {
         position.x += parentShape.getChildOffsetPoint().x;
     }, (node, parentShape) => {
 
-        if (parentShape.node.type === ALIASES.CONDITIONAL &&
-            node.key === CONDITIONAL_KEYS.ALTERNATE &&
-            parentShape.isFirstChildByKey(CONDITIONAL_KEYS.ALTERNATE)) {
+        if (parentShape.node.type === TOKEN_TYPES.CONDITIONAL &&
+            node.key === TOKEN_KEYS.ALTERNATE &&
+            parentShape.isFirstChildByKey(TOKEN_KEYS.ALTERNATE)) {
 
             const alternatePoint = parentShape.getAlternativeBranchChildOffsetPoint();
             position.x = alternatePoint.x;
@@ -46,7 +46,7 @@ export const buildShapeStructures = (flowTree, customStyleTheme) => {
 
         return shape;
     }, (parentNode, parentShape) => {
-        if (parentNode.type === ALIASES.CONDITIONAL) {
+        if (parentNode.type === TOKEN_TYPES.CONDITIONAL) {
             position.y = parentShape.getChildBoundaries().max.y + parentShape.getMargin();
         }
 
@@ -70,12 +70,15 @@ export const buildConnections = (shapesTree, customStyleTheme) => {
     }, (shape, parentShape) => {
         latestShape = shape;
 
+        //TODO: add const startShape = ; because it's not always parent (like `continue` in loop actually change flow)
+
+
         const config = {
             endPoint: shape.getToPoint(),
             arrowType: ARROW_TYPE.RIGHT
         };
 
-        if (shape.node.key === CONDITIONAL_KEYS.ALTERNATE) {
+        if (shape.node.key === TOKEN_KEYS.ALTERNATE) {
             const boundaryPoint = parentShape.getAlternativeBranchChildOffsetPoint();
 
             config.startPoint = parentShape.getAlternateFromPoint();
@@ -88,7 +91,7 @@ export const buildConnections = (shapesTree, customStyleTheme) => {
 
         return shape;
     }, (parentShape) => {
-        if (parentShape.node.type !== ALIASES.LOOP) return;
+        if (parentShape.node.type !== TOKEN_TYPES.LOOP) return;
 
         const {max} = parentShape.getChildBoundaries();
 

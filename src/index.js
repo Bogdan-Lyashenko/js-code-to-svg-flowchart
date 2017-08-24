@@ -58,7 +58,7 @@ const simpleStrSwitch = `
     }
 `;
 
-const simpleStr = `function Test() {
+const simpleStrTry = `function Test() {
     try {
         abcdMethod();
     } catch(e) {
@@ -68,7 +68,31 @@ const simpleStr = `function Test() {
     }
 }`;
 
-const flowTree = getFlowTree(simpleStr),
+const simpleStrContinue = `
+function Test() {
+    for (; i < obj.length; i++) {
+        c = 12;
+        if (c == 2) {
+            continue;
+        }
+        
+        b = 12;
+    } 
+}
+`;
+
+const simpleStr = `function myMethod(b) {
+    
+   let clickFn;
+   
+   (item) => {
+        list.push(item.id);
+        list.push(item.id);
+        list.push(item.id);
+   };
+}`;
+
+const flowTree = getFlowTree(code),
     svgRender = createSVGRender(flowTree, {Circle: {strokeColor: 'black'}});
 
 document.getElementById('svgImage').innerHTML = svgRender.render();

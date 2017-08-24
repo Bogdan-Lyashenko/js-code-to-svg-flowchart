@@ -1,5 +1,5 @@
 import Shape, {setupInit} from './Shape';
-import {CONDITIONAL_KEYS} from '../../../shared/constants';
+import {TOKEN_KEYS} from '../../../shared/constants';
 
 const THEME_FIELD_NAME = 'ConditionRhombus';
 
@@ -32,7 +32,7 @@ class ConditionRhombus extends Shape {
     }
 
     getConsequentBranchChildBoundary() {
-        return this.getChildBoundaries(child => child.node.key === CONDITIONAL_KEYS.CONSEQUENT);
+        return this.getChildBoundaries(child => child.node.key === TOKEN_KEYS.CONSEQUENT);
     }
 
     getAlternativeBranchChildOffsetPoint() {
