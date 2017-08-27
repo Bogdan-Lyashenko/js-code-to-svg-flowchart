@@ -1,7 +1,7 @@
 import {traversal} from './traversal'
 import {setupPointer} from './treeLevelsPointer';
 
-export const complexTraversal = (tree, root, onStepIn, onNode, onStepOut) => {
+export const complexTraversal = (tree, root, onStepIn, onNode, onStepOut, options) => {
     const levelsPointer = setupPointer();
     let latestShape = root;
 
@@ -13,5 +13,5 @@ export const complexTraversal = (tree, root, onStepIn, onNode, onStepOut) => {
     }, (parentNode) => {
         levelsPointer.getCurrent() && onStepOut(parentNode, levelsPointer.getCurrent());
         levelsPointer.stepOut();
-    });
+    }, options);
 };

@@ -1,9 +1,10 @@
-export const flatTree = (tree) => {
+export const flatTree = (tree, options={}) => {
     let flatList = [];
+    const getBody = options.getBody || (node => node.body);
 
     [].concat(tree).forEach((node) => {
-        if (node.body && node.body.length) {
-            flatList = flatList.concat(node, flatTree(node.body));
+        if (getBody(node) && getBody(node).length) {
+            flatList = flatList.concat(node, flatTree(getBody(node)));
         } else {
             flatList.push(node);
         }

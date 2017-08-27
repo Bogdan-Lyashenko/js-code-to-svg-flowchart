@@ -1,13 +1,8 @@
-import Shape, {setupInit} from './Shape';
+import {delegateInit} from './Shape';
 
-const THEME_FIELD_NAME = 'LoopRhombus';
+const ENTITY_FIELD_NAME = 'LoopRhombus';
 
-class LoopRhombus extends Shape {
-    calculatePosition(x, y) {
-        const theme = this.theme;
-        return {x, y: y + theme.positionTopShift};
-    }
-
+class LoopRhombus {
     calculateWidth(name) {
         const theme = this.theme;
         return 2 * theme.horizontalPadding + name.length * theme.symbolWidth + 2 * theme.thinPartOffset;
@@ -16,6 +11,11 @@ class LoopRhombus extends Shape {
     calculateHeight() {
         const theme = this.theme;
         return 2 * theme.verticalPadding + theme.symbolHeight + 2*theme.thinPartOffset;
+    }
+
+    calculatePositionY(y) {
+        const theme = this.theme;
+        return y + theme.positionTopShift;
     }
 
     calculateFromPoint(x, y, w, h) {
@@ -57,4 +57,4 @@ class LoopRhombus extends Shape {
     }
 }
 
-export default setupInit(LoopRhombus, THEME_FIELD_NAME);
+export default delegateInit(LoopRhombus, ENTITY_FIELD_NAME);

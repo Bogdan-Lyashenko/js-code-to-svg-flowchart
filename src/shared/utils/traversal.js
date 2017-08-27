@@ -1,10 +1,11 @@
-export const traversal = (tree, stepIn, onNode, stepOut) => {
+export const traversal = (tree, stepIn, onNode, stepOut, options={}) => {
+    const getBody = options.getBody || (node => node.body);
     stepIn(tree);
 
-    tree.body.forEach((node) => {
+    getBody(tree).forEach((node) => {
         onNode(node);
 
-        if (node.body) {
+        if (getBody(node)) {
             traversal(node, stepIn, onNode, stepOut);
         }
     });

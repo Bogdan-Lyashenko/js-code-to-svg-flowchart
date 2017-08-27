@@ -82,17 +82,10 @@ function Test() {
 `;
 
 const simpleStr = `function myMethod(b) {
-    
-   let clickFn;
-   
-   (item) => {
-        list.push(item.id);
-        list.push(item.id);
-        list.push(item.id);
-   };
+   let clickFn = 12;
 }`;
 
-const flowTree = getFlowTree(code),
+const flowTree = getFlowTree(simpleStr),
     svgRender = createSVGRender(flowTree, {Circle: {strokeColor: 'black'}});
 
 document.getElementById('svgImage').innerHTML = svgRender.render();

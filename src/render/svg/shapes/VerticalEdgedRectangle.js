@@ -1,17 +1,21 @@
-import Shape, {setupInit} from './Shape';
+import {
+    setupBasicBehaviour,
+    setupInitialProperties,
+    setupInitialSelectors,
 
-const THEME_FIELD_NAME = 'VerticalEdgedRectangle';
+    calculateHeight,
+    calculatePosition,
 
-class VerticalEdgedRectangle extends Shape {
-    calculateWidth(name) {
-        const theme = this.theme;
-        return 2 * theme.horizontalPadding + name.length * theme.symbolWidth + 2 * theme.edgeOffset;
-    }
+    delegateInit
+} from './Shape';
 
+const ENTITY_FIELD_NAME = 'VerticalEdgedRectangle';
+
+export const setupVerticalEdgedRectangleBehavior = (state) => ({
     print() {
-        const theme = this.theme;
-        const {x, y} = this.position,
-            {w, h} = this.dimensions,
+        const theme = state.theme;
+        const {x, y} = state.position,
+            {w, h} = state.dimensions,
             namePosition = {x: x + theme.edgeOffset, y};
 
         return `
@@ -30,6 +34,35 @@ class VerticalEdgedRectangle extends Shape {
                 ${this.printName(namePosition)}
             </g>`
     }
-}
+});
 
-export default setupInit(VerticalEdgedRectangle, THEME_FIELD_NAME);
+export const calculateWidth = ({theme, name}) =>
+    (2 * theme.horizontalPadding + name.length * theme.symbolWidth + 2 * theme.edgeOffset);
+
+export const calculateVerticalEdgedRectangleDimensions = (state) => ({
+    w: calculateWidth(state),
+    h: calculateHeight(state)
+});
+
+export const extractBasicState = (state) => ({
+    ...state,
+    position: calculatePosition(state),
+    dimensions: calculateVerticalEdgedRectangleDimensions(state)
+});
+
+export const VerticalEdgedRectangle = (initialState) => {
+    let state = extractBasicState(initialState);
+
+    state = {...state, ...setupInitialProperties(state)};
+
+    return Object.assign(
+        { state },
+        setupInitialSelectors(state),
+
+        setupBasicBehaviour(state),
+
+        setupVerticalEdgedRectangleBehavior(state)
+    );
+};
+
+export default delegateInit(VerticalEdgedRectangle, ENTITY_FIELD_NAME);

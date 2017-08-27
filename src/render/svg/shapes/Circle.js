@@ -1,10 +1,9 @@
-import Shape, {setupInit} from './Shape';
+import {delegateInit} from './Shape';
 
-const THEME_FIELD_NAME = 'Circle';
+const ENTITY_FIELD_NAME = 'Circle';
 
-class Circle extends Shape {
+class Circle {
     constructor(node, config, theme) {
-        super(node, config, theme);
     }
 
     calculateFromPoint() {
@@ -12,6 +11,10 @@ class Circle extends Shape {
             r = this.dimensions.w / 2;
 
         return {x: x, y: y + r};
+    }
+
+    setChildOffsetPoint(point) {
+        this.childOffsetPoint = point;
     }
 
     print() {
@@ -28,4 +31,4 @@ class Circle extends Shape {
     }
 }
 
-export default setupInit(Circle, THEME_FIELD_NAME);
+export default delegateInit(Circle, ENTITY_FIELD_NAME);

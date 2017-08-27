@@ -1,9 +1,9 @@
-import Shape, {setupInit} from './Shape';
+import {delegateInit} from './Shape';
 import {TOKEN_KEYS} from '../../../shared/constants';
 
-const THEME_FIELD_NAME = 'ConditionRhombus';
+const ENTITY_FIELD_NAME = 'ConditionRhombus';
 
-class ConditionRhombus extends Shape {
+class ConditionRhombus {
     calculateWidth(name) {
         const theme = this.theme;
         return 2 * theme.horizontalPadding + name.length * theme.symbolWidth + 2 * theme.thinPartOffset;
@@ -18,6 +18,7 @@ class ConditionRhombus extends Shape {
         return {x: x + w/2, y: y + h};
     }
 
+    //this.alternateFromPoint = this.calculateAlternateFromPoint();
     calculateAlternateFromPoint(x, y, w, h) {
         return {x: x + w, y: y + h/2};
     }
@@ -39,12 +40,12 @@ class ConditionRhombus extends Shape {
         const theme = this.theme,
             position = {};
 
-        position.y = this.getPosition().y + this.getChildOffsetPoint().y;
+        position.y = this.position.y + this.childOffsetPoint.y;
 
         position.x = this.getConsequentBranchChildBoundary().max.x;
         position.x += theme.alternateBranchOffset;
 
-        const rightLimit = this.getPosition().x + this.getDimensions().w + theme.childOffset;
+        const rightLimit = this.position.x + this.dimensions.w + theme.childOffset;
         if (position.x <= rightLimit) {
             position.x = rightLimit;
         }
@@ -84,4 +85,4 @@ class ConditionRhombus extends Shape {
     }
 }
 
-export default setupInit(ConditionRhombus, THEME_FIELD_NAME);
+export default delegateInit(ConditionRhombus, ENTITY_FIELD_NAME);

@@ -1,26 +1,44 @@
-import Shape, {setupInit} from './Shape';
+import {
+    setupBasicBehaviour,
+    setupInitialProperties,
+    setupInitialSelectors,
+    extractBasicState,
 
-const THEME_FIELD_NAME = 'Rectangle';
+    delegateInit
+} from './Shape';
 
-class Rectangle extends Shape {
-    static getThemeFieldName() {
-        return THEME_FIELD_NAME;
-    }
+const ENTITY_FIELD_NAME = 'Rectangle';
 
+export const setupRectangleBehavior = (state) => ({
     print() {
-        const theme = this.theme;
-        const {x, y} = this.position,
-            {w, h} = this.dimensions;
+        const theme = state.theme;
+        const {x, y} = state.position,
+            {w, h} = state.dimensions;
 
         return `
-            <g>
-                <rect x="${x}" y="${y}"
-                    width="${w}" height=${h}
-                    rx="${theme.roundBorder}" ry="${theme.roundBorder}"
-                    style="fill:${theme.fillColor}; stroke-width:${theme.strokeWidth}; stroke:${theme.strokeColor}" />
-               ${this.printName()}
-            </g>`
+                <g>
+                    <rect x="${x}" y="${y}"
+                        width="${w}" height=${h}
+                        rx="${theme.roundBorder}" ry="${theme.roundBorder}"
+                        style="fill:${theme.fillColor}; stroke-width:${theme.strokeWidth}; stroke:${theme.strokeColor}" />
+                   ${this.printName()}
+                </g>`;
     }
-}
+});
 
-export default setupInit(Rectangle, THEME_FIELD_NAME);
+export const Rectangle = (initialState) => {
+    let state = extractBasicState(initialState);
+
+    state = {...state, ...setupInitialProperties(state)}; //move two lines to shape
+
+    return Object.assign(
+        {state},
+        setupInitialSelectors(state),
+
+        setupBasicBehaviour(state),
+
+        setupRectangleBehavior(state)
+    );
+};
+
+export default delegateInit(Rectangle, ENTITY_FIELD_NAME);

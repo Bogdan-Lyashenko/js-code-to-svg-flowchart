@@ -8,25 +8,33 @@ export const buildSVGObjectsTree = (flowTree, customStyleTheme) => {
     const svg = SVGBase();
 
     const shapeStructures = buildShapeStructures(flowTree, customStyleTheme);
-    const connections = buildConnections(shapeStructures.root, customStyleTheme);
+    //const connections = buildConnections(shapeStructures.root, customStyleTheme);
 
     svg.add(shapeStructures.list).add(shapeStructures.root);
-    svg.add(connections);
+    //svg.add(connections);
 
     return svg;
 };
 
 export const buildShapeStructures = (flowTree, customStyleTheme) => {
-    const root = createRootCircle(flowTree, customStyleTheme);
+    const root = {
+        childOffsetPoint: {x: 50, y: 50},
+        getChildOffsetPoint: function() {return this.childOffsetPoint;},
+        getNodeType: function() {},
+        connectChild: function() {},
+        getPosition: function() {return {x: 20, y: 20}},
+        print: function () {
+            return '';}
+    };//TODO: fix -> createRootCircle(flowTree, customStyleTheme);
 
-    const position = {...root.getChildOffsetPoint()};
+    const position = {...root.childOffsetPoint};
     const shapesList = [];
 
     complexTraversal(flowTree, root, (parentNode, parentShape) => {
         position.x += parentShape.getChildOffsetPoint().x;
     }, (node, parentShape) => {
 
-        if (parentShape.node.type === TOKEN_TYPES.CONDITIONAL &&
+        if (parentShape.getNodeType() === TOKEN_TYPES.CONDITIONAL &&
             node.key === TOKEN_KEYS.ALTERNATE &&
             parentShape.isFirstChildByKey(TOKEN_KEYS.ALTERNATE)) {
 
@@ -37,8 +45,8 @@ export const buildShapeStructures = (flowTree, customStyleTheme) => {
 
         const shape = createShapeForNode(node, {x: position.x, y: position.y}, customStyleTheme);
 
-        position.x = shape.position.x;
-        position.y = shape.position.y;
+        position.x = shape.getPosition().x;
+        position.y = shape.getPosition().y;
 
         shapesList.push(shape);
         parentShape.connectChild(shape);
@@ -74,17 +82,17 @@ export const buildConnections = (shapesTree, customStyleTheme) => {
 
 
         const config = {
-            endPoint: shape.getToPoint(),
+            endPoint: shape.toPoint,
             arrowType: ARROW_TYPE.RIGHT
         };
 
         if (shape.node.key === TOKEN_KEYS.ALTERNATE) {
             const boundaryPoint = parentShape.getAlternativeBranchChildOffsetPoint();
 
-            config.startPoint = parentShape.getAlternateFromPoint();
+            config.startPoint = parentShape.alternateFromPoint;
             config.boundaryPoint = {x: boundaryPoint.x - parentShape.getMargin()};
         } else {
-            config.startPoint = parentShape.getFromPoint();
+            config.startPoint = parentShape.fromPoint;
         }
 
         pushArrow(config);
@@ -96,11 +104,13 @@ export const buildConnections = (shapesTree, customStyleTheme) => {
         const {max} = parentShape.getChildBoundaries();
 
         pushArrow({
-            startPoint: latestShape.getBackPoint(),
+            startPoint: latestShape.backPoint,
             endPoint: parentShape.getRhombusMidPoint(),
             boundaryPoint: {x: max.x},
             arrowType: ARROW_TYPE.DOWN
         });
+    }, {
+        getBody: node => node.getBody()
     });
 
     return connections;
