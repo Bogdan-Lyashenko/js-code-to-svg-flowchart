@@ -8,27 +8,18 @@ export const buildSVGObjectsTree = (flowTree, customStyleTheme) => {
     const svg = SVGBase();
 
     const shapeStructures = buildShapeStructures(flowTree, customStyleTheme);
-    //const connections = buildConnections(shapeStructures.root, customStyleTheme);
+    const connections = buildConnections(shapeStructures.root, customStyleTheme);
 
     svg.add(shapeStructures.list).add(shapeStructures.root);
-    //svg.add(connections);
+    svg.add(connections);
 
     return svg;
 };
 
 export const buildShapeStructures = (flowTree, customStyleTheme) => {
-    const root = {
-        childOffsetPoint: {x: 50, y: 50},
-        getChildOffsetPoint: function() {return this.childOffsetPoint;},
-        getNodeType: function() {},
-        connectChild: function() {},
-        getPosition: function() {return {x: 20, y: 20}},
-        print: function () {
-            return '';}
-    };//TODO: fix -> createRootCircle(flowTree, customStyleTheme);
-
-    const position = {...root.childOffsetPoint};
-    const shapesList = [];
+    const root = createRootCircle(flowTree, customStyleTheme),
+        position = {...root.getChildOffsetPoint()},
+        shapesList = [];
 
     complexTraversal(flowTree, root, (parentNode, parentShape) => {
         position.x += parentShape.getChildOffsetPoint().x;
@@ -82,30 +73,30 @@ export const buildConnections = (shapesTree, customStyleTheme) => {
 
 
         const config = {
-            endPoint: shape.toPoint,
+            endPoint: shape.getToPoint(),
             arrowType: ARROW_TYPE.RIGHT
         };
 
-        if (shape.node.key === TOKEN_KEYS.ALTERNATE) {
+        if (shape.getNodeKey() === TOKEN_KEYS.ALTERNATE) {
             const boundaryPoint = parentShape.getAlternativeBranchChildOffsetPoint();
 
-            config.startPoint = parentShape.alternateFromPoint;
+            config.startPoint = parentShape.getAlternateFromPoint();
             config.boundaryPoint = {x: boundaryPoint.x - parentShape.getMargin()};
         } else {
-            config.startPoint = parentShape.fromPoint;
+            config.startPoint = parentShape.getFromPoint();
         }
 
         pushArrow(config);
 
         return shape;
     }, (parentShape) => {
-        if (parentShape.node.type !== TOKEN_TYPES.LOOP) return;
+        if (parentShape.getNodeType() !== TOKEN_TYPES.LOOP) return;
 
         const {max} = parentShape.getChildBoundaries();
 
         pushArrow({
-            startPoint: latestShape.backPoint,
-            endPoint: parentShape.getRhombusMidPoint(),
+            startPoint: latestShape.getBackPoint(),
+            endPoint: parentShape.getMidPoint(),
             boundaryPoint: {x: max.x},
             arrowType: ARROW_TYPE.DOWN
         });

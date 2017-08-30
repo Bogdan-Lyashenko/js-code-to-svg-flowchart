@@ -1,43 +1,48 @@
-import {delegateInit} from './Shape';
+import {
+    setupBasicBehaviour,
+    setupInitialSelectors,
+
+    calculateToPoint,
+    calculateBackPoint,
+    calculateBoundaries,
+
+    delegateInit
+} from './Shape';
+
+import {
+    calculateDimensions,
+    calculateFromPoint,
+    calculateChildOffsetPoint
+} from './Rhombus';
 
 const ENTITY_FIELD_NAME = 'LoopRhombus';
 
-class LoopRhombus {
-    calculateWidth(name) {
-        const theme = this.theme;
-        return 2 * theme.horizontalPadding + name.length * theme.symbolWidth + 2 * theme.thinPartOffset;
+const calculateMidPoint = ({position, dimensions}) => ({
+    x: position.x + dimensions.w / 2,
+    y: position.y
+});
+
+const setupInitialProperties = (state) => ({
+    fromPoint: calculateFromPoint(state),
+    childOffsetPoint: calculateChildOffsetPoint(state),
+    toPoint: calculateToPoint(state),
+    backPoint: calculateBackPoint(state),
+    boundaries: calculateBoundaries(state),
+
+    midPoint: calculateMidPoint(state)
+});
+
+const setupAdditionalSelectors = (state) => ({
+    getMidPoint() {
+        return state.midPoint;
     }
+});
 
-    calculateHeight() {
-        const theme = this.theme;
-        return 2 * theme.verticalPadding + theme.symbolHeight + 2*theme.thinPartOffset;
-    }
-
-    calculatePositionY(y) {
-        const theme = this.theme;
-        return y + theme.positionTopShift;
-    }
-
-    calculateFromPoint(x, y, w, h) {
-        return {x: x + w/2, y: y+h};
-    }
-
-    calculateChildOffsetPoint(x, y, w, h) {
-        const theme = this.theme;
-        return {x: w/2 + theme.childOffset, y: h + h/4};
-    }
-
-    getRhombusMidPoint() {
-        const {w,h} = this.dimensions,
-            {x,y} = this.position;
-
-        return {x: x + w/2, y };
-    }
-
+const setupLoopRhombusBehavior = (state) => ({
     print() {
-        const theme = this.theme;
-        const {x, y} = this.position,
-            {w, h} = this.dimensions,
+        const theme = state.theme;
+        const {x, y} = state.position,
+            {w, h} = state.dimensions,
             namePosition = {x: x + theme.thinPartOffset, y: y + theme.thinPartOffset},
             {doubleLayerOffset, fillColor, strokeColor, strokeWidth} = theme;
 
@@ -55,6 +60,33 @@ class LoopRhombus {
             ${this.printName(namePosition)}
         </g>`
     }
-}
+});
+
+const calculatePosition = ({initialPosition, theme}) => ({
+    x: initialPosition.x,
+    y: initialPosition.y + theme.positionTopShift
+});
+
+const extractBasicState = (state) => ({
+    ...state,
+    position: calculatePosition(state),
+    dimensions: calculateDimensions(state)
+});
+
+export const LoopRhombus = (initialState) => {
+    let state = extractBasicState(initialState);
+
+    state =  {...state, ...setupInitialProperties(state)};
+
+    return Object.assign(
+        {state, type: ENTITY_FIELD_NAME},
+        setupInitialSelectors(state),
+        setupAdditionalSelectors(state),
+
+        setupBasicBehaviour(state),
+
+        setupLoopRhombusBehavior(state)
+    );
+};
 
 export default delegateInit(LoopRhombus, ENTITY_FIELD_NAME);

@@ -38,46 +38,65 @@ export const extractBasicState = (state) => ({
     dimensions: calculateDimensions(state)
 });
 
-export const setupInitialSelectors = ({body, childOffsetPoint, dimensions, id, name, node, parent, position,
-                                          theme}) => ({
+export const setupInitialSelectors = (state) => ({
     getBody() {
-        return body;
+        return state.body;
+    },
+
+    getBoundaries() {
+        return state.boundaries;
+    },
+
+    getBackPoint() {
+        return state.backPoint;
     },
 
     getChildOffsetPoint() {
-        return childOffsetPoint;
+        return state.childOffsetPoint;
     },
 
     getDimensions() {
-        return dimensions;
+        return state.dimensions;
     },
 
     getId() {
-        return id;
+        return state.id;
+    },
+
+    getFromPoint() {
+        return state.fromPoint;
     },
 
     getMargin() {
-        return theme.margin;
+        return state.theme.margin;
     },
 
     getName() {
-        return name;
+        return state.name;
     },
 
     getNode() {
-        return node;
+        return state.node;
     },
 
     getNodeType() {
-        return node.type;
+        return state.node.type;
+    },
+
+    getNodeKey() {
+        return state.node.key;
     },
 
     getParent() {
-        return parent;
+        return state.parent;
     },
 
     getPosition() {
-        return position;
+        return state.position;
+    },
+
+    getToPoint() {
+        return state.toPoint;
     }
 });
 
@@ -113,17 +132,25 @@ export const setupConnectChild = (state) => ({
     }
 });
 
-export const setupGetChildBoundaries = ({body, boundaries}) => ({
+export const setupGetChildBoundaries = (state) => ({
     getChildBoundaries(filterFn) {
+        const {body, boundaries} = state;
+
         if (!body.length) {
             return boundaries;
         }
 
+
+        const nBody = filterFn ? body.filter(filterFn) : body;
         const tree = {
             state: {
-                body: filterFn ? body.filter(filterFn) : body,
+                body: nBody,
                 boundaries
+            },
+            getBody() {
+                return nBody;
             }
+
         };
 
         return calculateShapesBoundaries(
@@ -139,6 +166,11 @@ export const setupBasicBehaviour = (state) => Object.assign(
     setupConnectChild(state),
     setupGetChildBoundaries(state)
 );
+
+export const setupCompleteState = (initialState) => {
+    let state = extractBasicState(initialState);
+    return {...state, ...setupInitialProperties(state)};
+};
 
 export const calculateWidth = ({name, theme}) => 2 * theme.horizontalPadding + name.length * theme.symbolWidth;
 

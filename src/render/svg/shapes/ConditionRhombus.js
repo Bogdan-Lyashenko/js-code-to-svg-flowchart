@@ -1,78 +1,92 @@
-import {delegateInit} from './Shape';
 import {TOKEN_KEYS} from '../../../shared/constants';
+
+import {
+    setupBasicBehaviour,
+    setupInitialSelectors,
+
+    calculateBackPoint,
+    calculateBoundaries,
+    calculatePosition,
+
+    delegateInit
+} from './Shape';
+
+import {
+    calculateDimensions,
+    calculateFromPoint,
+    calculateChildOffsetPoint
+} from './Rhombus';
 
 const ENTITY_FIELD_NAME = 'ConditionRhombus';
 
-class ConditionRhombus {
-    calculateWidth(name) {
-        const theme = this.theme;
-        return 2 * theme.horizontalPadding + name.length * theme.symbolWidth + 2 * theme.thinPartOffset;
-    }
+const calculateAlternateFromPoint = ({position, dimensions}) => ({
+    x: position.x + dimensions.w,
+    y: position.y + dimensions.h/2
+});
 
-    calculateHeight() {
-        const theme = this.theme;
-        return 2 * theme.verticalPadding + theme.symbolHeight + 2*theme.thinPartOffset;
-    }
+const calculateToPoint = ({position, dimensions}) => ({
+    x: position.x,
+    y: position.y + dimensions.h/2
+});
 
-    calculateFromPoint(x, y, w, h) {
-        return {x: x + w/2, y: y + h};
-    }
+const setupInitialProperties = (state) => ({
+    fromPoint: calculateFromPoint(state),
+    childOffsetPoint: calculateChildOffsetPoint(state),
+    toPoint: calculateToPoint(state),
+    backPoint: calculateBackPoint(state),
+    boundaries: calculateBoundaries(state),
 
-    //this.alternateFromPoint = this.calculateAlternateFromPoint();
-    calculateAlternateFromPoint(x, y, w, h) {
-        return {x: x + w, y: y + h/2};
-    }
+    alternateFromPoint: calculateAlternateFromPoint(state)
+});
 
-    calculateToPoint(x, y, w, h) {
-        return {x: x, y: y + h/2};
+const setupAdditionalSelectors = (state) => ({
+    getAlternateFromPoint() {
+        return state.alternateFromPoint;
     }
+});
 
-    calculateChildOffsetPoint(x, y, w, h) {
-        const theme = this.theme;
-        return {x: w/2 + theme.childOffset, y: h + h/4};
-    }
-
+export const setupConditionRhombusBehavior = (state) => ({
     getConsequentBranchChildBoundary() {
-        return this.getChildBoundaries(child => child.node.key === TOKEN_KEYS.CONSEQUENT);
-    }
+        return this.getChildBoundaries(child => child.state.node.key === TOKEN_KEYS.CONSEQUENT);
+    },
 
     getAlternativeBranchChildOffsetPoint() {
-        const theme = this.theme,
+        const theme = state.theme,
             position = {};
 
-        position.y = this.position.y + this.childOffsetPoint.y;
+        position.y = state.position.y + state.childOffsetPoint.y;
 
         position.x = this.getConsequentBranchChildBoundary().max.x;
         position.x += theme.alternateBranchOffset;
 
-        const rightLimit = this.position.x + this.dimensions.w + theme.childOffset;
+        const rightLimit = state.position.x + state.dimensions.w + theme.childOffset;
         if (position.x <= rightLimit) {
             position.x = rightLimit;
         }
 
         return position;
-    }
+    },
 
     isFirstChildByKey(key) {
-        return !this.body.filter(shape => shape.node.key === key).length;
-    }
+        return !state.body.filter(shape => shape.state.node.key === key).length;
+    },
 
     printConditionMarks() {
-        const theme = this.theme;
-        const {x, y} = this.position,
-            {w, h} = this.dimensions;
+        const theme = state.theme;
+        const {x, y} = state.position,
+            {w, h} = state.dimensions;
 
         return `<text x="${x + w - theme.markOffset.x}" y="${y + h/2 - theme.markOffset.y}"
             font-family="${theme.fontFamily}" font-size="${theme.fontSize}" fill="${theme.textColor}"> - </text>
             
             <text x="${x + w/2 - 2*theme.markOffset.x}" y="${y + h + 2*theme.markOffset.y}"
             font-family="${theme.fontFamily}" font-size="${theme.fontSize}" fill="${theme.textColor}"> + </text>`
-    }
+    },
 
     print() {
-        const theme = this.theme;
-        const {x, y} = this.position,
-            {w, h} = this.dimensions,
+        const theme = state.theme;
+        const {x, y} = state.position,
+            {w, h} = state.dimensions,
             namePosition = {x: x + theme.thinPartOffset, y: y + theme.thinPartOffset};
 
         return `<g>
@@ -83,6 +97,29 @@ class ConditionRhombus {
             ${this.printConditionMarks()}
         </g>`
     }
-}
+});
+
+const extractBasicState = (state) => ({
+    ...state,
+    position: calculatePosition(state),
+    dimensions: calculateDimensions(state)
+});
+
+
+export const ConditionRhombus = (initialState) => {
+    let state = extractBasicState(initialState);
+
+    state =  {...state, ...setupInitialProperties(state)};
+
+    return Object.assign(
+        {state, type: ENTITY_FIELD_NAME},
+        setupInitialSelectors(state),
+        setupAdditionalSelectors(state),
+
+        setupBasicBehaviour(state),
+
+        setupConditionRhombusBehavior(state)
+    );
+};
 
 export default delegateInit(ConditionRhombus, ENTITY_FIELD_NAME);

@@ -4,6 +4,7 @@ import {ARROW_TYPE} from '../../shared/constants';
 class ConnectionArrow {
     constructor(config, theme) {
         this.theme = theme;
+        //TODO: move properties to state object
 
         this.config = config;
     }

@@ -1,26 +1,30 @@
-import {delegateInit} from './Shape';
+import {
+    extractBasicState,
+    setupBasicBehaviour,
+    setupInitialSelectors,
+
+    calculateBoundaries,
+
+    delegateInit
+} from './Shape';
 
 const ENTITY_FIELD_NAME = 'Circle';
 
-class Circle {
-    constructor(node, config, theme) {
-    }
+const calculateFromPoint = ({position, dimensions}) => {
+    const r = dimensions.w / 2;
+    return {x: position.x, y: position.y + r};
+};
 
-    calculateFromPoint() {
-        const {x, y} = this.position,
-            r = this.dimensions.w / 2;
+const setupInitialProperties = (state) => ({
+    fromPoint: calculateFromPoint(state),
+    boundaries: calculateBoundaries(state)
+});
 
-        return {x: x, y: y + r};
-    }
-
-    setChildOffsetPoint(point) {
-        this.childOffsetPoint = point;
-    }
-
+const setupCircleBehavior = (state) => ({
     print() {
-        const theme = this.theme;
-        const {x, y} = this.position,
-            r = this.dimensions.w / 2;
+        const theme = state.theme;
+        const {x, y} = state.position,
+            r = state.dimensions.w / 2;
 
         return `
             <g>
@@ -28,7 +32,26 @@ class Circle {
                 style="fill:${theme.fillColor};stroke:${theme.strokeColor};stroke-width:${theme.strokeWidth}" />
                ${this.printName()}
             </g>`
+    },
+
+    setChildOffsetPoint(point) {
+        state.childOffsetPoint = point;
     }
-}
+});
+
+export const Circle = (initialState) => {
+    let state = extractBasicState(initialState);
+
+    state =  {...state, ...setupInitialProperties(state)};
+
+    return Object.assign(
+        {state, type: ENTITY_FIELD_NAME},
+        setupInitialSelectors(state),
+
+        setupBasicBehaviour(state),
+
+        setupCircleBehavior(state)
+    );
+};
 
 export default delegateInit(Circle, ENTITY_FIELD_NAME);

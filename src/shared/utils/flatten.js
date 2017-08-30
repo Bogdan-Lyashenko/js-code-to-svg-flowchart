@@ -3,8 +3,10 @@ export const flatTree = (tree, options={}) => {
     const getBody = options.getBody || (node => node.body);
 
     [].concat(tree).forEach((node) => {
-        if (getBody(node) && getBody(node).length) {
-            flatList = flatList.concat(node, flatTree(getBody(node)));
+        const body = getBody(node);
+
+        if (body && body.length) {
+            flatList = flatList.concat(node, flatTree(body, options));
         } else {
             flatList.push(node);
         }

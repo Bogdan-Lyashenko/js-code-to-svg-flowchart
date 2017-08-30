@@ -1,15 +1,14 @@
 import {
+    setupCompleteState,
     setupBasicBehaviour,
-    setupInitialProperties,
     setupInitialSelectors,
-    extractBasicState,
 
     delegateInit
 } from './Shape';
 
 const ENTITY_FIELD_NAME = 'Rectangle';
 
-export const setupRectangleBehavior = (state) => ({
+const setupRectangleBehavior = (state) => ({
     print() {
         const theme = state.theme;
         const {x, y} = state.position,
@@ -27,12 +26,10 @@ export const setupRectangleBehavior = (state) => ({
 });
 
 export const Rectangle = (initialState) => {
-    let state = extractBasicState(initialState);
-
-    state = {...state, ...setupInitialProperties(state)}; //move two lines to shape
+    const state = setupCompleteState(initialState);
 
     return Object.assign(
-        {state},
+        {state, type: ENTITY_FIELD_NAME},
         setupInitialSelectors(state),
 
         setupBasicBehaviour(state),

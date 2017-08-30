@@ -83,9 +83,19 @@ function Test() {
 
 const simpleStr = `function myMethod(b) {
    let clickFn = 12;
+   
+   for (a; a < list.length; a++) {
+    console.log(list[a].name);
+   }
+   
+   a = 1;
+   
+   if (c == 2) {
+            d = a;
+        }
 }`;
 
-const flowTree = getFlowTree(simpleStr),
+const flowTree = getFlowTree(code),
     svgRender = createSVGRender(flowTree, {Circle: {strokeColor: 'black'}});
 
 document.getElementById('svgImage').innerHTML = svgRender.render();

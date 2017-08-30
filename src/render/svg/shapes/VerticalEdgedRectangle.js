@@ -11,7 +11,7 @@ import {
 
 const ENTITY_FIELD_NAME = 'VerticalEdgedRectangle';
 
-export const setupVerticalEdgedRectangleBehavior = (state) => ({
+const setupVerticalEdgedRectangleBehavior = (state) => ({
     print() {
         const theme = state.theme;
         const {x, y} = state.position,
@@ -36,18 +36,18 @@ export const setupVerticalEdgedRectangleBehavior = (state) => ({
     }
 });
 
-export const calculateWidth = ({theme, name}) =>
+const calculateWidth = ({theme, name}) =>
     (2 * theme.horizontalPadding + name.length * theme.symbolWidth + 2 * theme.edgeOffset);
 
-export const calculateVerticalEdgedRectangleDimensions = (state) => ({
+const calculateDimensions = (state) => ({
     w: calculateWidth(state),
     h: calculateHeight(state)
 });
 
-export const extractBasicState = (state) => ({
+const extractBasicState = (state) => ({
     ...state,
     position: calculatePosition(state),
-    dimensions: calculateVerticalEdgedRectangleDimensions(state)
+    dimensions: calculateDimensions(state)
 });
 
 export const VerticalEdgedRectangle = (initialState) => {
@@ -56,7 +56,7 @@ export const VerticalEdgedRectangle = (initialState) => {
     state = {...state, ...setupInitialProperties(state)};
 
     return Object.assign(
-        { state },
+        { state , type: ENTITY_FIELD_NAME},
         setupInitialSelectors(state),
 
         setupBasicBehaviour(state),

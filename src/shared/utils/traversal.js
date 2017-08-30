@@ -6,7 +6,7 @@ export const traversal = (tree, stepIn, onNode, stepOut, options={}) => {
         onNode(node);
 
         if (getBody(node)) {
-            traversal(node, stepIn, onNode, stepOut);
+            traversal(node, stepIn, onNode, stepOut, options);
         }
     });
 
