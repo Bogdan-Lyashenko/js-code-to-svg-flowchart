@@ -7,7 +7,7 @@ import {
     calculateBoundaries,
 
     delegateInit
-} from './Shape';
+} from './BaseShape';
 
 import {
     calculateDimensions,
@@ -79,7 +79,7 @@ export const LoopRhombus = (initialState) => {
     state =  {...state, ...setupInitialProperties(state)};
 
     return Object.assign(
-        {state, type: ENTITY_FIELD_NAME},
+        {state},
         setupInitialSelectors(state),
         setupAdditionalSelectors(state),
 

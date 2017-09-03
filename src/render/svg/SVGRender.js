@@ -30,7 +30,7 @@ export const buildShapeStructures = (flowTree, customStyleTheme) => {
             parentShape.isFirstChildByKey(TOKEN_KEYS.ALTERNATE)) {
 
             const alternatePoint = parentShape.getAlternativeBranchChildOffsetPoint();
-            position.x = alternatePoint.x;
+            position.x = alternatePoint.x + parentShape.getMargin();
             position.y = alternatePoint.y;
         }
 
@@ -62,7 +62,8 @@ export const buildConnections = (shapesTree, customStyleTheme) => {
     const connections = [],
         pushArrow = (config) => { connections.push(createConnectionArrow(config, customStyleTheme)); };
 
-    let latestShape = null;
+    let latestShape = null,
+        latestParentShape = null;
 
     complexTraversal(shapesTree, shapesTree, (parentShape) => {
 
@@ -81,7 +82,7 @@ export const buildConnections = (shapesTree, customStyleTheme) => {
             const boundaryPoint = parentShape.getAlternativeBranchChildOffsetPoint();
 
             config.startPoint = parentShape.getAlternateFromPoint();
-            config.boundaryPoint = {x: boundaryPoint.x - parentShape.getMargin()};
+            config.boundaryPoint = {x: boundaryPoint.x};
         } else {
             config.startPoint = parentShape.getFromPoint();
         }

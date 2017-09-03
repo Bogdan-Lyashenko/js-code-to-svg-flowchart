@@ -4,10 +4,11 @@ import {
     setupInitialSelectors,
 
     calculateHeight,
+    calculateNameBasedWidth,
     calculatePosition,
 
     delegateInit
-} from './Shape';
+} from './BaseShape';
 
 const ENTITY_FIELD_NAME = 'VerticalEdgedRectangle';
 
@@ -36,8 +37,8 @@ const setupVerticalEdgedRectangleBehavior = (state) => ({
     }
 });
 
-const calculateWidth = ({theme, name}) =>
-    (2 * theme.horizontalPadding + name.length * theme.symbolWidth + 2 * theme.edgeOffset);
+const calculateWidth = (state) =>
+    2 * (state.theme.horizontalPadding + state.theme.edgeOffset) + calculateNameBasedWidth(state);
 
 const calculateDimensions = (state) => ({
     w: calculateWidth(state),
@@ -56,7 +57,7 @@ export const VerticalEdgedRectangle = (initialState) => {
     state = {...state, ...setupInitialProperties(state)};
 
     return Object.assign(
-        { state , type: ENTITY_FIELD_NAME},
+        {state},
         setupInitialSelectors(state),
 
         setupBasicBehaviour(state),

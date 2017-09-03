@@ -1,5 +1,5 @@
 import generate from 'babel-generator';
-import {TOKEN_TYPES} from '../../shared/constants';
+import {TOKEN_TYPES, CLASS_FUNCTION_KINDS} from '../../shared/constants';
 
 export const idleConverter = (path) => {
     return generate(path.node).code;
@@ -17,6 +17,12 @@ export const functionConverter = ({node}) => {
         return paramsCode + ' =>';
     }
 
+    if (node.type === TOKEN_TYPES.CLASS_METHOD) {
+        return (node.kind === CLASS_FUNCTION_KINDS.CONSTRUCTOR)
+            ? 'constructor' + paramsCode
+            : node.key.name + paramsCode;
+    }
+
     return 'function' + paramsCode;
 };
 
@@ -30,13 +36,18 @@ export const returnConverter = (path) => {
 /* end function */
 
 /* loop */
-export const loopConverter = (path) => {
-    if (path.node.test) {
-        return generate(path.node.test).code;
+export const loopConverter = ({node}) => {
+    if (node.test) {
+        return generate(node.test).code;
     }
 
-    if (path.node.left && path.node.right) {
-        return `${generate(path.node.left).code} in ${generate(path.node.right).code}`;
+    if (node.left && node.right) {
+        const innerPart = node.type === TOKEN_TYPES.FOR_OF_STATEMENT ? 'of' : 'in';
+        const leftPart =  node.left.type === TOKEN_TYPES.VARIABLE_DECLARATION
+            ? getVariableDeclarations(node.left.declarations)
+            : generate(node.left).code;
+
+        return `${leftPart} ${innerPart} ${generate(node.right).code}`;
     }
 };
 
@@ -98,6 +109,9 @@ export const throwStatementConverter = (path) => {
 export const debuggerConverter = (path) => {
     return `debugger`;
 };
+
+export const getVariableDeclarations = (variables) =>
+    variables.map(v => variableDeclaratorConverter({node: v})).join(', ');
 
 export const variableDeclaratorConverter = ({node}) => {
     if (isNodeContainsFunc(node.init)) {

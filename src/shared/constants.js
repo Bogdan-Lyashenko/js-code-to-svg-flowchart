@@ -1,7 +1,9 @@
 export const TOKEN_TYPES = {
     FUNCTION: 'Function',
+    FUNCTION_EXPRESSION: 'FunctionExpression',
     VARIABLE_DECLARATOR: 'VariableDeclarator',
     ASSIGNMENT_EXPRESSION: 'AssignmentExpression',
+    VARIABLE_DECLARATION: 'VariableDeclaration',
     UPDATE_EXPRESSION: 'UpdateExpression',
     CALL_EXPRESSION: 'CallExpression',
     NEW_EXPRESSION: 'NewExpression',
@@ -18,8 +20,17 @@ export const TOKEN_TYPES = {
     WITH_STATEMENT: 'WithStatement',
     THROW_STATEMENT: 'ThrowStatement',
     DEBUGGER_STATEMENT: 'DebuggerStatement',
+
+    //ES Harmony features
     ARROW_FUNCTION_EXPRESSION: 'ArrowFunctionExpression',
-    FUNCTION_EXPRESSION: 'FunctionExpression'
+    IMPORT_DECLARATION: 'ImportDeclaration',
+    IMPORT_DEFAULT_SPECIFIER: 'ImportDefaultSpecifier',
+    IMPORT_SPECIFIER: 'ImportSpecifier',
+    EXPORT_NAMED_DECLARATION: 'ExportNamedDeclaration',
+    EXPORT_DEFAULT_DECLARATION: 'ExportDefaultDeclaration',
+    CLASS_DECLARATION: 'ClassDeclaration',
+    CLASS_METHOD: 'ClassMethod',
+    FOR_OF_STATEMENT: 'ForOfStatement'
 };
 
 export const TOKEN_KEYS = {
@@ -33,4 +44,9 @@ export const ARROW_TYPE = {
     LEFT: 'LEFT',
     UP: 'UP',
     DOWN: 'DOWN'
+};
+
+export const CLASS_FUNCTION_KINDS = {
+    CONSTRUCTOR: 'constructor',
+    METHOD: 'method'
 };

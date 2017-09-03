@@ -1077,7 +1077,7 @@ $export.P = 8;   // proto
 $export.B = 16;  // bind
 $export.W = 32;  // wrap
 $export.U = 64;  // safe
-$export.R = 128; // real proto method for `library` 
+$export.R = 128; // real proto method for `library`
 module.exports = $export;
 
 /***/ }),
@@ -2042,7 +2042,260 @@ var CLASS_FUNCTION_KINDS = exports.CLASS_FUNCTION_KINDS = {
 };
 
 /***/ }),
-/* 30 */,
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.calculateBoundaries = exports.calculateChildOffsetPoint = exports.calculateBackPoint = exports.calculateToPoint = exports.calculateFromPoint = exports.calculatePosition = exports.calculateDimensions = exports.calculateHeight = exports.calculateWidth = exports.setupCompleteState = exports.setupBasicBehaviour = exports.setupGetChildBoundaries = exports.setupConnectChild = exports.setupPrintName = exports.setupInitialSelectors = exports.extractBasicState = exports.setupInitialProperties = exports.getInitialState = exports.delegateInit = undefined;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _string = __webpack_require__(176);
+
+var _flatten = __webpack_require__(177);
+
+var _geometry = __webpack_require__(178);
+
+var delegateInit = exports.delegateInit = function delegateInit(shape, themeFieldName) {
+    function init(node, position, theme) {
+        return shape(getInitialState(node, position, theme, themeFieldName));
+    }
+
+    init.getThemeFieldName = function () {
+        return themeFieldName;
+    };
+
+    return init;
+};
+
+var getInitialState = exports.getInitialState = function getInitialState(node, _ref, theme, type) {
+    var x = _ref.x,
+        y = _ref.y;
+    return {
+        id: (0, _string.generateId)(),
+        type: type,
+        body: [],
+        theme: theme,
+        node: node,
+        name: node.name,
+        initialPosition: { x: x, y: y }
+    };
+};
+
+var setupInitialProperties = exports.setupInitialProperties = function setupInitialProperties(state) {
+    return {
+        fromPoint: calculateFromPoint(state),
+        toPoint: calculateToPoint(state),
+        backPoint: calculateBackPoint(state),
+        childOffsetPoint: calculateChildOffsetPoint(state),
+        boundaries: calculateBoundaries(state)
+    };
+};
+
+var extractBasicState = exports.extractBasicState = function extractBasicState(state) {
+    return _extends({}, state, {
+        position: calculatePosition(state),
+        dimensions: calculateDimensions(state)
+    });
+};
+
+var setupInitialSelectors = exports.setupInitialSelectors = function setupInitialSelectors(state) {
+    return {
+        getBody: function getBody() {
+            return state.body;
+        },
+        getBoundaries: function getBoundaries() {
+            return state.boundaries;
+        },
+        getBackPoint: function getBackPoint() {
+            return state.backPoint;
+        },
+        getChildOffsetPoint: function getChildOffsetPoint() {
+            return state.childOffsetPoint;
+        },
+        getDimensions: function getDimensions() {
+            return state.dimensions;
+        },
+        getId: function getId() {
+            return state.id;
+        },
+        getFromPoint: function getFromPoint() {
+            return state.fromPoint;
+        },
+        getMargin: function getMargin() {
+            return state.theme.margin;
+        },
+        getName: function getName() {
+            return state.name;
+        },
+        getNode: function getNode() {
+            return state.node;
+        },
+        getNodeType: function getNodeType() {
+            return state.node.type;
+        },
+        getNodeKey: function getNodeKey() {
+            return state.node.key;
+        },
+        getParent: function getParent() {
+            return state.parent;
+        },
+        getPosition: function getPosition() {
+            return state.position;
+        },
+        getToPoint: function getToPoint() {
+            return state.toPoint;
+        }
+    };
+};
+
+var setupPrintName = exports.setupPrintName = function setupPrintName(_ref2) {
+    var position = _ref2.position,
+        theme = _ref2.theme,
+        name = _ref2.name;
+    return {
+        /*TODO: add multi line support
+         <text x="10" y="20" appearance="fill:red;">Several lines:
+         <tspan x="10" y="45">First line.</tspan>
+         <tspan x="10" y="70">Second line.</tspan>
+         </text>*/
+        printName: function printName(newPosition) {
+            var _ref3 = newPosition ? newPosition : position,
+                x = _ref3.x,
+                y = _ref3.y;
+
+            return '<text x="' + (x + theme.horizontalPadding) + '" y="' + (y + 2 * theme.verticalPadding) + '"\n                font-family="' + theme.fontFamily + '" font-size="' + theme.fontSize + '" fill="' + theme.textColor + '">\n                ' + name + '\n            </text>';
+        }
+    };
+};
+
+var setupConnectChild = exports.setupConnectChild = function setupConnectChild(state) {
+    return {
+        addChild: function addChild(child) {
+            state.body.push(child);
+        },
+        setParent: function setParent(parent) {
+            state.parent = parent;
+        },
+        connectChild: function connectChild(child) {
+            this.addChild(child);
+            child.setParent(this);
+        }
+    };
+};
+
+var setupGetChildBoundaries = exports.setupGetChildBoundaries = function setupGetChildBoundaries(state) {
+    return {
+        getChildBoundaries: function getChildBoundaries(filterFn) {
+            var body = state.body,
+                boundaries = state.boundaries;
+
+
+            if (!body.length) {
+                return boundaries;
+            }
+
+            var flattedTree = (0, _flatten.flatTree)({
+                getBody: function getBody() {
+                    return filterFn ? body.filter(filterFn) : body;
+                },
+                getBoundaries: function getBoundaries() {
+                    return boundaries;
+                }
+
+            }, {
+                getBody: function getBody(node) {
+                    return node.getBody();
+                }
+            });
+
+            return (0, _geometry.calculateShapesBoundaries)(flattedTree.map(function (item) {
+                return item.getBoundaries();
+            }));
+        }
+    };
+};
+
+var setupBasicBehaviour = exports.setupBasicBehaviour = function setupBasicBehaviour(state) {
+    return Object.assign({}, setupPrintName(state), setupConnectChild(state), setupGetChildBoundaries(state));
+};
+
+var setupCompleteState = exports.setupCompleteState = function setupCompleteState(initialState) {
+    var state = extractBasicState(initialState);
+    return _extends({}, state, setupInitialProperties(state));
+};
+
+var calculateWidth = exports.calculateWidth = function calculateWidth(_ref4) {
+    var name = _ref4.name,
+        theme = _ref4.theme;
+    return 2 * theme.horizontalPadding + name.length * theme.symbolWidth;
+};
+
+var calculateHeight = exports.calculateHeight = function calculateHeight(_ref5) {
+    var theme = _ref5.theme;
+    return 2 * theme.verticalPadding + theme.symbolHeight;
+};
+
+var calculateDimensions = exports.calculateDimensions = function calculateDimensions(state) {
+    return { w: calculateWidth(state), h: calculateHeight(state) };
+};
+
+var calculatePosition = exports.calculatePosition = function calculatePosition(state) {
+    return _extends({}, state.initialPosition);
+};
+
+var calculateFromPoint = exports.calculateFromPoint = function calculateFromPoint(_ref6) {
+    var position = _ref6.position,
+        dimensions = _ref6.dimensions,
+        theme = _ref6.theme;
+    return {
+        x: position.x + theme.childOffset / 2,
+        y: position.y + dimensions.h
+    };
+};
+
+var calculateToPoint = exports.calculateToPoint = function calculateToPoint(_ref7) {
+    var position = _ref7.position,
+        dimensions = _ref7.dimensions;
+    return {
+        x: position.x,
+        y: position.y + dimensions.h / 2
+    };
+};
+
+var calculateBackPoint = exports.calculateBackPoint = function calculateBackPoint(_ref8) {
+    var position = _ref8.position,
+        dimensions = _ref8.dimensions;
+    return {
+        x: position.x + dimensions.w,
+        y: position.y + dimensions.h / 2
+    };
+};
+
+var calculateChildOffsetPoint = exports.calculateChildOffsetPoint = function calculateChildOffsetPoint(_ref9) {
+    var theme = _ref9.theme,
+        dimensions = _ref9.dimensions;
+    return {
+        x: theme.childOffset,
+        y: dimensions.h + dimensions.h / 4
+    };
+};
+
+var calculateBoundaries = exports.calculateBoundaries = function calculateBoundaries(_ref10) {
+    var position = _ref10.position,
+        dimensions = _ref10.dimensions;
+    return {
+        min: { x: position.x, y: position.y },
+        max: { x: position.x + dimensions.w, y: position.y + dimensions.h }
+    };
+};
+
+/***/ }),
 /* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -7264,7 +7517,7 @@ var Tokenizer = function () {
 
     if (next === 33 && code === 60 && this.input.charCodeAt(this.state.pos + 2) === 45 && this.input.charCodeAt(this.state.pos + 3) === 45) {
       if (this.inModule) this.unexpected();
-      // `<!--`, an XML-style comment that should be interpreted as a line comment
+      // `<!--`, an XML-appearance comment that should be interpreted as a line comment
       this.skipLineComment(4);
       this.skipSpace();
       return this.nextToken();
@@ -16455,7 +16708,7 @@ var buildShapeStructures = exports.buildShapeStructures = function buildShapeStr
         if (parentShape.getNodeType() === _constants.TOKEN_TYPES.CONDITIONAL && node.key === _constants.TOKEN_KEYS.ALTERNATE && parentShape.isFirstChildByKey(_constants.TOKEN_KEYS.ALTERNATE)) {
 
             var alternatePoint = parentShape.getAlternativeBranchChildOffsetPoint();
-            position.x = alternatePoint.x + parentShape.getMargin();
+            position.x = alternatePoint.x;
             position.y = alternatePoint.y;
         }
 
@@ -16489,8 +16742,7 @@ var buildConnections = exports.buildConnections = function buildConnections(shap
         connections.push((0, _shapesFactory.createConnectionArrow)(config, customStyleTheme));
     };
 
-    var latestShape = null,
-        latestParentShape = null;
+    var latestShape = null;
 
     (0, _traversalWithTreeLevelsPointer.complexTraversal)(shapesTree, shapesTree, function (parentShape) {}, function (shape, parentShape) {
         latestShape = shape;
@@ -16507,7 +16759,7 @@ var buildConnections = exports.buildConnections = function buildConnections(shap
             var boundaryPoint = parentShape.getAlternativeBranchChildOffsetPoint();
 
             config.startPoint = parentShape.getAlternateFromPoint();
-            config.boundaryPoint = { x: boundaryPoint.x };
+            config.boundaryPoint = { x: boundaryPoint.x - parentShape.getMargin() };
         } else {
             config.startPoint = parentShape.getFromPoint();
         }
@@ -16674,7 +16926,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _constants = __webpack_require__(29);
 
-var _StyleTheme = __webpack_require__(453);
+var _Theme = __webpack_require__(174);
 
 var _VerticalEdgedRectangle = __webpack_require__(175);
 
@@ -16724,14 +16976,14 @@ var createShapeForNode = exports.createShapeForNode = function createShapeForNod
             shape = _Rectangle2.default;
     }
 
-    var DefaultTheme = (0, _StyleTheme.getTheme)();
+    var DefaultTheme = (0, _Theme.getTheme)();
     return shape(node, position, _extends({}, DefaultTheme[shape.getThemeFieldName()], customStyleTheme[shape.getThemeFieldName()] || {}));
 };
 
 var createRootCircle = exports.createRootCircle = function createRootCircle(node) {
     var customStyleTheme = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-    var DefaultTheme = (0, _StyleTheme.getTheme)();
+    var DefaultTheme = (0, _Theme.getTheme)();
     var circleTheme = _extends({}, DefaultTheme[_Circle2.default.getThemeFieldName()], customStyleTheme[_Circle2.default.getThemeFieldName()] || {});
 
     var _DefaultTheme$RootSta = _extends({}, customStyleTheme.RootStartPoint || {}, DefaultTheme.RootStartPoint),
@@ -16747,7 +16999,7 @@ var createRootCircle = exports.createRootCircle = function createRootCircle(node
 var createConnectionArrow = exports.createConnectionArrow = function createConnectionArrow(config) {
     var customStyleTheme = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-    var DefaultTheme = (0, _StyleTheme.getTheme)();
+    var DefaultTheme = (0, _Theme.getTheme)();
     return (0, _ConnectionArrow2.default)(getConnectionConfig(config), _extends({}, DefaultTheme.ConnectionArrow, customStyleTheme.ConnectionArrow || {}));
 };
 
@@ -16757,7 +17009,7 @@ var getConnectionConfig = exports.getConnectionConfig = function getConnectionCo
         boundaryPoint = _ref.boundaryPoint,
         arrowType = _ref.arrowType;
 
-    var DefaultTheme = (0, _StyleTheme.getTheme)(); //TODO: refactor redundant calls for building Theme
+    var DefaultTheme = (0, _Theme.getTheme)(); //TODO: refactor redundant calls for building Theme
     var theme = DefaultTheme.ConnectionArrow;
 
     var config = {
@@ -16791,7 +17043,105 @@ var getConnectionConfig = exports.getConnectionConfig = function getConnectionCo
 };
 
 /***/ }),
-/* 174 */,
+/* 174 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var DefaultShape = {
+    strokeColor: '#333',
+    strokeWidth: 1,
+    fillColor: '#fff',
+    textColor: '#111',
+    fontFamily: 'monospace',
+    fontSize: 13,
+    symbolHeight: 10,
+    symbolWidth: 7.8,
+    horizontalPadding: 10,
+    verticalPadding: 10,
+    childOffset: 40,
+    margin: 10
+};
+
+var Themes = exports.Themes = {
+    DEFAULT: {
+        ConnectionArrow: {
+            arrow: {
+                size: {
+                    x: 8,
+                    y: 6
+                },
+                fillColor: '#222'
+            },
+            line: {
+                strokeColor: '#333',
+                strokeWidth: 1
+            },
+            lineTurnOffset: 20
+        },
+
+        Shape: _extends({}, DefaultShape),
+
+        Rectangle: _extends({}, DefaultShape, {
+            fillColor: '#b39ddb',
+            roundBorder: 3
+        }),
+
+        VerticalEdgedRectangle: _extends({}, DefaultShape, {
+            fillColor: '#a5d6a7',
+            edgeOffset: 10
+        }),
+
+        Circle: _extends({}, DefaultShape, {
+            fillColor: '#fff59d'
+        }),
+
+        LoopRhombus: _extends({}, DefaultShape, {
+            fillColor: '#90CAF9',
+            thinPartOffset: 15,
+            doubleLayerOffset: 4,
+            childOffset: 20,
+            positionTopShift: 20
+        }),
+
+        ConditionRhombus: _extends({}, DefaultShape, {
+            fillColor: '#ce93d8',
+            thinPartOffset: 15,
+            childOffset: 20,
+            alternateBranchOffset: 40,
+            markOffset: {
+                x: 5,
+                y: 5
+            },
+            margin: 20
+        }),
+
+        RootStartPoint: {
+            center: {
+                x: 15, y: 15
+            },
+            childOffset: {
+                x: 20, y: 50
+            }
+        }
+    }
+};
+
+var getTheme = exports.getTheme = function getTheme(currentTheme) {
+    switch (currentTheme) {
+        default:
+            return Themes.DEFAULT;
+    }
+};
+
+/***/ }),
 /* 175 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16805,7 +17155,7 @@ exports.VerticalEdgedRectangle = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _BaseShape = __webpack_require__(454);
+var _Shape = __webpack_require__(30);
 
 var ENTITY_FIELD_NAME = 'VerticalEdgedRectangle';
 
@@ -16822,25 +17172,27 @@ var setupVerticalEdgedRectangleBehavior = function setupVerticalEdgedRectangleBe
                 namePosition = { x: x + theme.edgeOffset, y: y };
 
 
-            return '\n            <g>\n             <rect x="' + x + '" y="' + y + '"\n                    width="' + w + '" height=' + h + '\n                    rx="' + 0 + '" ry="' + 0 + '"\n                    style="fill:' + theme.fillColor + '; stroke-width:' + theme.strokeWidth + '; stroke:' + theme.strokeColor + '" />\n                    \n             <line x1="' + (x + theme.edgeOffset) + '" y1="' + y + '" x2="' + (x + theme.edgeOffset) + '" y2="' + (y + h) + '"\n                    style="stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />\n             \n             <line x1="' + (x + w - theme.edgeOffset) + '" y1="' + y + '" x2="' + (x + w - theme.edgeOffset) + '" y2="' + (y + h) + '"\n                    style="stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />\n                    \n                ' + this.printName(namePosition) + '\n            </g>';
+            return '\n            <g>\n             <rect x="' + x + '" y="' + y + '"\n                    width="' + w + '" height=' + h + '\n                    rx="' + 0 + '" ry="' + 0 + '"\n                    appearance="fill:' + theme.fillColor + '; stroke-width:' + theme.strokeWidth + '; stroke:' + theme.strokeColor + '" />\n                    \n             <line x1="' + (x + theme.edgeOffset) + '" y1="' + y + '" x2="' + (x + theme.edgeOffset) + '" y2="' + (y + h) + '"\n                    appearance="stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />\n             \n             <line x1="' + (x + w - theme.edgeOffset) + '" y1="' + y + '" x2="' + (x + w - theme.edgeOffset) + '" y2="' + (y + h) + '"\n                    appearance="stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />\n                    \n                ' + this.printName(namePosition) + '\n            </g>';
         }
     };
 };
 
-var calculateWidth = function calculateWidth(state) {
-    return 2 * (state.theme.horizontalPadding + state.theme.edgeOffset) + (0, _BaseShape.calculateNameBasedWidth)(state);
+var calculateWidth = function calculateWidth(_ref) {
+    var theme = _ref.theme,
+        name = _ref.name;
+    return 2 * theme.horizontalPadding + name.length * theme.symbolWidth + 2 * theme.edgeOffset;
 };
 
 var calculateDimensions = function calculateDimensions(state) {
     return {
         w: calculateWidth(state),
-        h: (0, _BaseShape.calculateHeight)(state)
+        h: (0, _Shape.calculateHeight)(state)
     };
 };
 
 var extractBasicState = function extractBasicState(state) {
     return _extends({}, state, {
-        position: (0, _BaseShape.calculatePosition)(state),
+        position: (0, _Shape.calculatePosition)(state),
         dimensions: calculateDimensions(state)
     });
 };
@@ -16848,12 +17200,12 @@ var extractBasicState = function extractBasicState(state) {
 var VerticalEdgedRectangle = exports.VerticalEdgedRectangle = function VerticalEdgedRectangle(initialState) {
     var state = extractBasicState(initialState);
 
-    state = _extends({}, state, (0, _BaseShape.setupInitialProperties)(state));
+    state = _extends({}, state, (0, _Shape.setupInitialProperties)(state));
 
-    return Object.assign({ state: state }, (0, _BaseShape.setupInitialSelectors)(state), (0, _BaseShape.setupBasicBehaviour)(state), setupVerticalEdgedRectangleBehavior(state));
+    return Object.assign({ state: state }, (0, _Shape.setupInitialSelectors)(state), (0, _Shape.setupBasicBehaviour)(state), setupVerticalEdgedRectangleBehavior(state));
 };
 
-exports.default = (0, _BaseShape.delegateInit)(VerticalEdgedRectangle, ENTITY_FIELD_NAME);
+exports.default = (0, _Shape.delegateInit)(VerticalEdgedRectangle, ENTITY_FIELD_NAME);
 
 /***/ }),
 /* 176 */
@@ -16873,39 +17225,12 @@ var generateId = exports.generateId = function generateId() {
     });
 };
 
-var splitNameString = exports.splitNameString = function splitNameString(str) {
-    var maxLineLength = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 20;
-    var nameSplitterTokensIterator = arguments[2];
+var splitString = exports.splitString = function splitString(str) {
+    var maxLineLength = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 15;
 
-    var strLength = str.length;
-
-    if (strLength <= maxLineLength) return [str];
-
-    var parts = [],
-        currentPositionIndex = 0,
-        splitter = nameSplitterTokensIterator.getNext();
-
-    while (currentPositionIndex < strLength) {
-        var splitterIndex = str.indexOf(splitter, currentPositionIndex);
-
-        if (splitterIndex !== -1) {
-            parts.push(str.slice(currentPositionIndex, splitterIndex + splitter.length));
-            currentPositionIndex += splitterIndex + splitter.length;
-        } else {
-            //TODO: try other splitters then
-            //splitter = nameSplitterTokensIterator.getNext(),
-            parts.push(str.slice(currentPositionIndex, str.length));
-            currentPositionIndex = str.length;
-        }
-    }
+    var parts = [];
 
     return parts;
-};
-
-var getMaxStringLengthFromList = exports.getMaxStringLengthFromList = function getMaxStringLengthFromList(list) {
-    return list.reduce(function (max, current) {
-        return current.length >= max ? current.length : max;
-    }, 0);
 };
 
 /***/ }),
@@ -17000,7 +17325,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Rectangle = undefined;
 
-var _BaseShape = __webpack_require__(454);
+var _Shape = __webpack_require__(30);
 
 var ENTITY_FIELD_NAME = 'Rectangle';
 
@@ -17016,18 +17341,18 @@ var setupRectangleBehavior = function setupRectangleBehavior(state) {
                 h = _state$dimensions.h;
 
 
-            return '\n                <g>\n                    <rect x="' + x + '" y="' + y + '"\n                        width="' + w + '" height=' + h + '\n                        rx="' + theme.roundBorder + '" ry="' + theme.roundBorder + '"\n                        style="fill:' + theme.fillColor + '; stroke-width:' + theme.strokeWidth + '; stroke:' + theme.strokeColor + '" />\n                   ' + this.printName() + '\n                </g>';
+            return '\n                <g>\n                    <rect x="' + x + '" y="' + y + '"\n                        width="' + w + '" height=' + h + '\n                        rx="' + theme.roundBorder + '" ry="' + theme.roundBorder + '"\n                        appearance="fill:' + theme.fillColor + '; stroke-width:' + theme.strokeWidth + '; stroke:' + theme.strokeColor + '" />\n                   ' + this.printName() + '\n                </g>';
         }
     };
 };
 
 var Rectangle = exports.Rectangle = function Rectangle(initialState) {
-    var state = (0, _BaseShape.setupCompleteState)(initialState);
+    var state = (0, _Shape.setupCompleteState)(initialState);
 
-    return Object.assign({ state: state }, (0, _BaseShape.setupInitialSelectors)(state), (0, _BaseShape.setupBasicBehaviour)(state), setupRectangleBehavior(state));
+    return Object.assign({ state: state }, (0, _Shape.setupInitialSelectors)(state), (0, _Shape.setupBasicBehaviour)(state), setupRectangleBehavior(state));
 };
 
-exports.default = (0, _BaseShape.delegateInit)(Rectangle, ENTITY_FIELD_NAME);
+exports.default = (0, _Shape.delegateInit)(Rectangle, ENTITY_FIELD_NAME);
 
 /***/ }),
 /* 180 */
@@ -17045,7 +17370,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _constants = __webpack_require__(29);
 
-var _BaseShape = __webpack_require__(454);
+var _Shape = __webpack_require__(30);
 
 var _Rhombus = __webpack_require__(451);
 
@@ -17074,8 +17399,8 @@ var setupInitialProperties = function setupInitialProperties(state) {
         fromPoint: (0, _Rhombus.calculateFromPoint)(state),
         childOffsetPoint: (0, _Rhombus.calculateChildOffsetPoint)(state),
         toPoint: calculateToPoint(state),
-        backPoint: (0, _BaseShape.calculateBackPoint)(state),
-        boundaries: (0, _BaseShape.calculateBoundaries)(state),
+        backPoint: (0, _Shape.calculateBackPoint)(state),
+        boundaries: (0, _Shape.calculateBoundaries)(state),
 
         alternateFromPoint: calculateAlternateFromPoint(state)
     };
@@ -17130,28 +17455,24 @@ var setupConditionRhombusBehavior = exports.setupConditionRhombusBehavior = func
             return '<text x="' + (x + w - theme.markOffset.x) + '" y="' + (y + h / 2 - theme.markOffset.y) + '"\n            font-family="' + theme.fontFamily + '" font-size="' + theme.fontSize + '" fill="' + theme.textColor + '"> - </text>\n            \n            <text x="' + (x + w / 2 - 2 * theme.markOffset.x) + '" y="' + (y + h + 2 * theme.markOffset.y) + '"\n            font-family="' + theme.fontFamily + '" font-size="' + theme.fontSize + '" fill="' + theme.textColor + '"> + </text>';
         },
         print: function print() {
-            var theme = state.theme,
-                _state$position2 = state.position,
+            var theme = state.theme;
+            var _state$position2 = state.position,
                 x = _state$position2.x,
                 y = _state$position2.y,
                 _state$dimensions2 = state.dimensions,
                 w = _state$dimensions2.w,
-                h = _state$dimensions2.h;
+                h = _state$dimensions2.h,
+                namePosition = { x: x + theme.thinPartOffset, y: y + theme.thinPartOffset };
 
 
-            var namePosition = {
-                x: x + state.totalNamePartsNumber * theme.thinPartOffset,
-                y: y + state.totalNamePartsNumber * theme.thinPartOffset
-            };
-
-            return '<g>\n            <polygon points="' + x + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + y + ' ' + (x + w) + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + (y + h) + '"\n                style="fill:' + theme.fillColor + ';stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />\n                \n            ' + this.printName(namePosition) + '\n            ' + this.printConditionMarks() + '\n        </g>';
+            return '<g>\n            <polygon points="' + x + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + y + ' ' + (x + w) + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + (y + h) + '"\n                appearance="fill:' + theme.fillColor + ';stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />\n                \n            ' + this.printName(namePosition) + '\n            ' + this.printConditionMarks() + '\n        </g>';
         }
     };
 };
 
 var extractBasicState = function extractBasicState(state) {
     return _extends({}, state, {
-        position: (0, _BaseShape.calculatePosition)(state),
+        position: (0, _Shape.calculatePosition)(state),
         dimensions: (0, _Rhombus.calculateDimensions)(state)
     });
 };
@@ -17161,10 +17482,10 @@ var ConditionRhombus = exports.ConditionRhombus = function ConditionRhombus(init
 
     state = _extends({}, state, setupInitialProperties(state));
 
-    return Object.assign({ state: state }, (0, _BaseShape.setupInitialSelectors)(state), setupAdditionalSelectors(state), (0, _BaseShape.setupBasicBehaviour)(state), setupConditionRhombusBehavior(state));
+    return Object.assign({ state: state }, (0, _Shape.setupInitialSelectors)(state), setupAdditionalSelectors(state), (0, _Shape.setupBasicBehaviour)(state), setupConditionRhombusBehavior(state));
 };
 
-exports.default = (0, _BaseShape.delegateInit)(ConditionRhombus, ENTITY_FIELD_NAME);
+exports.default = (0, _Shape.delegateInit)(ConditionRhombus, ENTITY_FIELD_NAME);
 
 /***/ }),
 /* 181 */
@@ -17180,7 +17501,7 @@ exports.LoopRhombus = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _BaseShape = __webpack_require__(454);
+var _Shape = __webpack_require__(30);
 
 var _Rhombus = __webpack_require__(451);
 
@@ -17199,9 +17520,9 @@ var setupInitialProperties = function setupInitialProperties(state) {
     return {
         fromPoint: (0, _Rhombus.calculateFromPoint)(state),
         childOffsetPoint: (0, _Rhombus.calculateChildOffsetPoint)(state),
-        toPoint: (0, _BaseShape.calculateToPoint)(state),
-        backPoint: (0, _BaseShape.calculateBackPoint)(state),
-        boundaries: (0, _BaseShape.calculateBoundaries)(state),
+        toPoint: (0, _Shape.calculateToPoint)(state),
+        backPoint: (0, _Shape.calculateBackPoint)(state),
+        boundaries: (0, _Shape.calculateBoundaries)(state),
 
         midPoint: calculateMidPoint(state)
     };
@@ -17232,7 +17553,7 @@ var setupLoopRhombusBehavior = function setupLoopRhombusBehavior(state) {
                 strokeWidth = theme.strokeWidth;
 
 
-            return '<g>\n            <polygon points="\n                    ' + (x + doubleLayerOffset / 2) + ',' + (y + h / 2 - doubleLayerOffset) + ' \n                    ' + (x + w / 2 + doubleLayerOffset / 2) + ',' + (y - doubleLayerOffset) + ' \n                    ' + (x + w + theme.doubleLayerOffset / 2) + ',' + (y + h / 2 - doubleLayerOffset) + ' \n                    ' + (x + w / 2 + theme.doubleLayerOffset / 2) + ',' + (y + h - doubleLayerOffset) + '"\n                style="fill:' + fillColor + ';stroke:' + strokeColor + ';stroke-width:' + strokeWidth + '" />\n                \n            <polygon points="' + x + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + y + ' ' + (x + w) + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + (y + h) + '"\n                style="fill:' + fillColor + ';stroke:' + strokeColor + ';stroke-width:' + strokeWidth + '" />\n                \n            ' + this.printName(namePosition) + '\n        </g>';
+            return '<g>\n            <polygon points="\n                    ' + (x + doubleLayerOffset / 2) + ',' + (y + h / 2 - doubleLayerOffset) + ' \n                    ' + (x + w / 2 + doubleLayerOffset / 2) + ',' + (y - doubleLayerOffset) + ' \n                    ' + (x + w + theme.doubleLayerOffset / 2) + ',' + (y + h / 2 - doubleLayerOffset) + ' \n                    ' + (x + w / 2 + theme.doubleLayerOffset / 2) + ',' + (y + h - doubleLayerOffset) + '"\n                appearance="fill:' + fillColor + ';stroke:' + strokeColor + ';stroke-width:' + strokeWidth + '" />\n                \n            <polygon points="' + x + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + y + ' ' + (x + w) + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + (y + h) + '"\n                appearance="fill:' + fillColor + ';stroke:' + strokeColor + ';stroke-width:' + strokeWidth + '" />\n                \n            ' + this.printName(namePosition) + '\n        </g>';
         }
     };
 };
@@ -17258,10 +17579,10 @@ var LoopRhombus = exports.LoopRhombus = function LoopRhombus(initialState) {
 
     state = _extends({}, state, setupInitialProperties(state));
 
-    return Object.assign({ state: state }, (0, _BaseShape.setupInitialSelectors)(state), setupAdditionalSelectors(state), (0, _BaseShape.setupBasicBehaviour)(state), setupLoopRhombusBehavior(state));
+    return Object.assign({ state: state }, (0, _Shape.setupInitialSelectors)(state), setupAdditionalSelectors(state), (0, _Shape.setupBasicBehaviour)(state), setupLoopRhombusBehavior(state));
 };
 
-exports.default = (0, _BaseShape.delegateInit)(LoopRhombus, ENTITY_FIELD_NAME);
+exports.default = (0, _Shape.delegateInit)(LoopRhombus, ENTITY_FIELD_NAME);
 
 /***/ }),
 /* 182 */
@@ -17277,7 +17598,7 @@ exports.Circle = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _BaseShape = __webpack_require__(454);
+var _Shape = __webpack_require__(30);
 
 var ENTITY_FIELD_NAME = 'Circle';
 
@@ -17292,7 +17613,7 @@ var calculateFromPoint = function calculateFromPoint(_ref) {
 var setupInitialProperties = function setupInitialProperties(state) {
     return {
         fromPoint: calculateFromPoint(state),
-        boundaries: (0, _BaseShape.calculateBoundaries)(state)
+        boundaries: (0, _Shape.calculateBoundaries)(state)
     };
 };
 
@@ -17306,7 +17627,7 @@ var setupCircleBehavior = function setupCircleBehavior(state) {
                 r = state.dimensions.w / 2;
 
 
-            return '\n            <g>\n               <circle cx="' + x + '" cy="' + y + '" r="' + r + '"\n                style="fill:' + theme.fillColor + ';stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />\n               ' + this.printName() + '\n            </g>';
+            return '\n            <g>\n               <circle cx="' + x + '" cy="' + y + '" r="' + r + '"\n                appearance="fill:' + theme.fillColor + ';stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />\n               ' + this.printName() + '\n            </g>';
         },
         setChildOffsetPoint: function setChildOffsetPoint(point) {
             state.childOffsetPoint = point;
@@ -17315,14 +17636,14 @@ var setupCircleBehavior = function setupCircleBehavior(state) {
 };
 
 var Circle = exports.Circle = function Circle(initialState) {
-    var state = (0, _BaseShape.extractBasicState)(initialState);
+    var state = (0, _Shape.extractBasicState)(initialState);
 
     state = _extends({}, state, setupInitialProperties(state));
 
-    return Object.assign({ state: state }, (0, _BaseShape.setupInitialSelectors)(state), (0, _BaseShape.setupBasicBehaviour)(state), setupCircleBehavior(state));
+    return Object.assign({ state: state }, (0, _Shape.setupInitialSelectors)(state), (0, _Shape.setupBasicBehaviour)(state), setupCircleBehavior(state));
 };
 
-exports.default = (0, _BaseShape.delegateInit)(Circle, ENTITY_FIELD_NAME);
+exports.default = (0, _Shape.delegateInit)(Circle, ENTITY_FIELD_NAME);
 
 /***/ }),
 /* 183 */
@@ -17360,7 +17681,7 @@ var ConnectionArrow = function () {
                 line = this.theme.line;
 
 
-            return '<polyline points="' + pointStr + '" style="fill:none;stroke:' + line.strokeColor + ';stroke-width:' + line.strokeWidth + '" />';
+            return '<polyline points="' + pointStr + '" appearance="fill:none;stroke:' + line.strokeColor + ';stroke-width:' + line.strokeWidth + '" />';
         }
     }, {
         key: 'printArrow',
@@ -17474,7 +17795,8 @@ var getAST = exports.getAST = function getAST(code, config) {
     (0, _babelTraverse2.default)(c, {
         enter: function enter(path) {
             if (path.node.type === 'CallExpression') {
-                //debugger;
+
+                debugger;
             }
             console.log(path.node.type, path.node.name);
         }
@@ -19163,7 +19485,7 @@ module.exports = function toFastproperties(o) {
 	Sub.prototype = o;
 	var receiver = new Sub(); // create an instance
 	function ic() { return typeof receiver.foo; } // perform access
-	ic(); 
+	ic();
 	ic();
 	return o;
 	eval("o" + o); // ensure no dead code elimination
@@ -23525,7 +23847,7 @@ function plural(ms, n, name) {
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source code is licensed under the BSD-appearance license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
@@ -23535,7 +23857,7 @@ function plural(ms, n, name) {
 /**
  * Use invariant() to assert state which your program assumes to be true.
  *
- * Provide sprintf-style format (only %s is supported) and arguments
+ * Provide sprintf-appearance format (only %s is supported) and arguments
  * to provide information about what broke and what you were
  * expecting.
  *
@@ -31542,7 +31864,7 @@ exports.quickSort = function (ary, comparator) {
 var SourceMapGenerator = __webpack_require__(157).SourceMapGenerator;
 var util = __webpack_require__(42);
 
-// Matches a Windows-style `\r\n` newline or a `\n` newline used by all other
+// Matches a Windows-appearance `\r\n` newline or a `\n` newline used by all other
 // operating systems these days (capturing the result).
 var REGEX_NEWLINE = /(\r?\n)/;
 
@@ -36827,10 +37149,6 @@ var isNodeContainsFunc = exports.isNodeContainsFunc = function isNodeContainsFun
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.calculateChildOffsetPoint = exports.calculateFromPoint = exports.calculateHeight = exports.calculateWidth = exports.calculateDimensions = undefined;
-
-var _BaseShape = __webpack_require__(454);
-
 var calculateDimensions = exports.calculateDimensions = function calculateDimensions(state) {
     return {
         w: calculateWidth(state),
@@ -36838,26 +37156,29 @@ var calculateDimensions = exports.calculateDimensions = function calculateDimens
     };
 };
 
-var calculateWidth = exports.calculateWidth = function calculateWidth(state) {
-    return 2 * (state.theme.horizontalPadding + state.totalNamePartsNumber * state.theme.thinPartOffset) + (0, _BaseShape.calculateNameBasedWidth)(state);
+var calculateWidth = exports.calculateWidth = function calculateWidth(_ref) {
+    var name = _ref.name,
+        theme = _ref.theme;
+    return 2 * theme.horizontalPadding + name.length * theme.symbolWidth + 2 * theme.thinPartOffset;
 };
 
-var calculateHeight = exports.calculateHeight = function calculateHeight(state) {
-    return 2 * (state.theme.verticalPadding + state.totalNamePartsNumber * state.theme.thinPartOffset) + (0, _BaseShape.calculateNameBasedHeight)(state);
+var calculateHeight = exports.calculateHeight = function calculateHeight(_ref2) {
+    var theme = _ref2.theme;
+    return 2 * theme.verticalPadding + theme.symbolHeight + 2 * theme.thinPartOffset;
 };
 
-var calculateFromPoint = exports.calculateFromPoint = function calculateFromPoint(_ref) {
-    var position = _ref.position,
-        dimensions = _ref.dimensions;
+var calculateFromPoint = exports.calculateFromPoint = function calculateFromPoint(_ref3) {
+    var position = _ref3.position,
+        dimensions = _ref3.dimensions;
     return {
         x: position.x + dimensions.w / 2,
         y: position.y + dimensions.h
     };
 };
 
-var calculateChildOffsetPoint = exports.calculateChildOffsetPoint = function calculateChildOffsetPoint(_ref2) {
-    var dimensions = _ref2.dimensions,
-        theme = _ref2.theme;
+var calculateChildOffsetPoint = exports.calculateChildOffsetPoint = function calculateChildOffsetPoint(_ref4) {
+    var dimensions = _ref4.dimensions,
+        theme = _ref4.theme;
     return {
         x: dimensions.w / 2 + theme.childOffset,
         y: dimensions.h + dimensions.h / 4
@@ -36895,428 +37216,6 @@ var classDeclarationConverter = exports.classDeclarationConverter = function cla
     var node = _ref2.node;
 
     return 'class ' + (0, _babelGenerator2.default)(node.id).code + ' ' + (node.superClass ? ' extends ' + node.superClass.name : '');
-};
-
-/***/ }),
-/* 453 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var DefaultShape = {
-    strokeColor: '#333',
-    strokeWidth: 1,
-    fillColor: '#fff',
-    textColor: '#111',
-    fontFamily: 'monospace',
-    fontSize: 13,
-    lineHeight: 5,
-    symbolHeight: 10,
-    symbolWidth: 7.8,
-    horizontalPadding: 10,
-    verticalPadding: 10,
-    childOffset: 40,
-    margin: 10
-};
-
-var Themes = exports.Themes = {
-    DEFAULT: {
-        ConnectionArrow: {
-            arrow: {
-                size: {
-                    x: 8,
-                    y: 6
-                },
-                fillColor: '#222'
-            },
-            line: {
-                strokeColor: '#333',
-                strokeWidth: 1
-            },
-            lineTurnOffset: 20
-        },
-
-        Shape: _extends({}, DefaultShape),
-
-        Rectangle: _extends({}, DefaultShape, {
-            fillColor: '#b39ddb',
-            roundBorder: 3
-        }),
-
-        VerticalEdgedRectangle: _extends({}, DefaultShape, {
-            fillColor: '#a5d6a7',
-            edgeOffset: 10
-        }),
-
-        Circle: _extends({}, DefaultShape, {
-            fillColor: '#fff59d'
-        }),
-
-        LoopRhombus: _extends({}, DefaultShape, {
-            fillColor: '#90CAF9',
-            thinPartOffset: 15,
-            doubleLayerOffset: 4,
-            childOffset: 20,
-            positionTopShift: 20
-        }),
-
-        ConditionRhombus: _extends({}, DefaultShape, {
-            fillColor: '#ce93d8',
-            thinPartOffset: 15,
-            childOffset: 20,
-            alternateBranchOffset: 40,
-            markOffset: {
-                x: 5,
-                y: 5
-            },
-            margin: 20
-        }),
-
-        RootStartPoint: {
-            center: {
-                x: 15, y: 15
-            },
-            childOffset: {
-                x: 20, y: 50
-            }
-        }
-    }
-};
-
-var getTheme = exports.getTheme = function getTheme(currentTheme) {
-    switch (currentTheme) {
-        default:
-            return Themes.DEFAULT;
-    }
-};
-
-/***/ }),
-/* 454 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.calculateBoundaries = exports.calculateChildOffsetPoint = exports.calculateBackPoint = exports.calculateToPoint = exports.calculateFromPoint = exports.calculatePosition = exports.calculateDimensions = exports.calculateHeight = exports.calculateWidth = exports.calculateNameBasedHeight = exports.calculateNameBasedWidth = exports.setupCompleteState = exports.setupBasicBehaviour = exports.setupGetChildBoundaries = exports.setupConnectChild = exports.setupPrintName = exports.setupInitialSelectors = exports.extractBasicState = exports.setupInitialProperties = exports.getInitialState = exports.delegateInit = undefined;
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _string = __webpack_require__(176);
-
-var _flatten = __webpack_require__(177);
-
-var _geometry = __webpack_require__(178);
-
-var _TextContent = __webpack_require__(455);
-
-var delegateInit = exports.delegateInit = function delegateInit(shape, themeFieldName) {
-    function init(node, position, theme) {
-        return shape(getInitialState(node, position, theme, themeFieldName));
-    }
-
-    init.getThemeFieldName = function () {
-        return themeFieldName;
-    };
-
-    return init;
-};
-
-var getInitialState = exports.getInitialState = function getInitialState(node, _ref, theme, type) {
-    var x = _ref.x,
-        y = _ref.y;
-
-    var nameParts = (0, _string.splitNameString)(node.name, _TextContent.MAX_NAME_STR_LENGTH, (0, _TextContent.getNameSplitterTokensIterator)()),
-        totalNamePartsNumber = nameParts.length,
-        maxNamePartLength = (0, _string.getMaxStringLengthFromList)(nameParts);
-
-    return {
-        id: (0, _string.generateId)(),
-        type: type,
-        body: [],
-        theme: theme,
-        node: node,
-        name: node.name,
-        nameParts: nameParts,
-        totalNamePartsNumber: totalNamePartsNumber,
-        maxNamePartLength: maxNamePartLength,
-        initialPosition: { x: x, y: y }
-    };
-};
-
-var setupInitialProperties = exports.setupInitialProperties = function setupInitialProperties(state) {
-    return {
-        fromPoint: calculateFromPoint(state),
-        toPoint: calculateToPoint(state),
-        backPoint: calculateBackPoint(state),
-        childOffsetPoint: calculateChildOffsetPoint(state),
-        boundaries: calculateBoundaries(state)
-    };
-};
-
-var extractBasicState = exports.extractBasicState = function extractBasicState(state) {
-    return _extends({}, state, {
-        position: calculatePosition(state),
-        dimensions: calculateDimensions(state)
-    });
-};
-
-var setupInitialSelectors = exports.setupInitialSelectors = function setupInitialSelectors(state) {
-    return {
-        getBody: function getBody() {
-            return state.body;
-        },
-        getBoundaries: function getBoundaries() {
-            return state.boundaries;
-        },
-        getBackPoint: function getBackPoint() {
-            return state.backPoint;
-        },
-        getChildOffsetPoint: function getChildOffsetPoint() {
-            return state.childOffsetPoint;
-        },
-        getDimensions: function getDimensions() {
-            return state.dimensions;
-        },
-        getId: function getId() {
-            return state.id;
-        },
-        getFromPoint: function getFromPoint() {
-            return state.fromPoint;
-        },
-        getMargin: function getMargin() {
-            return state.theme.margin;
-        },
-        getName: function getName() {
-            return state.name;
-        },
-        getNode: function getNode() {
-            return state.node;
-        },
-        getNodeType: function getNodeType() {
-            return state.node.type;
-        },
-        getNodeKey: function getNodeKey() {
-            return state.node.key;
-        },
-        getParent: function getParent() {
-            return state.parent;
-        },
-        getPosition: function getPosition() {
-            return state.position;
-        },
-        getToPoint: function getToPoint() {
-            return state.toPoint;
-        }
-    };
-};
-
-var setupPrintName = exports.setupPrintName = function setupPrintName(_ref2) {
-    var position = _ref2.position,
-        theme = _ref2.theme,
-        nameParts = _ref2.nameParts;
-    return {
-        //TODO: split name, splitNameString
-        /*TODO: add multi line support
-         <text x="10" y="20" appearance="fill:red;">Several lines:
-         <tspan x="10" y="45">First line.</tspan>
-         <tspan x="10" y="70">Second line.</tspan>
-         </text>*/
-        printName: function printName(newPosition) {
-            var _ref3 = newPosition ? newPosition : position,
-                x = _ref3.x,
-                y = _ref3.y;
-
-            var name = nameParts.map(function (part, i) {
-                return '<tspan x="' + (x + theme.horizontalPadding) + '" y="' + (y + 2 * theme.verticalPadding * (i + 1)) + '">' + part + '</tspan>';
-            }).join('');
-
-            return '<text x="' + (x + theme.horizontalPadding) + '" y="' + (y + 2 * theme.verticalPadding) + '"\n                font-family="' + theme.fontFamily + '" font-size="' + theme.fontSize + '" fill="' + theme.textColor + '">\n                ' + name + '\n            </text>';
-        }
-    };
-};
-
-var setupConnectChild = exports.setupConnectChild = function setupConnectChild(state) {
-    return {
-        addChild: function addChild(child) {
-            state.body.push(child);
-        },
-        setParent: function setParent(parent) {
-            state.parent = parent;
-        },
-        connectChild: function connectChild(child) {
-            this.addChild(child);
-            child.setParent(this);
-        }
-    };
-};
-
-var setupGetChildBoundaries = exports.setupGetChildBoundaries = function setupGetChildBoundaries(state) {
-    return {
-        getChildBoundaries: function getChildBoundaries(filterFn) {
-            var body = state.body,
-                boundaries = state.boundaries;
-
-
-            if (!body.length) {
-                return boundaries;
-            }
-
-            var flattedTree = (0, _flatten.flatTree)({
-                getBody: function getBody() {
-                    return filterFn ? body.filter(filterFn) : body;
-                },
-                getBoundaries: function getBoundaries() {
-                    return boundaries;
-                }
-
-            }, {
-                getBody: function getBody(node) {
-                    return node.getBody();
-                }
-            });
-
-            return (0, _geometry.calculateShapesBoundaries)(flattedTree.map(function (item) {
-                return item.getBoundaries();
-            }));
-        }
-    };
-};
-
-var setupBasicBehaviour = exports.setupBasicBehaviour = function setupBasicBehaviour(state) {
-    return Object.assign({}, setupPrintName(state), setupConnectChild(state), setupGetChildBoundaries(state));
-};
-
-var setupCompleteState = exports.setupCompleteState = function setupCompleteState(initialState) {
-    var state = extractBasicState(initialState);
-    return _extends({}, state, setupInitialProperties(state));
-};
-
-var calculateNameBasedWidth = exports.calculateNameBasedWidth = function calculateNameBasedWidth(_ref4) {
-    var maxNamePartLength = _ref4.maxNamePartLength,
-        theme = _ref4.theme;
-    return maxNamePartLength * theme.symbolWidth;
-};
-
-var calculateNameBasedHeight = exports.calculateNameBasedHeight = function calculateNameBasedHeight(_ref5) {
-    var totalNamePartsNumber = _ref5.totalNamePartsNumber,
-        theme = _ref5.theme;
-    return totalNamePartsNumber * theme.symbolHeight + (totalNamePartsNumber - 1) * theme.lineHeight;
-};
-
-var calculateWidth = exports.calculateWidth = function calculateWidth(state) {
-    return 2 * state.theme.horizontalPadding + calculateNameBasedWidth(state);
-};
-
-var calculateHeight = exports.calculateHeight = function calculateHeight(state) {
-    return 2 * state.theme.verticalPadding + calculateNameBasedHeight(state);
-};
-
-var calculateDimensions = exports.calculateDimensions = function calculateDimensions(state) {
-    return { w: calculateWidth(state), h: calculateHeight(state) };
-};
-
-var calculatePosition = exports.calculatePosition = function calculatePosition(state) {
-    return _extends({}, state.initialPosition);
-};
-
-var calculateFromPoint = exports.calculateFromPoint = function calculateFromPoint(_ref6) {
-    var position = _ref6.position,
-        dimensions = _ref6.dimensions,
-        theme = _ref6.theme;
-    return {
-        x: position.x + theme.childOffset / 2,
-        y: position.y + dimensions.h
-    };
-};
-
-var calculateToPoint = exports.calculateToPoint = function calculateToPoint(_ref7) {
-    var position = _ref7.position,
-        dimensions = _ref7.dimensions;
-    return {
-        x: position.x,
-        y: position.y + dimensions.h / 2
-    };
-};
-
-var calculateBackPoint = exports.calculateBackPoint = function calculateBackPoint(_ref8) {
-    var position = _ref8.position,
-        dimensions = _ref8.dimensions;
-    return {
-        x: position.x + dimensions.w,
-        y: position.y + dimensions.h / 2
-    };
-};
-
-var calculateChildOffsetPoint = exports.calculateChildOffsetPoint = function calculateChildOffsetPoint(_ref9) {
-    var theme = _ref9.theme,
-        dimensions = _ref9.dimensions;
-    return {
-        x: theme.childOffset,
-        y: dimensions.h + dimensions.h / 4
-    };
-};
-
-var calculateBoundaries = exports.calculateBoundaries = function calculateBoundaries(_ref10) {
-    var position = _ref10.position,
-        dimensions = _ref10.dimensions;
-    return {
-        min: { x: position.x, y: position.y },
-        max: { x: position.x + dimensions.w, y: position.y + dimensions.h }
-    };
-};
-
-/***/ }),
-/* 455 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getNameSplitterTokensIterator = exports.NAME_SPLITTER_TOKENS = exports.MAX_NAME_STR_LENGTH = undefined;
-
-var _iteratorBuilder = __webpack_require__(456);
-
-var MAX_NAME_STR_LENGTH = exports.MAX_NAME_STR_LENGTH = 20;
-
-var NAME_SPLITTER_TOKENS = exports.NAME_SPLITTER_TOKENS = ['||', '&&', '=', '?', ':', '<==', '>==', '<', '>', '===', '==', ',', '.', '('];
-
-var getNameSplitterTokensIterator = exports.getNameSplitterTokensIterator = function getNameSplitterTokensIterator() {
-  return (0, _iteratorBuilder.buildIterator)(NAME_SPLITTER_TOKENS);
-};
-
-/***/ }),
-/* 456 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-var buildIterator = exports.buildIterator = function buildIterator(list) {
-    return {
-        index: 0,
-        getNext: function getNext() {
-            return list[this.index++];
-        },
-        reset: function reset() {
-            this.index = 0;
-        }
-    };
 };
 
 /***/ })

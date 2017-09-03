@@ -4,7 +4,7 @@ import {
     setupInitialSelectors,
 
     delegateInit
-} from './Shape';
+} from './BaseShape';
 
 const ENTITY_FIELD_NAME = 'Rectangle';
 
@@ -29,7 +29,7 @@ export const Rectangle = (initialState) => {
     const state = setupCompleteState(initialState);
 
     return Object.assign(
-        {state, type: ENTITY_FIELD_NAME},
+        {state},
         setupInitialSelectors(state),
 
         setupBasicBehaviour(state),

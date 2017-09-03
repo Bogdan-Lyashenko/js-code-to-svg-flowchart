@@ -9,7 +9,7 @@ import {
     calculatePosition,
 
     delegateInit
-} from './Shape';
+} from './BaseShape';
 
 import {
     calculateDimensions,
@@ -68,7 +68,7 @@ export const setupConditionRhombusBehavior = (state) => ({
     },
 
     isFirstChildByKey(key) {
-        return !state.body.filter(shape => shape.state.node.key === key).length;
+        return !state.body.filter(shape => shape.getNodeKey() === key).length;
     },
 
     printConditionMarks() {
@@ -84,10 +84,14 @@ export const setupConditionRhombusBehavior = (state) => ({
     },
 
     print() {
-        const theme = state.theme;
-        const {x, y} = state.position,
-            {w, h} = state.dimensions,
-            namePosition = {x: x + theme.thinPartOffset, y: y + theme.thinPartOffset};
+        const theme = state.theme,
+            {x, y} = state.position,
+            {w, h} = state.dimensions;
+
+        const namePosition = {
+            x: x + state.totalNamePartsNumber * theme.thinPartOffset,
+            y: y + state.totalNamePartsNumber*theme.thinPartOffset
+        };
 
         return `<g>
             <polygon points="${x},${y + h/2} ${x + w / 2},${y} ${x + w},${y + h/2} ${x + w/2},${y + h}"
@@ -112,7 +116,7 @@ export const ConditionRhombus = (initialState) => {
     state =  {...state, ...setupInitialProperties(state)};
 
     return Object.assign(
-        {state, type: ENTITY_FIELD_NAME},
+        {state},
         setupInitialSelectors(state),
         setupAdditionalSelectors(state),
 

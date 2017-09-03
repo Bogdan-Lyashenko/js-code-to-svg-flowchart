@@ -1,5 +1,5 @@
 import {TOKEN_TYPES, ARROW_TYPE} from '../../shared/constants';
-import {getTheme} from './style/Theme';
+import {getTheme} from './appearance/StyleTheme';
 import VerticalEdgedRectangle from './shapes/VerticalEdgedRectangle';
 import Rectangle from './shapes/Rectangle';
 import ConditionRhombus from './shapes/ConditionRhombus';

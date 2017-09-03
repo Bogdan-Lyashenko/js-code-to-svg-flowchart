@@ -2,39 +2,47 @@ import {createSVGRender} from './render/svg/SVGRender';
 import {getFlowTree} from './builder/FlowTreeBuilder';
 
 
+
 var code = `
-    function myMethod(test) {
-        let list = app2.getInitList(d, e),
-            varcns = 12,
-            empty = 0;
-            
-        const res = 1 + 2 + 3 + 4;
-        
-        for (let i = 0; i < list.length; i++) {
-            if (list[i].id === test) {
-                res = list[i];
-                c = 0;
-                
-                for ( k; b < 8; ++b) a += count;
-                
-            } else if (b === a[8] && isFlag) {
-                d = 123;
-                e = 456 + d;
-                e = 456 + d;
-                e = 456 + d;
-            }
-            
-            const abc = 2 + 2 - childCall();
+    function traverseDoc(doc, onEnter, onExit, shouldTraverseConditionalGroups) {
+      function traverseDocRec(doc) {
+        let shouldRecurse = true;
+        if (onEnter) {
+          if (onEnter(doc) === false) {
+            shouldRecurse = false;
+          }
         }
-        
-        c = 12+b;
-        
-        methodCall();
-        
-        return res;
-    }
     
-    function childCall() { }
+        if (shouldRecurse) {
+          if (doc.type === "concat" || doc.type === "fill") {
+            for (let i = 0; i < doc.parts.length; i++) {
+              traverseDocRec(doc.parts[i]);
+            }
+          } else if (doc.type === "if-break") {
+            if (doc.breakContents) {
+              traverseDocRec(doc.breakContents);
+            }
+            if (doc.flatContents) {
+              traverseDocRec(doc.flatContents);
+            }
+          } else if (doc.type === "group" && doc.expandedStates) {
+            if (shouldTraverseConditionalGroups) {
+              doc.expandedStates.forEach(traverseDocRec);
+            } else {
+              traverseDocRec(doc.contents);
+            }
+          } else if (doc.contents) {
+            traverseDocRec(doc.contents);
+          }
+        }
+    
+        if (onExit) {
+          onExit(doc);
+        }
+      }
+    
+      traverseDocRec(doc);
+}
 `;
 
 
@@ -81,19 +89,39 @@ function Test() {
 }
 `;
 
-const simpleStr = `function myMethod(b) {
+const simpleStrModules = `
+import a, {b,c} from 'lib-bob';
+import d from './libbob/file';
+
+var o = 123;
+
+export default function myMethod(b) {
    let clickFn = 12;
-   
-   for (a; a < list.length; a++) {
-    console.log(list[a].name);
-   }
-   
-   a = 1;
-   
-   if (c == 2) {
-            d = a;
-        }
-}`;
+}
+
+export const BOB = 12;
+`;
+
+
+const simpleStrClass = `
+class Animal extends Zero {
+    constructor(b) {
+        this.s = 12;
+    }
+    
+    getA(){
+        return this.a;
+    }
+    
+    setName(name) {
+        this.name = name;
+    }
+}
+`;
+
+const simpleStr = `
+  
+`;
 
 const flowTree = getFlowTree(code),
     svgRender = createSVGRender(flowTree, {Circle: {strokeColor: 'black'}});

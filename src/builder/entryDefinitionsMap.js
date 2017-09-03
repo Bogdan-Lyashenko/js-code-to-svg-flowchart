@@ -20,6 +20,12 @@ import {
     debuggerConverter
 } from './converters/core';
 
+import {
+    importDeclarationConverter,
+    exportDeclarationConverter,
+    classDeclarationConverter
+} from  './converters/Harmony'
+
 export const DefinitionsMap = [{
     type: TOKEN_TYPES.FUNCTION,
     getName: functionConverter,
@@ -38,8 +44,12 @@ export const DefinitionsMap = [{
 },{
     type: TOKEN_TYPES.CALL_EXPRESSION,
     getName: callExpressionConverter,
-    ignore: path => path.getStatementParent().isVariableDeclaration() ||
+    ignore: path => {
+        const statementParent = path.getStatementParent();
+
+        return statementParent.isVariableDeclaration() || statementParent.isConditional() ||
             path.parent.type === TOKEN_TYPES.ASSIGNMENT_EXPRESSION
+    }
 
 },{
     type: TOKEN_TYPES.UPDATE_EXPRESSION,
@@ -98,20 +108,36 @@ export const DefinitionsMap = [{
     type: TOKEN_TYPES.DEBUGGER_STATEMENT,//TODO: visual (makes it RED!)
     getName: debuggerConverter,
     body: true
+},
+
+//ES Harmony features
+{
+    type: TOKEN_TYPES.IMPORT_DECLARATION,//TODO: visual display in separate way libs (npm modules) and local dependencies
+    getName: importDeclarationConverter,
+    body: true
+},{
+    type: TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER, //TODO: visual display it as dependencies to another module?
+    getName: idleConverter
+},{
+    type: TOKEN_TYPES.IMPORT_SPECIFIER,
+    getName: idleConverter
+},{
+    type: TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION, //TODO: visual display as main result of module, => |a = 12| can be as big arrow shape at left side of main body
+    getName: exportDeclarationConverter
+},{
+    type: TOKEN_TYPES.EXPORT_NAMED_DECLARATION, //TODO: visual ' => |a = 12| ' can be as big arrow shape at left side of main body
+    getName: exportDeclarationConverter
+},{
+    type: TOKEN_TYPES.CLASS_DECLARATION, //TODO: visual something like function declaration but more visible (class is bigger than function)
+    getName: classDeclarationConverter, //TODO: if it has superClass -> render it with highlighting
+    body: true
 }];
 
 /*
 *
-* TODO: finish declarations
-* ES5:
 *
-* - arrow function
-* - import
-* - export
-* - class
-* - for of
+* TODO: start with visual for each new token
 *
 *
-* TODO:
-* start with visual for each new token
+* TODO: finish declarations (add jsx and flow)
 * */

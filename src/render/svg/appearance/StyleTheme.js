@@ -5,6 +5,7 @@ const DefaultShape = {
     textColor: '#111',
     fontFamily: 'monospace',
     fontSize: 13,
+    lineHeight: 5,
     symbolHeight: 10,
     symbolWidth: 7.8,
     horizontalPadding: 10,

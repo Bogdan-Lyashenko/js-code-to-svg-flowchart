@@ -6,7 +6,7 @@ import {
     calculateBoundaries,
 
     delegateInit
-} from './Shape';
+} from './BaseShape';
 
 const ENTITY_FIELD_NAME = 'Circle';
 
@@ -45,7 +45,7 @@ export const Circle = (initialState) => {
     state =  {...state, ...setupInitialProperties(state)};
 
     return Object.assign(
-        {state, type: ENTITY_FIELD_NAME},
+        {state},
         setupInitialSelectors(state),
 
         setupBasicBehaviour(state),
