@@ -1,4 +1,5 @@
 import {TOKEN_KEYS} from '../../../shared/constants';
+import {getRhombus, getRoundedRectangle, getText} from '../../../shared/utils/svgPrimitives';
 
 import {
     setupBasicBehaviour,
@@ -67,20 +68,30 @@ export const setupConditionRhombusBehavior = (state) => ({
         return position;
     },
 
-    isFirstChildByKey(key) {
-        return !state.body.filter(shape => shape.getNodeKey() === key).length;
+    checkIfChildExist(key) {
+        return state.body.filter(shape => shape.getNodeKey() === key).length;
     },
 
     printConditionMarks() {
         const theme = state.theme;
         const {x, y} = state.position,
-            {w, h} = state.dimensions;
+            R = state.dimensions.h,
+            w = state.dimensions.w;
 
-        return `<text x="${x + w - theme.markOffset.x}" y="${y + h/2 - theme.markOffset.y}"
-            font-family="${theme.fontFamily}" font-size="${theme.fontSize}" fill="${theme.textColor}"> - </text>
+        const text = 'if',
+            positive = '+',
+            alternative = '-';
+
+        //TODO: render - mark only if parent has alternative branch
+        //TODO: move to variables for marks
+        return `
+            ${getText(x + R/2 - text.length*theme.symbolWidth/2, y + R/2 + theme.symbolHeight/2, theme, text)}
             
-            <text x="${x + w/2 - 2*theme.markOffset.x}" y="${y + h + 2*theme.markOffset.y}"
-            font-family="${theme.fontFamily}" font-size="${theme.fontSize}" fill="${theme.textColor}"> + </text>`
+            ${getText(x + R/2 + theme.symbolWidth, y + R + theme.symbolWidth/4, theme, positive)}
+            
+            ${this.checkIfChildExist(TOKEN_KEYS.ALTERNATE) ? 
+                getText(x + w + theme.symbolWidth/2, y + R/2 - theme.symbolWidth/4, theme, alternative) : ''}
+        `;
     },
 
     print() {
@@ -88,15 +99,17 @@ export const setupConditionRhombusBehavior = (state) => ({
             {x, y} = state.position,
             {w, h} = state.dimensions;
 
+        const R = h,
+            rH = h - 2*theme.thinPartOffset;
+
         const namePosition = {
-            x: x + state.totalNamePartsNumber * theme.thinPartOffset,
-            y: y + state.totalNamePartsNumber*theme.thinPartOffset
+            x: x + R,
+            y: y + rH/2
         };
 
         return `<g>
-            <polygon points="${x},${y + h/2} ${x + w / 2},${y} ${x + w},${y + h/2} ${x + w/2},${y + h}"
-                style="fill:${theme.fillColor};stroke:${theme.strokeColor};stroke-width:${theme.strokeWidth}" />
-                
+            ${getRoundedRectangle(x + h/2, y + h/4, w - R/2, rH, theme)}                
+            ${getRhombus(x, y, R, R, theme)}
             ${this.printName(namePosition)}
             ${this.printConditionMarks()}
         </g>`

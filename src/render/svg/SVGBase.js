@@ -1,8 +1,9 @@
 export const SVGBase = () => {
     return {
+        //TODO: add calculation based on children boundaries
         dimensions: {
-            h: 1000,
-            w: 1000
+            h: 3000,
+            w: 3000
         },
         children: [],
         add(shape) {

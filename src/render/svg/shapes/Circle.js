@@ -1,3 +1,5 @@
+import {getCircle} from '../../../shared/utils/svgPrimitives';
+
 import {
     extractBasicState,
     setupBasicBehaviour,
@@ -28,8 +30,7 @@ const setupCircleBehavior = (state) => ({
 
         return `
             <g>
-               <circle cx="${x }" cy="${y}" r="${r}"
-                style="fill:${theme.fillColor};stroke:${theme.strokeColor};stroke-width:${theme.strokeWidth}" />
+               ${getCircle(x, y, r, theme)}
                ${this.printName()}
             </g>`
     },

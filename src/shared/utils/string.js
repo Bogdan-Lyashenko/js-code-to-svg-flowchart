@@ -8,7 +8,9 @@ export const generateId =() => {
 export const splitNameString = (str, maxLineLength = 20, nameSplitterTokensIterator) => {
     const strLength = str.length;
 
-    if (strLength <= maxLineLength) return [str];
+    return [str];
+    //TODO: fix
+    //if (strLength <= maxLineLength) return [str];
 
     let parts = [],
         currentPositionIndex = 0,

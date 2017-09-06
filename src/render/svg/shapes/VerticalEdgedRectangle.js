@@ -1,3 +1,5 @@
+import {getRectangle, getLine} from '../../../shared/utils/svgPrimitives';
+
 import {
     setupBasicBehaviour,
     setupInitialProperties,
@@ -21,17 +23,11 @@ const setupVerticalEdgedRectangleBehavior = (state) => ({
 
         return `
             <g>
-             <rect x="${x}" y="${y}"
-                    width="${w}" height=${h}
-                    rx="${0}" ry="${0}"
-                    style="fill:${theme.fillColor}; stroke-width:${theme.strokeWidth}; stroke:${theme.strokeColor}" />
+                ${getRectangle(x, y ,w, h, theme)}
                     
-             <line x1="${x + theme.edgeOffset}" y1="${y}" x2="${x + theme.edgeOffset}" y2="${y + h}"
-                    style="stroke:${theme.strokeColor};stroke-width:${theme.strokeWidth}" />
+                ${getLine(x + theme.edgeOffset, y, x + theme.edgeOffset, y + h, theme)}
+                ${getLine(x + w - theme.edgeOffset, y, x + w - theme.edgeOffset, y + h, theme)}
              
-             <line x1="${x + w - theme.edgeOffset}" y1="${y}" x2="${x + w - theme.edgeOffset}" y2="${y + h}"
-                    style="stroke:${theme.strokeColor};stroke-width:${theme.strokeWidth}" />
-                    
                 ${this.printName(namePosition)}
             </g>`
     }

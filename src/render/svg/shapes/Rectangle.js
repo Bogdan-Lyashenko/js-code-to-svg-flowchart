@@ -1,3 +1,5 @@
+import {getRoundedRectangle} from '../../../shared/utils/svgPrimitives';
+
 import {
     setupCompleteState,
     setupBasicBehaviour,
@@ -16,10 +18,7 @@ const setupRectangleBehavior = (state) => ({
 
         return `
                 <g>
-                    <rect x="${x}" y="${y}"
-                        width="${w}" height=${h}
-                        rx="${theme.roundBorder}" ry="${theme.roundBorder}"
-                        style="fill:${theme.fillColor}; stroke-width:${theme.strokeWidth}; stroke:${theme.strokeColor}" />
+                   ${getRoundedRectangle(x, y, w, h, theme)}
                    ${this.printName()}
                 </g>`;
     }

@@ -10,7 +10,7 @@ export const functionConverter = ({node}) => {
     const paramsCode = getFunctionParametersCode(node.params);
 
     if (node.id) {
-        return node.id.name + paramsCode;
+        return 'function ' + node.id.name + paramsCode;
     }
 
     if (node.type === TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION) {
@@ -58,7 +58,7 @@ export const continueConverter = (path) => {
 
 
 export const conditionalConverter = (path) => {
-    return generate(path.node.test).code;
+    return `(${generate(path.node.test).code})`;
 };
 
 /* try-catch */

@@ -1,3 +1,5 @@
+import {getRhombus, getRoundedRectangle, getText} from '../../../shared/utils/svgPrimitives';
+
 import {
     setupBasicBehaviour,
     setupInitialSelectors,
@@ -18,7 +20,7 @@ import {
 const ENTITY_FIELD_NAME = 'LoopRhombus';
 
 const calculateMidPoint = ({position, dimensions}) => ({
-    x: position.x + dimensions.w / 2,
+    x: position.x + dimensions.h / 2,
     y: position.y
 });
 
@@ -39,25 +41,35 @@ const setupAdditionalSelectors = (state) => ({
 });
 
 const setupLoopRhombusBehavior = (state) => ({
+    printConditionMarks() {
+        const theme = state.theme;
+        const {x, y} = state.position,
+            R = state.dimensions.h,
+            text = 'for';
+
+        return getText(x + R/2 - text.length*theme.symbolWidth/2, y + R/2 + theme.symbolHeight/2, theme, text);
+    },
+
     print() {
         const theme = state.theme;
         const {x, y} = state.position,
-            {w, h} = state.dimensions,
-            namePosition = {x: x + theme.thinPartOffset, y: y + theme.thinPartOffset},
-            {doubleLayerOffset, fillColor, strokeColor, strokeWidth} = theme;
+            {w, h} = state.dimensions;
+
+        const R = h,
+            rH = h - 2*theme.thinPartOffset;
+
+        const namePosition = {
+            x: x + R,
+            y: y + rH/2
+        };
 
         return `<g>
-            <polygon points="
-                    ${x + doubleLayerOffset/2},${y + h/2 - doubleLayerOffset} 
-                    ${x + w / 2 + doubleLayerOffset/2},${y - doubleLayerOffset} 
-                    ${x + w + theme.doubleLayerOffset/2},${y + h/2 - doubleLayerOffset} 
-                    ${x + w/2 + theme.doubleLayerOffset/2},${y + h - doubleLayerOffset}"
-                style="fill:${fillColor};stroke:${strokeColor};stroke-width:${strokeWidth}" />
-                
-            <polygon points="${x},${y + h/2} ${x + w / 2},${y} ${x + w},${y + h/2} ${x + w/2},${y + h}"
-                style="fill:${fillColor};stroke:${strokeColor};stroke-width:${strokeWidth}" />
+
+            ${getRoundedRectangle(x + h/2, y + h/4, w - R/2, rH, theme)}
+            ${getRhombus(x, y, R, R, theme)}
                 
             ${this.printName(namePosition)}
+            ${this.printConditionMarks()}
         </g>`
     }
 });

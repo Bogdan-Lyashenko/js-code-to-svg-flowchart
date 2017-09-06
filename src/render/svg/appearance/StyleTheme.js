@@ -56,7 +56,10 @@ export const Themes = {
             ...DefaultShape,
             fillColor: '#90CAF9',
             thinPartOffset: 15,
-            doubleLayerOffset: 4,
+            rhombusSize: 50,
+            roundBorder: 3,
+            doubleLayerOffsetA: 4,
+            doubleLayerOffsetB: 8,
             childOffset: 20,
             positionTopShift: 20
         },
@@ -65,10 +68,11 @@ export const Themes = {
             ...DefaultShape,
             fillColor: '#ce93d8',
             thinPartOffset: 15,
+            roundBorder: 3,
             childOffset: 20,
             alternateBranchOffset: 40,
             markOffset: {
-                x: 5,
+                x: 15,
                 y: 5
             },
             margin: 20

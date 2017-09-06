@@ -138,6 +138,7 @@ export const DefinitionsMap = [{
 *
 * TODO: start with visual for each new token
 *
+* TODO: fix visual displaying of recurrence function call (should be looped as a for-loop, but fromPoint of arrow is in the bottom of shape)
 *
 * TODO: finish declarations (add jsx and flow)
 * */

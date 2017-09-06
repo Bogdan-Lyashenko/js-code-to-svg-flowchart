@@ -16443,6 +16443,7 @@ var buildSVGObjectsTree = exports.buildSVGObjectsTree = function buildSVGObjects
     return svg;
 };
 
+//TODO: think about rendering 'collapsed structures' //means body elements are not created, so, just higher abstraction level (methods definitions, etc)
 var buildShapeStructures = exports.buildShapeStructures = function buildShapeStructures(flowTree, customStyleTheme) {
     var root = (0, _shapesFactory.createRootCircle)(flowTree, customStyleTheme),
         position = _extends({}, root.getChildOffsetPoint()),
@@ -16452,7 +16453,7 @@ var buildShapeStructures = exports.buildShapeStructures = function buildShapeStr
         position.x += parentShape.getChildOffsetPoint().x;
     }, function (node, parentShape) {
 
-        if (parentShape.getNodeType() === _constants.TOKEN_TYPES.CONDITIONAL && node.key === _constants.TOKEN_KEYS.ALTERNATE && parentShape.isFirstChildByKey(_constants.TOKEN_KEYS.ALTERNATE)) {
+        if (parentShape.getNodeType() === _constants.TOKEN_TYPES.CONDITIONAL && node.key === _constants.TOKEN_KEYS.ALTERNATE && !parentShape.checkIfChildExist(_constants.TOKEN_KEYS.ALTERNATE)) {
 
             var alternatePoint = parentShape.getAlternativeBranchChildOffsetPoint();
             position.x = alternatePoint.x + parentShape.getMargin();
@@ -16638,9 +16639,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 var SVGBase = exports.SVGBase = function SVGBase() {
     return {
+        //TODO: add calculation based on children boundaries
         dimensions: {
-            h: 1000,
-            w: 1000
+            h: 3000,
+            w: 3000
         },
         children: [],
         add: function add(shape) {
@@ -16805,6 +16807,8 @@ exports.VerticalEdgedRectangle = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+var _svgPrimitives = __webpack_require__(457);
+
 var _BaseShape = __webpack_require__(454);
 
 var ENTITY_FIELD_NAME = 'VerticalEdgedRectangle';
@@ -16822,7 +16826,7 @@ var setupVerticalEdgedRectangleBehavior = function setupVerticalEdgedRectangleBe
                 namePosition = { x: x + theme.edgeOffset, y: y };
 
 
-            return '\n            <g>\n             <rect x="' + x + '" y="' + y + '"\n                    width="' + w + '" height=' + h + '\n                    rx="' + 0 + '" ry="' + 0 + '"\n                    style="fill:' + theme.fillColor + '; stroke-width:' + theme.strokeWidth + '; stroke:' + theme.strokeColor + '" />\n                    \n             <line x1="' + (x + theme.edgeOffset) + '" y1="' + y + '" x2="' + (x + theme.edgeOffset) + '" y2="' + (y + h) + '"\n                    style="stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />\n             \n             <line x1="' + (x + w - theme.edgeOffset) + '" y1="' + y + '" x2="' + (x + w - theme.edgeOffset) + '" y2="' + (y + h) + '"\n                    style="stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />\n                    \n                ' + this.printName(namePosition) + '\n            </g>';
+            return '\n            <g>\n                ' + (0, _svgPrimitives.getRectangle)(x, y, w, h, theme) + '\n                    \n                ' + (0, _svgPrimitives.getLine)(x + theme.edgeOffset, y, x + theme.edgeOffset, y + h, theme) + '\n                ' + (0, _svgPrimitives.getLine)(x + w - theme.edgeOffset, y, x + w - theme.edgeOffset, y + h, theme) + '\n             \n                ' + this.printName(namePosition) + '\n            </g>';
         }
     };
 };
@@ -16879,7 +16883,9 @@ var splitNameString = exports.splitNameString = function splitNameString(str) {
 
     var strLength = str.length;
 
-    if (strLength <= maxLineLength) return [str];
+    return [str];
+    //TODO: fix
+    //if (strLength <= maxLineLength) return [str];
 
     var parts = [],
         currentPositionIndex = 0,
@@ -17000,6 +17006,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Rectangle = undefined;
 
+var _svgPrimitives = __webpack_require__(457);
+
 var _BaseShape = __webpack_require__(454);
 
 var ENTITY_FIELD_NAME = 'Rectangle';
@@ -17016,7 +17024,7 @@ var setupRectangleBehavior = function setupRectangleBehavior(state) {
                 h = _state$dimensions.h;
 
 
-            return '\n                <g>\n                    <rect x="' + x + '" y="' + y + '"\n                        width="' + w + '" height=' + h + '\n                        rx="' + theme.roundBorder + '" ry="' + theme.roundBorder + '"\n                        style="fill:' + theme.fillColor + '; stroke-width:' + theme.strokeWidth + '; stroke:' + theme.strokeColor + '" />\n                   ' + this.printName() + '\n                </g>';
+            return '\n                <g>\n                   ' + (0, _svgPrimitives.getRoundedRectangle)(x, y, w, h, theme) + '\n                   ' + this.printName() + '\n                </g>';
         }
     };
 };
@@ -17044,6 +17052,8 @@ exports.ConditionRhombus = exports.setupConditionRhombusBehavior = undefined;
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _constants = __webpack_require__(29);
+
+var _svgPrimitives = __webpack_require__(457);
 
 var _BaseShape = __webpack_require__(454);
 
@@ -17112,8 +17122,8 @@ var setupConditionRhombusBehavior = exports.setupConditionRhombusBehavior = func
 
             return position;
         },
-        isFirstChildByKey: function isFirstChildByKey(key) {
-            return !state.body.filter(function (shape) {
+        checkIfChildExist: function checkIfChildExist(key) {
+            return state.body.filter(function (shape) {
                 return shape.getNodeKey() === key;
             }).length;
         },
@@ -17122,29 +17132,37 @@ var setupConditionRhombusBehavior = exports.setupConditionRhombusBehavior = func
             var _state$position = state.position,
                 x = _state$position.x,
                 y = _state$position.y,
-                _state$dimensions = state.dimensions,
-                w = _state$dimensions.w,
-                h = _state$dimensions.h;
+                R = state.dimensions.h,
+                w = state.dimensions.w;
 
 
-            return '<text x="' + (x + w - theme.markOffset.x) + '" y="' + (y + h / 2 - theme.markOffset.y) + '"\n            font-family="' + theme.fontFamily + '" font-size="' + theme.fontSize + '" fill="' + theme.textColor + '"> - </text>\n            \n            <text x="' + (x + w / 2 - 2 * theme.markOffset.x) + '" y="' + (y + h + 2 * theme.markOffset.y) + '"\n            font-family="' + theme.fontFamily + '" font-size="' + theme.fontSize + '" fill="' + theme.textColor + '"> + </text>';
+            var text = 'if',
+                positive = '+',
+                alternative = '-';
+
+            //TODO: render - mark only if parent has alternative branch
+            //TODO: move to variables for marks
+            return '\n            ' + (0, _svgPrimitives.getText)(x + R / 2 - text.length * theme.symbolWidth / 2, y + R / 2 + theme.symbolHeight / 2, theme, text) + '\n            \n            ' + (0, _svgPrimitives.getText)(x + R / 2 + theme.symbolWidth, y + R + theme.symbolWidth / 4, theme, positive) + '\n            \n            ' + (this.checkIfChildExist(_constants.TOKEN_KEYS.ALTERNATE) ? (0, _svgPrimitives.getText)(x + w + theme.symbolWidth / 2, y + R / 2 - theme.symbolWidth / 4, theme, alternative) : '') + '\n        ';
         },
         print: function print() {
             var theme = state.theme,
                 _state$position2 = state.position,
                 x = _state$position2.x,
                 y = _state$position2.y,
-                _state$dimensions2 = state.dimensions,
-                w = _state$dimensions2.w,
-                h = _state$dimensions2.h;
+                _state$dimensions = state.dimensions,
+                w = _state$dimensions.w,
+                h = _state$dimensions.h;
 
+
+            var R = h,
+                rH = h - 2 * theme.thinPartOffset;
 
             var namePosition = {
-                x: x + state.totalNamePartsNumber * theme.thinPartOffset,
-                y: y + state.totalNamePartsNumber * theme.thinPartOffset
+                x: x + R,
+                y: y + rH / 2
             };
 
-            return '<g>\n            <polygon points="' + x + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + y + ' ' + (x + w) + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + (y + h) + '"\n                style="fill:' + theme.fillColor + ';stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />\n                \n            ' + this.printName(namePosition) + '\n            ' + this.printConditionMarks() + '\n        </g>';
+            return '<g>\n            ' + (0, _svgPrimitives.getRoundedRectangle)(x + h / 2, y + h / 4, w - R / 2, rH, theme) + '                \n            ' + (0, _svgPrimitives.getRhombus)(x, y, R, R, theme) + '\n            ' + this.printName(namePosition) + '\n            ' + this.printConditionMarks() + '\n        </g>';
         }
     };
 };
@@ -17180,6 +17198,8 @@ exports.LoopRhombus = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+var _svgPrimitives = __webpack_require__(457);
+
 var _BaseShape = __webpack_require__(454);
 
 var _Rhombus = __webpack_require__(451);
@@ -17190,7 +17210,7 @@ var calculateMidPoint = function calculateMidPoint(_ref) {
     var position = _ref.position,
         dimensions = _ref.dimensions;
     return {
-        x: position.x + dimensions.w / 2,
+        x: position.x + dimensions.h / 2,
         y: position.y
     };
 };
@@ -17217,22 +17237,36 @@ var setupAdditionalSelectors = function setupAdditionalSelectors(state) {
 
 var setupLoopRhombusBehavior = function setupLoopRhombusBehavior(state) {
     return {
-        print: function print() {
+        printConditionMarks: function printConditionMarks() {
             var theme = state.theme;
             var _state$position = state.position,
                 x = _state$position.x,
                 y = _state$position.y,
+                R = state.dimensions.h,
+                text = 'for';
+
+
+            return (0, _svgPrimitives.getText)(x + R / 2 - text.length * theme.symbolWidth / 2, y + R / 2 + theme.symbolHeight / 2, theme, text);
+        },
+        print: function print() {
+            var theme = state.theme;
+            var _state$position2 = state.position,
+                x = _state$position2.x,
+                y = _state$position2.y,
                 _state$dimensions = state.dimensions,
                 w = _state$dimensions.w,
-                h = _state$dimensions.h,
-                namePosition = { x: x + theme.thinPartOffset, y: y + theme.thinPartOffset },
-                doubleLayerOffset = theme.doubleLayerOffset,
-                fillColor = theme.fillColor,
-                strokeColor = theme.strokeColor,
-                strokeWidth = theme.strokeWidth;
+                h = _state$dimensions.h;
 
 
-            return '<g>\n            <polygon points="\n                    ' + (x + doubleLayerOffset / 2) + ',' + (y + h / 2 - doubleLayerOffset) + ' \n                    ' + (x + w / 2 + doubleLayerOffset / 2) + ',' + (y - doubleLayerOffset) + ' \n                    ' + (x + w + theme.doubleLayerOffset / 2) + ',' + (y + h / 2 - doubleLayerOffset) + ' \n                    ' + (x + w / 2 + theme.doubleLayerOffset / 2) + ',' + (y + h - doubleLayerOffset) + '"\n                style="fill:' + fillColor + ';stroke:' + strokeColor + ';stroke-width:' + strokeWidth + '" />\n                \n            <polygon points="' + x + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + y + ' ' + (x + w) + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + (y + h) + '"\n                style="fill:' + fillColor + ';stroke:' + strokeColor + ';stroke-width:' + strokeWidth + '" />\n                \n            ' + this.printName(namePosition) + '\n        </g>';
+            var R = h,
+                rH = h - 2 * theme.thinPartOffset;
+
+            var namePosition = {
+                x: x + R,
+                y: y + rH / 2
+            };
+
+            return '<g>\n\n            ' + (0, _svgPrimitives.getRoundedRectangle)(x + h / 2, y + h / 4, w - R / 2, rH, theme) + '\n            ' + (0, _svgPrimitives.getRhombus)(x, y, R, R, theme) + '\n                \n            ' + this.printName(namePosition) + '\n            ' + this.printConditionMarks() + '\n        </g>';
         }
     };
 };
@@ -17277,6 +17311,8 @@ exports.Circle = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+var _svgPrimitives = __webpack_require__(457);
+
 var _BaseShape = __webpack_require__(454);
 
 var ENTITY_FIELD_NAME = 'Circle';
@@ -17306,7 +17342,7 @@ var setupCircleBehavior = function setupCircleBehavior(state) {
                 r = state.dimensions.w / 2;
 
 
-            return '\n            <g>\n               <circle cx="' + x + '" cy="' + y + '" r="' + r + '"\n                style="fill:' + theme.fillColor + ';stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />\n               ' + this.printName() + '\n            </g>';
+            return '\n            <g>\n               ' + (0, _svgPrimitives.getCircle)(x, y, r, theme) + '\n               ' + this.printName() + '\n            </g>';
         },
         setChildOffsetPoint: function setChildOffsetPoint(point) {
             state.childOffsetPoint = point;
@@ -29636,6 +29672,7 @@ var DefinitionsMap = exports.DefinitionsMap = [{
 *
 * TODO: start with visual for each new token
 *
+* TODO: fix visual displaying of recurrence function call (should be looped as a for-loop, but fromPoint of arrow is in the bottom of shape)
 *
 * TODO: finish declarations (add jsx and flow)
 * */
@@ -36661,7 +36698,7 @@ var functionConverter = exports.functionConverter = function functionConverter(_
     var paramsCode = getFunctionParametersCode(node.params);
 
     if (node.id) {
-        return node.id.name + paramsCode;
+        return 'function ' + node.id.name + paramsCode;
     }
 
     if (node.type === _constants.TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION) {
@@ -36708,7 +36745,7 @@ var continueConverter = exports.continueConverter = function continueConverter(p
 /* end loop */
 
 var conditionalConverter = exports.conditionalConverter = function conditionalConverter(path) {
-    return (0, _babelGenerator2.default)(path.node.test).code;
+    return '(' + (0, _babelGenerator2.default)(path.node.test).code + ')';
 };
 
 /* try-catch */
@@ -36839,18 +36876,17 @@ var calculateDimensions = exports.calculateDimensions = function calculateDimens
 };
 
 var calculateWidth = exports.calculateWidth = function calculateWidth(state) {
-    return 2 * (state.theme.horizontalPadding + state.totalNamePartsNumber * state.theme.thinPartOffset) + (0, _BaseShape.calculateNameBasedWidth)(state);
+    return calculateHeight(state) + (0, _BaseShape.calculateWidth)(state);
 };
-
 var calculateHeight = exports.calculateHeight = function calculateHeight(state) {
-    return 2 * (state.theme.verticalPadding + state.totalNamePartsNumber * state.theme.thinPartOffset) + (0, _BaseShape.calculateNameBasedHeight)(state);
+    return 2 * state.theme.thinPartOffset + (0, _BaseShape.calculateHeight)(state);
 };
 
 var calculateFromPoint = exports.calculateFromPoint = function calculateFromPoint(_ref) {
     var position = _ref.position,
         dimensions = _ref.dimensions;
     return {
-        x: position.x + dimensions.w / 2,
+        x: position.x + dimensions.h / 2,
         y: position.y + dimensions.h
     };
 };
@@ -36859,8 +36895,8 @@ var calculateChildOffsetPoint = exports.calculateChildOffsetPoint = function cal
     var dimensions = _ref2.dimensions,
         theme = _ref2.theme;
     return {
-        x: dimensions.w / 2 + theme.childOffset,
-        y: dimensions.h + dimensions.h / 4
+        x: dimensions.h / 2 + theme.childOffset,
+        y: dimensions.h + theme.childOffset / 2
     };
 };
 
@@ -36962,7 +36998,10 @@ var Themes = exports.Themes = {
         LoopRhombus: _extends({}, DefaultShape, {
             fillColor: '#90CAF9',
             thinPartOffset: 15,
-            doubleLayerOffset: 4,
+            rhombusSize: 50,
+            roundBorder: 3,
+            doubleLayerOffsetA: 4,
+            doubleLayerOffsetB: 8,
             childOffset: 20,
             positionTopShift: 20
         }),
@@ -36970,10 +37009,11 @@ var Themes = exports.Themes = {
         ConditionRhombus: _extends({}, DefaultShape, {
             fillColor: '#ce93d8',
             thinPartOffset: 15,
+            roundBorder: 3,
             childOffset: 20,
             alternateBranchOffset: 40,
             markOffset: {
-                x: 5,
+                x: 15,
                 y: 5
             },
             margin: 20
@@ -37125,12 +37165,7 @@ var setupPrintName = exports.setupPrintName = function setupPrintName(_ref2) {
         theme = _ref2.theme,
         nameParts = _ref2.nameParts;
     return {
-        //TODO: split name, splitNameString
-        /*TODO: add multi line support
-         <text x="10" y="20" appearance="fill:red;">Several lines:
-         <tspan x="10" y="45">First line.</tspan>
-         <tspan x="10" y="70">Second line.</tspan>
-         </text>*/
+        //TODO: fix spacing for multi line name
         printName: function printName(newPosition) {
             var _ref3 = newPosition ? newPosition : position,
                 x = _ref3.x,
@@ -37262,7 +37297,7 @@ var calculateChildOffsetPoint = exports.calculateChildOffsetPoint = function cal
         dimensions = _ref9.dimensions;
     return {
         x: theme.childOffset,
-        y: dimensions.h + dimensions.h / 4
+        y: dimensions.h + theme.childOffset / 2
     };
 };
 
@@ -37317,6 +37352,40 @@ var buildIterator = exports.buildIterator = function buildIterator(list) {
             this.index = 0;
         }
     };
+};
+
+/***/ }),
+/* 457 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var getRhombus = exports.getRhombus = function getRhombus(x, y, w, h, theme) {
+    return "\n        <polygon points=\"" + x + "," + (y + h / 2) + " " + (x + w / 2) + "," + y + " " + (x + w) + "," + (y + h / 2) + " " + (x + w / 2) + "," + (y + h) + "\"\n            style=\"fill:" + theme.fillColor + ";stroke:" + theme.strokeColor + ";stroke-width:" + theme.strokeWidth + "\" />";
+};
+
+var getRoundedRectangle = exports.getRoundedRectangle = function getRoundedRectangle(x, y, w, h, theme) {
+    return "\n        <rect x=\"" + x + "\" y=\"" + y + "\"\n            width=\"" + w + "\" height=" + h + "\n            rx=\"" + theme.roundBorder + "\" ry=\"" + theme.roundBorder + "\"\n            style=\"fill:" + theme.fillColor + "; stroke-width:" + theme.strokeWidth + "; stroke:" + theme.strokeColor + "\" />";
+};
+
+var getRectangle = exports.getRectangle = function getRectangle(x, y, w, h, theme) {
+    return "\n        <rect x=\"" + x + "\" y=\"" + y + "\"\n            width=\"" + w + "\" height=" + h + "\n            style=\"fill:" + theme.fillColor + "; stroke-width:" + theme.strokeWidth + "; stroke:" + theme.strokeColor + "\" />";
+};
+
+var getLine = exports.getLine = function getLine(x1, y1, x2, y2, theme) {
+    return "\n         <line x1=\"" + x1 + "\" y1=\"" + y1 + "\" x2=\"" + x2 + "\" y2=\"" + y2 + "\"\n                style=\"stroke:" + theme.strokeColor + ";stroke-width:" + theme.strokeWidth + "\" />";
+};
+
+var getCircle = exports.getCircle = function getCircle(x, y, r, theme) {
+    return "\n       <circle cx=\"" + x + "\" cy=\"" + y + "\" r=\"" + r + "\"\n        style=\"fill:" + theme.fillColor + ";stroke:" + theme.strokeColor + ";stroke-width:" + theme.strokeWidth + "\" />";
+};
+
+var getText = exports.getText = function getText(x, y, theme, text) {
+    return "\n        <text x=\"" + x + "\" y=\"" + y + "\"\n        font-family=\"" + theme.fontFamily + "\" font-size=\"" + theme.fontSize + "\" fill=\"" + theme.textColor + "\">" + text + "</text>";
 };
 
 /***/ })

@@ -113,12 +113,7 @@ export const setupInitialSelectors = (state) => ({
 
 
 export const setupPrintName = ({position, theme, nameParts}) => ({
-    //TODO: split name, splitNameString
-    /*TODO: add multi line support
-     <text x="10" y="20" appearance="fill:red;">Several lines:
-     <tspan x="10" y="45">First line.</tspan>
-     <tspan x="10" y="70">Second line.</tspan>
-     </text>*/
+    //TODO: fix spacing for multi line name
     printName(newPosition) {
         const {x, y} = newPosition ? newPosition : position;
         const name = nameParts.map((part, i) =>
@@ -209,7 +204,7 @@ export const calculateBackPoint = ({position, dimensions}) => ({
 
 export const calculateChildOffsetPoint = ({theme, dimensions}) => ({
     x: theme.childOffset,
-    y: dimensions.h + dimensions.h/4
+    y: dimensions.h + theme.childOffset/2
 });
 
 export const calculateBoundaries = ({position, dimensions}) => ({
