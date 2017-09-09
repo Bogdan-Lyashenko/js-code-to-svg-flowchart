@@ -26,7 +26,8 @@ export const Themes = {
             },
             line: {
                 strokeColor: '#333',
-                strokeWidth: 1
+                strokeWidth: 1,
+                curveTurnRadius: 4
             },
             lineTurnOffset: 20
         },

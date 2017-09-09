@@ -30,3 +30,8 @@ export const calculateShapesBoundaries = (list) => {
         max: {x: maxX, y: maxY}
     };
 };
+
+export const addOffsetToPoints = (points, offsetPoint) => [].concat(points).map(point => ({
+    x: point.x + offsetPoint.x,
+    y: point.y + offsetPoint.y
+}));

@@ -16994,6 +16994,15 @@ var calculateShapesBoundaries = exports.calculateShapesBoundaries = function cal
     };
 };
 
+var addOffsetToPoints = exports.addOffsetToPoints = function addOffsetToPoints(points, offsetPoint) {
+    return [].concat(points).map(function (point) {
+        return {
+            x: point.x + offsetPoint.x,
+            y: point.y + offsetPoint.y
+        };
+    });
+};
+
 /***/ }),
 /* 179 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -17373,6 +17382,10 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _svgPrimitives = __webpack_require__(457);
+
+var _geometry = __webpack_require__(178);
+
 var _constants = __webpack_require__(29);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -17390,25 +17403,12 @@ var ConnectionArrow = function () {
     _createClass(ConnectionArrow, [{
         key: 'printLine',
         value: function printLine(points) {
-            var pointStr = points.map(function (point) {
-                return point.x + ',' + point.y;
-            }).join(' '),
-                line = this.theme.line;
-
-
-            return '<polyline points="' + pointStr + '" style="fill:none;stroke:' + line.strokeColor + ';stroke-width:' + line.strokeWidth + '" />';
+            return (0, _svgPrimitives.getCurvedPath)(points, this.theme.line);
         }
     }, {
         key: 'printArrow',
         value: function printArrow(point, arrowPoints) {
-            var M = arrowPoints[0],
-                L1 = arrowPoints[1],
-                L2 = arrowPoints[2];
-
-            var arrow = this.theme.arrow;
-
-
-            return '<path d=" \n            M' + (M.x + point.x) + ' ' + (M.y + point.y) + ' \n            L' + (L1.x + point.x) + ' ' + (L1.y + point.y) + ' \n            L' + (L2.x + point.x) + ' ' + (L2.y + point.y) + ' \n        Z" fill="' + arrow.fillColor + '"/>';
+            return (0, _svgPrimitives.getClosedPath)((0, _geometry.addOffsetToPoints)(arrowPoints, point), this.theme.arrow);
         }
     }, {
         key: 'printArrowByType',
@@ -17422,14 +17422,17 @@ var ConnectionArrow = function () {
             switch (type) {
                 case _constants.ARROW_TYPE.RIGHT:
                     point = { x: x - arrowSize.x, y: y - arrowSize.y / 2 };
+
                     return this.printArrow(point, [{ x: 0, y: 0 }, { x: arrowSize.x, y: arrowSize.y / 2 }, { x: 0, y: arrowSize.y }]);
 
                 case _constants.ARROW_TYPE.LEFT:
                     point = { x: x, y: y - arrowSize.y / 2 };
+
                     return this.printArrow(point, [{ x: 0, y: arrowSize.y / 2 }, { x: arrowSize.x, y: 0 }, { x: arrowSize.x, y: arrowSize.y }]);
 
                 case _constants.ARROW_TYPE.DOWN:
                     point = { x: x - arrowSize.y / 2, y: y - arrowSize.x };
+
                     return this.printArrow(point, [{ x: 0, y: 0 }, { x: arrowSize.y / 2, y: arrowSize.x }, { x: arrowSize.y, y: 0 }]);
 
                 default:
@@ -36974,7 +36977,8 @@ var Themes = exports.Themes = {
             },
             line: {
                 strokeColor: '#333',
-                strokeWidth: 1
+                strokeWidth: 1,
+                curveTurnRadius: 4
             },
             lineTurnOffset: 20
         },
@@ -37365,27 +37369,81 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 var getRhombus = exports.getRhombus = function getRhombus(x, y, w, h, theme) {
-    return "\n        <polygon points=\"" + x + "," + (y + h / 2) + " " + (x + w / 2) + "," + y + " " + (x + w) + "," + (y + h / 2) + " " + (x + w / 2) + "," + (y + h) + "\"\n            style=\"fill:" + theme.fillColor + ";stroke:" + theme.strokeColor + ";stroke-width:" + theme.strokeWidth + "\" />";
+    return '\n        <polygon points="' + x + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + y + ' ' + (x + w) + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + (y + h) + '"\n            style="fill:' + theme.fillColor + ';stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />';
 };
 
 var getRoundedRectangle = exports.getRoundedRectangle = function getRoundedRectangle(x, y, w, h, theme) {
-    return "\n        <rect x=\"" + x + "\" y=\"" + y + "\"\n            width=\"" + w + "\" height=" + h + "\n            rx=\"" + theme.roundBorder + "\" ry=\"" + theme.roundBorder + "\"\n            style=\"fill:" + theme.fillColor + "; stroke-width:" + theme.strokeWidth + "; stroke:" + theme.strokeColor + "\" />";
+    return '\n        <rect x="' + x + '" y="' + y + '"\n            width="' + w + '" height=' + h + '\n            rx="' + theme.roundBorder + '" ry="' + theme.roundBorder + '"\n            style="fill:' + theme.fillColor + '; stroke-width:' + theme.strokeWidth + '; stroke:' + theme.strokeColor + '" />';
 };
 
 var getRectangle = exports.getRectangle = function getRectangle(x, y, w, h, theme) {
-    return "\n        <rect x=\"" + x + "\" y=\"" + y + "\"\n            width=\"" + w + "\" height=" + h + "\n            style=\"fill:" + theme.fillColor + "; stroke-width:" + theme.strokeWidth + "; stroke:" + theme.strokeColor + "\" />";
+    return '\n        <rect x="' + x + '" y="' + y + '"\n            width="' + w + '" height=' + h + '\n            style="fill:' + theme.fillColor + '; stroke-width:' + theme.strokeWidth + '; stroke:' + theme.strokeColor + '" />';
 };
 
 var getLine = exports.getLine = function getLine(x1, y1, x2, y2, theme) {
-    return "\n         <line x1=\"" + x1 + "\" y1=\"" + y1 + "\" x2=\"" + x2 + "\" y2=\"" + y2 + "\"\n                style=\"stroke:" + theme.strokeColor + ";stroke-width:" + theme.strokeWidth + "\" />";
+    return '\n         <line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '"\n                style="stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />';
 };
 
 var getCircle = exports.getCircle = function getCircle(x, y, r, theme) {
-    return "\n       <circle cx=\"" + x + "\" cy=\"" + y + "\" r=\"" + r + "\"\n        style=\"fill:" + theme.fillColor + ";stroke:" + theme.strokeColor + ";stroke-width:" + theme.strokeWidth + "\" />";
+    return '\n       <circle cx="' + x + '" cy="' + y + '" r="' + r + '"\n        style="fill:' + theme.fillColor + ';stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />';
 };
 
 var getText = exports.getText = function getText(x, y, theme, text) {
-    return "\n        <text x=\"" + x + "\" y=\"" + y + "\"\n        font-family=\"" + theme.fontFamily + "\" font-size=\"" + theme.fontSize + "\" fill=\"" + theme.textColor + "\">" + text + "</text>";
+    return '\n        <text x="' + x + '" y="' + y + '"\n        font-family="' + theme.fontFamily + '" font-size="' + theme.fontSize + '" fill="' + theme.textColor + '">' + text + '</text>';
+};
+
+var getClosedPath = exports.getClosedPath = function getClosedPath(points, theme) {
+    var pointStr = points.map(function (point, i) {
+        if (!i) return 'M' + point.x + ', ' + point.y;
+
+        return 'L' + point.x + ', ' + point.y;
+    }).join(' ');
+
+    return '<path d="' + pointStr + ' Z" fill="' + theme.fillColor + '"/>';
+};
+
+var getCurvedPath = exports.getCurvedPath = function getCurvedPath(points, theme) {
+    var pointStr = points.map(function (point, i) {
+        if (!i) return 'M' + point.x + ', ' + point.y;
+
+        var previousPoint = points[i - 1];
+
+        if (i <= 1) {
+            return getLinePointStr(point, previousPoint, theme.curveTurnRadius);
+        }
+
+        return 'Q' + previousPoint.x + ' ' + previousPoint.y + ' \n                ' + getArcEndPointStr(point, previousPoint, theme.curveTurnRadius) + ' \n                ' + getLinePointStr(point, previousPoint, 2 * theme.curveTurnRadius);
+    }).join(' ');
+
+    return '<path d="' + pointStr + '"\n        style="fill:none;stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />';
+};
+
+var getLinePointStr = function getLinePointStr(point, previousPoint, radius) {
+    if (point.x === previousPoint.x) {
+        return 'L' + point.x + ' ' + getShiftedByArcNextPointValue(point.y, previousPoint.y, radius);
+    }
+
+    if (point.y === previousPoint.y) {
+        return 'L' + getShiftedByArcNextPointValue(point.x, previousPoint.x, radius) + ' ' + point.y + ' ';
+    }
+};
+
+var getShiftedByArcNextPointValue = function getShiftedByArcNextPointValue(pointValue, previousPointValue, radius) {
+    return pointValue > previousPointValue ? pointValue - radius : pointValue + radius;
+};
+
+var getArcEndPointStr = function getArcEndPointStr(point, previousPoint, radius) {
+    if (point.x === previousPoint.x) {
+        return previousPoint.x + ' ' + getArcEndPointValue(point.y, previousPoint.y, radius);
+    }
+
+    if (point.y === previousPoint.y) {
+        return getArcEndPointValue(point.x, previousPoint.x, radius) + ' ' + previousPoint.y;
+    }
+};
+
+var getArcEndPointValue = function getArcEndPointValue(pointValue, previousPointValue, radius) {
+    return pointValue > previousPointValue ? previousPointValue + radius : previousPointValue - radius;
 };
 
 /***/ })
