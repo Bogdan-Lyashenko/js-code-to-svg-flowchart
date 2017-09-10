@@ -6,7 +6,7 @@ import {setupPointer} from '../shared/utils/treeLevelsPointer';
 
 export const buildAST = (code, config) => {
     //TODO: remove when finish with defining types
-    const c = babylon.parse(code, {
+    /*const c = babylon.parse(code, {
         sourceType: 'module',
         plugins: [
             'objectRestSpread' //TODO: plugins should be configurable
@@ -19,9 +19,9 @@ export const buildAST = (code, config) => {
             if (path.node.type === 'CallExpression') {
                 //debugger;
             }
-            console.log(path.node.type, path.node.name);
+            //console.log(path.node.type, path.node.name);
         }
-    });
+    });*/
 
     return babylon.parse(code, {
         sourceType: 'module',//TODO: move to multiple files support, make it configurable
@@ -32,15 +32,16 @@ export const buildAST = (code, config) => {
 };
 
 export const buildVisitor = ({definitionsMap, globalIgnore}, treeNodesDestination) => {
-    const pointer = setupPointer(treeNodesDestination);
+    const pointer = setupPointer(treeNodesDestination),
+        wrapByGlobalIgnore = (visit) => (path) => visit(path, globalIgnore);
 
     return definitionsMap.reduce((acc, item) => {
         if (!item.body) {
-            acc[item.type] = visitSimpleEntry(item, pointer);
+            acc[item.type] = wrapByGlobalIgnore(visitSimpleEntry(item, pointer));
         } else {
             acc[item.type] = {
-                enter: enterComplexEntry(item, pointer),
-                exit: exitComplexEntry(item, pointer)
+                enter: wrapByGlobalIgnore(enterComplexEntry(item, pointer)),
+                exit: wrapByGlobalIgnore(exitComplexEntry(item, pointer))
             };
         }
 
@@ -48,23 +49,22 @@ export const buildVisitor = ({definitionsMap, globalIgnore}, treeNodesDestinatio
     }, {});
 };
 
-const visitSimpleEntry = (item, pointer) => (path) => {
-    if (item.ignore && item.ignore(path)) {
-        return;
-    }
+//TODO: refactor, looks a bit duplicated
+const visitSimpleEntry = (item, pointer) => (path, globalIgnore) => {
+    if (item.ignore && item.ignore(path)) return;
 
     const entryConfig = {
         ...getBasicEntryConfig(item, path),
         key: getStatementParentKey(path)
     };
 
+    if (globalIgnore && globalIgnore(entryConfig)) return;
+
     pointer.getCurrent().push(entryConfig);
 };
 
-const enterComplexEntry = (item, pointer) => (path) => {
-    if (item.ignore && item.ignore(path)) {
-        return;
-    }
+const enterComplexEntry = (item, pointer) => (path, globalIgnore) => {
+    if (item.ignore && item.ignore(path)) return;
 
     const entryConfig = {
         ...getBasicEntryConfig(item, path),
@@ -72,19 +72,20 @@ const enterComplexEntry = (item, pointer) => (path) => {
         body: []
     };
 
-    pointer.getCurrent().push(entryConfig);
+    if (!(globalIgnore && globalIgnore(entryConfig))) {
+        pointer.getCurrent().push(entryConfig);
+    }
+
     pointer.stepIn(entryConfig.body);
 };
 
 const getStatementParentKey = (path) => {
-    const statementParent = path.find((path) => path.parentKey === TOKEN_KEYS.PROGRAM || path.isStatementOrBlock()) || {};
+    const statementParent = path.find(path => path.parentKey === TOKEN_KEYS.PROGRAM || path.isStatementOrBlock()) || {};
     return statementParent.key;
 };
 
 const exitComplexEntry = (item, pointer) => (path) => {
-    if (item.ignore && item.ignore(path)) {
-        return;
-    }
+    if (item.ignore && item.ignore(path)) return;
 
     pointer.stepOut();
 };

@@ -16383,7 +16383,7 @@ var _FlowTreeBuilder = __webpack_require__(184);
 
 var _SVGRender = __webpack_require__(169);
 
-var code = '\n    function traverseDoc(doc, onEnter, onExit, shouldTraverseConditionalGroups) {\n      function traverseDocRec(doc) {\n        let shouldRecurse = true;\n        if (onEnter) {\n          if (onEnter(doc) === false) {\n            shouldRecurse = false;\n          }\n        }\n    \n        if (shouldRecurse) {\n          if (doc.type === "concat" || doc.type === "fill") {\n            for (let i = 0; i < doc.parts.length; i++) {\n              traverseDocRec(doc.parts[i]);\n            }\n          } else if (doc.type === "if-break") {\n            if (doc.breakContents) {\n              traverseDocRec(doc.breakContents);\n            }\n            if (doc.flatContents) {\n              traverseDocRec(doc.flatContents);\n            }\n          } else if (doc.type === "group" && doc.expandedStates) {\n            if (shouldTraverseConditionalGroups) {\n              doc.expandedStates.forEach(traverseDocRec);\n            } else {\n              traverseDocRec(doc.contents);\n            }\n          } else if (doc.contents) {\n            traverseDocRec(doc.contents);\n          }\n        }\n    \n        if (onExit) {\n          onExit(doc);\n        }\n      }\n    \n      traverseDocRec(doc);\n}\n\nfunction doLogging() {\n    const test = \'ignore\';\n}\n\nfunction logout() {\n    const test = \'ignore\';\n}\n';
+var code = '\n    function traverseDoc(doc, onEnter, onExit, shouldTraverseConditionalGroups) {\n      function traverseDocRec(doc) {\n        let shouldRecurse = true;\n        if (onEnter) {\n          if (onEnter(doc) === false) {\n            shouldRecurse = false;\n          }\n        }\n    \n        if (shouldRecurse) {\n          if (doc.type === "concat" || doc.type === "fill") {\n            for (let i = 0; i < doc.parts.length; i++) {\n              traverseDocRec(doc.parts[i]);\n            }\n          } else if (doc.type === "if-break") {\n            if (doc.breakContents) {\n              traverseDocRec(doc.breakContents);\n            }\n            if (doc.flatContents) {\n              traverseDocRec(doc.flatContents);\n            }\n          } else if (doc.type === "group" && doc.expandedStates) {\n            if (shouldTraverseConditionalGroups) {\n              doc.expandedStates.forEach(traverseDocRec);\n            } else {\n              traverseDocRec(doc.contents);\n            }\n          } else if (doc.contents) {\n            traverseDocRec(doc.contents);\n            \n            bob = 12;\n            if (bob) c = 13;\n          }\n        }\n    \n        if (onExit) {\n          onExit(doc);\n        }\n      }\n    \n      traverseDocRec(doc);\n}\n\nfunction doLogging() {\n    const test = \'ignore\';\n}\n\nfunction logout() {\n    const test = \'ignore\';\n}\n';
 
 var simpleStrSwitch = '\n    function Test(a) {\n        var b;\n        \n        switch (a) {\n            case 1:\n                b = 0;\n                break;\n            case 2:\n                b = 2;\n                return;\n            default:\n                b = 3;\n                break;\n        }\n        \n        return a + 2;\n    }\n';
 
@@ -16397,16 +16397,20 @@ var simpleStrClass = '\nclass Animal extends Zero {\n    constructor(b) {\n     
 
 var simpleStr = '\n  \n';
 
+var t0 = performance.now();
+
 var flowTreeBuilder = (0, _FlowTreeBuilder.createFlowTreeBuilder)();
+
 //flowTreeBuilder.setAbstractionLevel(ABSTRACTION_LEVELS.FUNCTION);
 //flowTreeBuilder.setAbstractionLevel([ABSTRACTION_LEVELS.CLASS, ABSTRACTION_LEVELS.FUNCTION]);
 //flowTreeBuilder.setAbstractionLevel([ABSTRACTION_LEVELS.IMPORT, ABSTRACTION_LEVELS.EXPORT]);
-
-var flowTree = flowTreeBuilder.build(simpleStrModules);
+var flowTree = flowTreeBuilder.build(code);
 
 var svgRender = (0, _SVGRender.createSVGRender)(flowTree, { Circle: { strokeColor: 'black' } });
-
 document.getElementById('svgImage').innerHTML = svgRender.render();
+
+var t1 = performance.now();
+console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
 
 exports.default = function (code) {/*
                                    const flowTree = getFlowTree(code),
@@ -17539,7 +17543,10 @@ var createFlowTreeBuilder = exports.createFlowTreeBuilder = function createFlowT
         astParserConfig: _extends({}, astParserConfig),
 
         astVisitorConfig: _extends({
-            definitionsMap: [].concat(_toConsumableArray(_entryDefinitionsMap.DefinitionsMap))
+            definitionsMap: [].concat(_toConsumableArray(_entryDefinitionsMap.DefinitionsMap)),
+            globalIgnore: function globalIgnore(entry) {
+                //return entry.name === '';
+            }
         }, astVisitorConfig)
     };
 
@@ -37445,21 +37452,20 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 var buildAST = exports.buildAST = function buildAST(code, config) {
     //TODO: remove when finish with defining types
-    var c = babylon.parse(code, {
+    /*const c = babylon.parse(code, {
         sourceType: 'module',
-        plugins: ['objectRestSpread' //TODO: plugins should be configurable
+        plugins: [
+            'objectRestSpread' //TODO: plugins should be configurable
         ]
-
-    });
-
-    (0, _babelTraverse2.default)(c, {
-        enter: function enter(path) {
+     });
+     traverse(c, {
+        enter(path) {
             if (path.node.type === 'CallExpression') {
                 //debugger;
             }
-            console.log(path.node.type, path.node.name);
+            //console.log(path.node.type, path.node.name);
         }
-    });
+    });*/
 
     return babylon.parse(code, {
         sourceType: 'module', //TODO: move to multiple files support, make it configurable
@@ -37472,15 +37478,20 @@ var buildVisitor = exports.buildVisitor = function buildVisitor(_ref, treeNodesD
     var definitionsMap = _ref.definitionsMap,
         globalIgnore = _ref.globalIgnore;
 
-    var pointer = (0, _treeLevelsPointer.setupPointer)(treeNodesDestination);
+    var pointer = (0, _treeLevelsPointer.setupPointer)(treeNodesDestination),
+        wrapByGlobalIgnore = function wrapByGlobalIgnore(visit) {
+        return function (path) {
+            return visit(path, globalIgnore);
+        };
+    };
 
     return definitionsMap.reduce(function (acc, item) {
         if (!item.body) {
-            acc[item.type] = visitSimpleEntry(item, pointer);
+            acc[item.type] = wrapByGlobalIgnore(visitSimpleEntry(item, pointer));
         } else {
             acc[item.type] = {
-                enter: enterComplexEntry(item, pointer),
-                exit: exitComplexEntry(item, pointer)
+                enter: wrapByGlobalIgnore(enterComplexEntry(item, pointer)),
+                exit: wrapByGlobalIgnore(exitComplexEntry(item, pointer))
             };
         }
 
@@ -37488,32 +37499,34 @@ var buildVisitor = exports.buildVisitor = function buildVisitor(_ref, treeNodesD
     }, {});
 };
 
+//TODO: refactor, looks a bit duplicated
 var visitSimpleEntry = function visitSimpleEntry(item, pointer) {
-    return function (path) {
-        if (item.ignore && item.ignore(path)) {
-            return;
-        }
+    return function (path, globalIgnore) {
+        if (item.ignore && item.ignore(path)) return;
 
         var entryConfig = _extends({}, getBasicEntryConfig(item, path), {
             key: getStatementParentKey(path)
         });
+
+        if (globalIgnore && globalIgnore(entryConfig)) return;
 
         pointer.getCurrent().push(entryConfig);
     };
 };
 
 var enterComplexEntry = function enterComplexEntry(item, pointer) {
-    return function (path) {
-        if (item.ignore && item.ignore(path)) {
-            return;
-        }
+    return function (path, globalIgnore) {
+        if (item.ignore && item.ignore(path)) return;
 
         var entryConfig = _extends({}, getBasicEntryConfig(item, path), {
             key: getStatementParentKey(path),
             body: []
         });
 
-        pointer.getCurrent().push(entryConfig);
+        if (!(globalIgnore && globalIgnore(entryConfig))) {
+            pointer.getCurrent().push(entryConfig);
+        }
+
         pointer.stepIn(entryConfig.body);
     };
 };
@@ -37527,9 +37540,7 @@ var getStatementParentKey = function getStatementParentKey(path) {
 
 var exitComplexEntry = function exitComplexEntry(item, pointer) {
     return function (path) {
-        if (item.ignore && item.ignore(path)) {
-            return;
-        }
+        if (item.ignore && item.ignore(path)) return;
 
         pointer.stepOut();
     };

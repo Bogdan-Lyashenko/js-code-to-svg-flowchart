@@ -31,6 +31,9 @@ var code = `
             }
           } else if (doc.contents) {
             traverseDocRec(doc.contents);
+            
+            bob = 12;
+            if (bob) c = 13;
           }
         }
     
@@ -143,16 +146,20 @@ const simpleStr = `
   
 `;
 
+var t0 = performance.now();
+
 const flowTreeBuilder = createFlowTreeBuilder();
+
 //flowTreeBuilder.setAbstractionLevel(ABSTRACTION_LEVELS.FUNCTION);
 //flowTreeBuilder.setAbstractionLevel([ABSTRACTION_LEVELS.CLASS, ABSTRACTION_LEVELS.FUNCTION]);
 //flowTreeBuilder.setAbstractionLevel([ABSTRACTION_LEVELS.IMPORT, ABSTRACTION_LEVELS.EXPORT]);
-
-const flowTree = flowTreeBuilder.build(simpleStrModules);
+const flowTree = flowTreeBuilder.build(code);
 
 const svgRender = createSVGRender(flowTree, {Circle: {strokeColor: 'black'}});
-
 document.getElementById('svgImage').innerHTML = svgRender.render();
+
+var t1 = performance.now();
+console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
 
 export default (code) => {/*
     const flowTree = getFlowTree(code),

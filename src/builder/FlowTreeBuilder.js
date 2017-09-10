@@ -43,6 +43,9 @@ export const createFlowTreeBuilder = ({astParserConfig = {}, astVisitorConfig = 
 
         astVisitorConfig: {
             definitionsMap: [...DefinitionsMap],
+            globalIgnore(entry) {
+                //return entry.name === '';
+            },
             ...astVisitorConfig
         }
     };
