@@ -1,6 +1,39 @@
-import {TOKEN_KEYS} from '../shared/constants';
+import * as babylon from 'babylon';
+import traverse from 'babel-traverse';//TODO: remove, needed only for debug now
 
-export const buildVisitor = (definitionsMap, pointer) => {
+import {TOKEN_KEYS} from '../shared/constants';
+import {setupPointer} from '../shared/utils/treeLevelsPointer';
+
+export const buildAST = (code, config) => {
+    //TODO: remove when finish with defining types
+    const c = babylon.parse(code, {
+        sourceType: 'module',
+        plugins: [
+            'objectRestSpread' //TODO: plugins should be configurable
+        ]
+
+    });
+
+    traverse(c, {
+        enter(path) {
+            if (path.node.type === 'CallExpression') {
+                //debugger;
+            }
+            console.log(path.node.type, path.node.name);
+        }
+    });
+
+    return babylon.parse(code, {
+        sourceType: 'module',//TODO: move to multiple files support, make it configurable
+        plugins: [
+            'objectRestSpread' //TODO: plugins should be configurable
+        ]
+    });
+};
+
+export const buildVisitor = ({definitionsMap, globalIgnore}, treeNodesDestination) => {
+    const pointer = setupPointer(treeNodesDestination);
+
     return definitionsMap.reduce((acc, item) => {
         if (!item.body) {
             acc[item.type] = visitSimpleEntry(item, pointer);

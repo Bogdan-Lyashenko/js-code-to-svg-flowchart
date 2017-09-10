@@ -78,12 +78,11 @@ export const setupConditionRhombusBehavior = (state) => ({
             R = state.dimensions.h,
             w = state.dimensions.w;
 
+        //TODO: move to theme config
         const text = 'if',
             positive = '+',
             alternative = '-';
 
-        //TODO: render - mark only if parent has alternative branch
-        //TODO: move to variables for marks
         return `
             ${getText(x + R/2 - text.length*theme.symbolWidth/2, y + R/2 + theme.symbolHeight/2, theme, text)}
             

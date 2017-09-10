@@ -1,42 +1,31 @@
-import * as babylon from 'babylon';
 import traverse from 'babel-traverse';
 import {DefinitionsMap} from './entryDefinitionsMap';
-import {buildVisitor} from './astVisitor';
-import {setupPointer} from '../shared/utils/treeLevelsPointer';
+import {buildAST, buildVisitor} from './ASTBuilder';
 
-export const getFlowTree = (code, config) => {
-    const treeNodes = [],
-        visitor = buildVisitor(DefinitionsMap, setupPointer(treeNodes)),
-        AST = getAST(code, config);
+const buildFlowTree = (code, {astParserConfig, astVisitorConfig}) => {
+    const treeNodes = [];
 
-    traverse(AST, visitor);
+    traverse(
+        buildAST(code, astParserConfig),
+        buildVisitor(astVisitorConfig, treeNodes)
+    );
 
     return {name: '', body: treeNodes};
 };
 
-export const getAST = (code, config) => {
-    //TODO: remove when finish with defining types
-    const c = babylon.parse(code, {
-        sourceType: 'module',
-        plugins: [
-            'objectRestSpread' //TODO: plugins should be configurable
-        ]
+export const createFlowTreeBuilder = ({astParserConfig = {}, astVisitorConfig = {}} = {}) => {
+    const options = {
+        astParserConfig: {
+            ...astParserConfig
+        },
 
-    });
-
-    traverse(c, {
-        enter(path) {
-            if (path.node.type === 'CallExpression') {
-                //debugger;
-            }
-            console.log(path.node.type, path.node.name);
+        astVisitorConfig: {
+            definitionsMap: [...DefinitionsMap],
+            ...astVisitorConfig
         }
-    });
+    };
 
-    return babylon.parse(code, {
-        sourceType: 'module',//TODO: move to multiple files support, make it configurable
-        plugins: [
-            'objectRestSpread' //TODO: plugins should be configurable
-        ]
-    });
+    return {
+        build: code => buildFlowTree(code, options)
+    };
 };

@@ -129,7 +129,7 @@ export const DefinitionsMap = [{
     getName: exportDeclarationConverter
 },{
     type: TOKEN_TYPES.CLASS_DECLARATION, //TODO: visual something like function declaration but more visible (class is bigger than function)
-    getName: classDeclarationConverter, //TODO: if it has superClass -> render it with highlighting
+    getName: classDeclarationConverter, //if it has superClass -> render it with highlighting
     body: true
 }];
 

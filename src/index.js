@@ -1,7 +1,5 @@
+import {createFlowTreeBuilder} from './builder/FlowTreeBuilder';
 import {createSVGRender} from './render/svg/SVGRender';
-import {getFlowTree} from './builder/FlowTreeBuilder';
-
-
 
 var code = `
     function traverseDoc(doc, onEnter, onExit, shouldTraverseConditionalGroups) {
@@ -123,14 +121,17 @@ const simpleStr = `
   
 `;
 
-const flowTree = getFlowTree(code),
-    svgRender = createSVGRender(flowTree, {Circle: {strokeColor: 'black'}});
+const flowTreeBuilder = createFlowTreeBuilder();
+
+const flowTree = flowTreeBuilder.build(code);
+
+const svgRender = createSVGRender(flowTree, {Circle: {strokeColor: 'black'}});
 
 document.getElementById('svgImage').innerHTML = svgRender.render();
 
-export default (code) => {
+export default (code) => {/*
     const flowTree = getFlowTree(code),
         svgRender = createSVGRender(flowTree);
 
-    return svgRender.render();
+    return svgRender.render();*/
 }

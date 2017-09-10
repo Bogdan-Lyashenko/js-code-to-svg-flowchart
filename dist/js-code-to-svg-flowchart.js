@@ -16377,9 +16377,9 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _SVGRender = __webpack_require__(169);
-
 var _FlowTreeBuilder = __webpack_require__(184);
+
+var _SVGRender = __webpack_require__(169);
 
 var code = '\n    function traverseDoc(doc, onEnter, onExit, shouldTraverseConditionalGroups) {\n      function traverseDocRec(doc) {\n        let shouldRecurse = true;\n        if (onEnter) {\n          if (onEnter(doc) === false) {\n            shouldRecurse = false;\n          }\n        }\n    \n        if (shouldRecurse) {\n          if (doc.type === "concat" || doc.type === "fill") {\n            for (let i = 0; i < doc.parts.length; i++) {\n              traverseDocRec(doc.parts[i]);\n            }\n          } else if (doc.type === "if-break") {\n            if (doc.breakContents) {\n              traverseDocRec(doc.breakContents);\n            }\n            if (doc.flatContents) {\n              traverseDocRec(doc.flatContents);\n            }\n          } else if (doc.type === "group" && doc.expandedStates) {\n            if (shouldTraverseConditionalGroups) {\n              doc.expandedStates.forEach(traverseDocRec);\n            } else {\n              traverseDocRec(doc.contents);\n            }\n          } else if (doc.contents) {\n            traverseDocRec(doc.contents);\n          }\n        }\n    \n        if (onExit) {\n          onExit(doc);\n        }\n      }\n    \n      traverseDocRec(doc);\n}\n';
 
@@ -16395,16 +16395,18 @@ var simpleStrClass = '\nclass Animal extends Zero {\n    constructor(b) {\n     
 
 var simpleStr = '\n  \n';
 
-var flowTree = (0, _FlowTreeBuilder.getFlowTree)(code),
-    svgRender = (0, _SVGRender.createSVGRender)(flowTree, { Circle: { strokeColor: 'black' } });
+var flowTreeBuilder = (0, _FlowTreeBuilder.createFlowTreeBuilder)();
+
+var flowTree = flowTreeBuilder.build(code);
+
+var svgRender = (0, _SVGRender.createSVGRender)(flowTree, { Circle: { strokeColor: 'black' } });
 
 document.getElementById('svgImage').innerHTML = svgRender.render();
 
-exports.default = function (code) {
-    var flowTree = (0, _FlowTreeBuilder.getFlowTree)(code),
-        svgRender = (0, _SVGRender.createSVGRender)(flowTree);
-
-    return svgRender.render();
+exports.default = function (code) {/*
+                                   const flowTree = getFlowTree(code),
+                                   svgRender = createSVGRender(flowTree);
+                                   return svgRender.render();*/
 };
 
 module.exports = exports['default'];
@@ -16443,7 +16445,6 @@ var buildSVGObjectsTree = exports.buildSVGObjectsTree = function buildSVGObjects
     return svg;
 };
 
-//TODO: think about rendering 'collapsed structures' //means body elements are not created, so, just higher abstraction level (methods definitions, etc)
 var buildShapeStructures = exports.buildShapeStructures = function buildShapeStructures(flowTree, customStyleTheme) {
     var root = (0, _shapesFactory.createRootCircle)(flowTree, customStyleTheme),
         position = _extends({}, root.getChildOffsetPoint()),
@@ -17144,13 +17145,12 @@ var setupConditionRhombusBehavior = exports.setupConditionRhombusBehavior = func
                 R = state.dimensions.h,
                 w = state.dimensions.w;
 
+            //TODO: move to theme config
 
             var text = 'if',
                 positive = '+',
                 alternative = '-';
 
-            //TODO: render - mark only if parent has alternative branch
-            //TODO: move to variables for marks
             return '\n            ' + (0, _svgPrimitives.getText)(x + R / 2 - text.length * theme.symbolWidth / 2, y + R / 2 + theme.symbolHeight / 2, theme, text) + '\n            \n            ' + (0, _svgPrimitives.getText)(x + R / 2 + theme.symbolWidth, y + R + theme.symbolWidth / 4, theme, positive) + '\n            \n            ' + (this.checkIfChildExist(_constants.TOKEN_KEYS.ALTERNATE) ? (0, _svgPrimitives.getText)(x + w + theme.symbolWidth / 2, y + R / 2 - theme.symbolWidth / 4, theme, alternative) : '') + '\n        ';
         },
         print: function print() {
@@ -17471,11 +17471,9 @@ module.exports = exports['default'];
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.getAST = exports.getFlowTree = undefined;
+exports.createFlowTreeBuilder = undefined;
 
-var _babylon = __webpack_require__(106);
-
-var babylon = _interopRequireWildcard(_babylon);
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _babelTraverse = __webpack_require__(31);
 
@@ -17483,47 +17481,43 @@ var _babelTraverse2 = _interopRequireDefault(_babelTraverse);
 
 var _entryDefinitionsMap = __webpack_require__(372);
 
-var _astVisitor = __webpack_require__(447);
-
-var _treeLevelsPointer = __webpack_require__(105);
+var _ASTBuilder = __webpack_require__(458);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-var getFlowTree = exports.getFlowTree = function getFlowTree(code, config) {
-    var treeNodes = [],
-        visitor = (0, _astVisitor.buildVisitor)(_entryDefinitionsMap.DefinitionsMap, (0, _treeLevelsPointer.setupPointer)(treeNodes)),
-        AST = getAST(code, config);
+var buildFlowTree = function buildFlowTree(code, _ref) {
+    var astParserConfig = _ref.astParserConfig,
+        astVisitorConfig = _ref.astVisitorConfig;
 
-    (0, _babelTraverse2.default)(AST, visitor);
+    var treeNodes = [];
+
+    (0, _babelTraverse2.default)((0, _ASTBuilder.buildAST)(code, astParserConfig), (0, _ASTBuilder.buildVisitor)(astVisitorConfig, treeNodes));
 
     return { name: '', body: treeNodes };
 };
 
-var getAST = exports.getAST = function getAST(code, config) {
-    //TODO: remove when finish with defining types
-    var c = babylon.parse(code, {
-        sourceType: 'module',
-        plugins: ['objectRestSpread' //TODO: plugins should be configurable
-        ]
+var createFlowTreeBuilder = exports.createFlowTreeBuilder = function createFlowTreeBuilder() {
+    var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        _ref2$astParserConfig = _ref2.astParserConfig,
+        astParserConfig = _ref2$astParserConfig === undefined ? {} : _ref2$astParserConfig,
+        _ref2$astVisitorConfi = _ref2.astVisitorConfig,
+        astVisitorConfig = _ref2$astVisitorConfi === undefined ? {} : _ref2$astVisitorConfi;
 
-    });
+    var options = {
+        astParserConfig: _extends({}, astParserConfig),
 
-    (0, _babelTraverse2.default)(c, {
-        enter: function enter(path) {
-            if (path.node.type === 'CallExpression') {
-                //debugger;
-            }
-            console.log(path.node.type, path.node.name);
+        astVisitorConfig: _extends({
+            definitionsMap: [].concat(_toConsumableArray(_entryDefinitionsMap.DefinitionsMap))
+        }, astVisitorConfig)
+    };
+
+    return {
+        build: function build(code) {
+            return buildFlowTree(code, options);
         }
-    });
-
-    return babylon.parse(code, {
-        sourceType: 'module', //TODO: move to multiple files support, make it configurable
-        plugins: ['objectRestSpread' //TODO: plugins should be configurable
-        ]
-    });
+    };
 };
 
 /***/ }),
@@ -29666,7 +29660,7 @@ var DefinitionsMap = exports.DefinitionsMap = [{
     getName: _Harmony.exportDeclarationConverter
 }, {
     type: _constants.TOKEN_TYPES.CLASS_DECLARATION, //TODO: visual something like function declaration but more visible (class is bigger than function)
-    getName: _Harmony.classDeclarationConverter, //TODO: if it has superClass -> render it with highlighting
+    getName: _Harmony.classDeclarationConverter, //if it has superClass -> render it with highlighting
     body: true
 }];
 
@@ -36578,97 +36572,7 @@ function JSXEmptyExpression() {}
 /* 444 */,
 /* 445 */,
 /* 446 */,
-/* 447 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.buildVisitor = undefined;
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _constants = __webpack_require__(29);
-
-var buildVisitor = exports.buildVisitor = function buildVisitor(definitionsMap, pointer) {
-    return definitionsMap.reduce(function (acc, item) {
-        if (!item.body) {
-            acc[item.type] = visitSimpleEntry(item, pointer);
-        } else {
-            acc[item.type] = {
-                enter: enterComplexEntry(item, pointer),
-                exit: exitComplexEntry(item, pointer)
-            };
-        }
-
-        return acc;
-    }, {});
-};
-
-var visitSimpleEntry = function visitSimpleEntry(item, pointer) {
-    return function (path) {
-        if (item.ignore && item.ignore(path)) {
-            return;
-        }
-
-        var entryConfig = _extends({}, getBasicEntryConfig(item, path), {
-            key: getStatementParentKey(path)
-        });
-
-        pointer.getCurrent().push(entryConfig);
-    };
-};
-
-var enterComplexEntry = function enterComplexEntry(item, pointer) {
-    return function (path) {
-        if (item.ignore && item.ignore(path)) {
-            return;
-        }
-
-        var entryConfig = _extends({}, getBasicEntryConfig(item, path), {
-            key: getStatementParentKey(path),
-            body: []
-        });
-
-        pointer.getCurrent().push(entryConfig);
-        pointer.stepIn(entryConfig.body);
-    };
-};
-
-var getStatementParentKey = function getStatementParentKey(path) {
-    var statementParent = path.find(function (path) {
-        return path.parentKey === _constants.TOKEN_KEYS.PROGRAM || path.isStatementOrBlock();
-    }) || {};
-    return statementParent.key;
-};
-
-var exitComplexEntry = function exitComplexEntry(item, pointer) {
-    return function (path) {
-        if (item.ignore && item.ignore(path)) {
-            return;
-        }
-
-        pointer.stepOut();
-    };
-};
-
-var getBasicEntryConfig = function getBasicEntryConfig(item, path) {
-    var config = {
-        name: item.getName(path),
-        type: item.type
-    };
-
-    if (item.type !== path.node.type) {
-        config.subType = path.node.type;
-    }
-
-    return config;
-};
-
-/***/ }),
+/* 447 */,
 /* 448 */,
 /* 449 */,
 /* 450 */
@@ -36762,8 +36666,8 @@ var catchConverter = exports.catchConverter = function catchConverter(path) {
 
 var finallyConverter = exports.finallyConverter = function finallyConverter(path) {
     //TODO: fix `finally`, not implemented yet because it presents only as a part of parent,
-    //TODO: there is no `finally` visitor as it exist for `catch`
-    //TODO: seems like to do that each try-catch block should be handled in a different way
+    //there is no `finally` visitor as it exist for `catch`
+    //seems like to do that each try-catch block should be handled in a different way
 
     return '*finallyConverter*';
 };
@@ -37444,6 +37348,141 @@ var getArcEndPointStr = function getArcEndPointStr(point, previousPoint, radius)
 
 var getArcEndPointValue = function getArcEndPointValue(pointValue, previousPointValue, radius) {
     return pointValue > previousPointValue ? previousPointValue + radius : previousPointValue - radius;
+};
+
+/***/ }),
+/* 458 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.buildVisitor = exports.buildAST = undefined;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; //TODO: remove, needed only for debug now
+
+var _babylon = __webpack_require__(106);
+
+var babylon = _interopRequireWildcard(_babylon);
+
+var _babelTraverse = __webpack_require__(31);
+
+var _babelTraverse2 = _interopRequireDefault(_babelTraverse);
+
+var _constants = __webpack_require__(29);
+
+var _treeLevelsPointer = __webpack_require__(105);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+var buildAST = exports.buildAST = function buildAST(code, config) {
+    //TODO: remove when finish with defining types
+    var c = babylon.parse(code, {
+        sourceType: 'module',
+        plugins: ['objectRestSpread' //TODO: plugins should be configurable
+        ]
+
+    });
+
+    (0, _babelTraverse2.default)(c, {
+        enter: function enter(path) {
+            if (path.node.type === 'CallExpression') {
+                //debugger;
+            }
+            console.log(path.node.type, path.node.name);
+        }
+    });
+
+    return babylon.parse(code, {
+        sourceType: 'module', //TODO: move to multiple files support, make it configurable
+        plugins: ['objectRestSpread' //TODO: plugins should be configurable
+        ]
+    });
+};
+
+var buildVisitor = exports.buildVisitor = function buildVisitor(_ref, treeNodesDestination) {
+    var definitionsMap = _ref.definitionsMap,
+        globalIgnore = _ref.globalIgnore;
+
+    var pointer = (0, _treeLevelsPointer.setupPointer)(treeNodesDestination);
+
+    return definitionsMap.reduce(function (acc, item) {
+        if (!item.body) {
+            acc[item.type] = visitSimpleEntry(item, pointer);
+        } else {
+            acc[item.type] = {
+                enter: enterComplexEntry(item, pointer),
+                exit: exitComplexEntry(item, pointer)
+            };
+        }
+
+        return acc;
+    }, {});
+};
+
+var visitSimpleEntry = function visitSimpleEntry(item, pointer) {
+    return function (path) {
+        if (item.ignore && item.ignore(path)) {
+            return;
+        }
+
+        var entryConfig = _extends({}, getBasicEntryConfig(item, path), {
+            key: getStatementParentKey(path)
+        });
+
+        pointer.getCurrent().push(entryConfig);
+    };
+};
+
+var enterComplexEntry = function enterComplexEntry(item, pointer) {
+    return function (path) {
+        if (item.ignore && item.ignore(path)) {
+            return;
+        }
+
+        var entryConfig = _extends({}, getBasicEntryConfig(item, path), {
+            key: getStatementParentKey(path),
+            body: []
+        });
+
+        pointer.getCurrent().push(entryConfig);
+        pointer.stepIn(entryConfig.body);
+    };
+};
+
+var getStatementParentKey = function getStatementParentKey(path) {
+    var statementParent = path.find(function (path) {
+        return path.parentKey === _constants.TOKEN_KEYS.PROGRAM || path.isStatementOrBlock();
+    }) || {};
+    return statementParent.key;
+};
+
+var exitComplexEntry = function exitComplexEntry(item, pointer) {
+    return function (path) {
+        if (item.ignore && item.ignore(path)) {
+            return;
+        }
+
+        pointer.stepOut();
+    };
+};
+
+var getBasicEntryConfig = function getBasicEntryConfig(item, path) {
+    var config = {
+        name: item.getName(path),
+        type: item.type
+    };
+
+    if (item.type !== path.node.type) {
+        config.subType = path.node.type;
+    }
+
+    return config;
 };
 
 /***/ })

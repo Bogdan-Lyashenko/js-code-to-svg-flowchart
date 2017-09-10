@@ -16,7 +16,6 @@ export const buildSVGObjectsTree = (flowTree, customStyleTheme) => {
     return svg;
 };
 
-//TODO: think about rendering 'collapsed structures' //means body elements are not created, so, just higher abstraction level (methods definitions, etc)
 export const buildShapeStructures = (flowTree, customStyleTheme) => {
     const root = createRootCircle(flowTree, customStyleTheme),
         position = {...root.getChildOffsetPoint()},

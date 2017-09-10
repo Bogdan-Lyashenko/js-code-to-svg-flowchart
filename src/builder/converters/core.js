@@ -72,8 +72,8 @@ export const catchConverter = (path) => {
 
 export const finallyConverter =  (path) => {
     //TODO: fix `finally`, not implemented yet because it presents only as a part of parent,
-    //TODO: there is no `finally` visitor as it exist for `catch`
-    //TODO: seems like to do that each try-catch block should be handled in a different way
+    //there is no `finally` visitor as it exist for `catch`
+    //seems like to do that each try-catch block should be handled in a different way
 
     return '*finallyConverter*';
 };
