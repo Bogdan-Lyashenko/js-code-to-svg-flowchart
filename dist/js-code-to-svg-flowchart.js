@@ -16383,7 +16383,7 @@ var _FlowTreeBuilder = __webpack_require__(184);
 
 var _SVGRender = __webpack_require__(169);
 
-var code = '\n    function traverseDoc(doc, onEnter, onExit, shouldTraverseConditionalGroups) {\n      function traverseDocRec(doc) {\n        let shouldRecurse = true;\n        if (onEnter) {\n          if (onEnter(doc) === false) {\n            shouldRecurse = false;\n          }\n        }\n    \n        if (shouldRecurse) {\n          if (doc.type === "concat" || doc.type === "fill") {\n            for (let i = 0; i < doc.parts.length; i++) {\n              traverseDocRec(doc.parts[i]);\n            }\n          } else if (doc.type === "if-break") {\n            if (doc.breakContents) {\n              traverseDocRec(doc.breakContents);\n            }\n            if (doc.flatContents) {\n              traverseDocRec(doc.flatContents);\n            }\n          } else if (doc.type === "group" && doc.expandedStates) {\n            if (shouldTraverseConditionalGroups) {\n              doc.expandedStates.forEach(traverseDocRec);\n            } else {\n              traverseDocRec(doc.contents);\n            }\n          } else if (doc.contents) {\n            traverseDocRec(doc.contents);\n            \n            bob = 12;\n            if (bob) c = 13;\n          }\n        }\n    \n        if (onExit) {\n          onExit(doc);\n        }\n      }\n    \n      traverseDocRec(doc);\n}\n\nfunction doLogging() {\n    const test = \'ignore\';\n}\n\nfunction logout() {\n    const test = \'ignore\';\n}\n';
+var code = '\n    console.log(\'test 0\');\n    \n    function traverseDoc(doc, onEnter, onExit, shouldTraverseConditionalGroups) {\n      function traverseDocRec(doc) {\n        let shouldRecurse = true;\n        console.log(\'test 1\')\n        if (onEnter) {\n          if (onEnter(doc) === false) {\n            shouldRecurse = false;\n          }\n        }\n    \n        if (shouldRecurse) {\n          if (doc.type === "concat" || doc.type === "fill") {\n            for (let i = 0; i < doc.parts.length; i++) {\n              traverseDocRec(doc.parts[i]);\n            }\n          } else if (doc.type === "if-break") {\n            if (doc.breakContents) {\n              traverseDocRec(doc.breakContents);\n            }\n            if (doc.flatContents) {\n              traverseDocRec(doc.flatContents);\n              console.log(\'test 2\')\n            }\n          } else if (doc.type === "group" && doc.expandedStates) {\n            if (shouldTraverseConditionalGroups) {\n              doc.expandedStates.forEach(traverseDocRec);\n            } else {\n              traverseDocRec(doc.contents);\n            }\n          } else if (doc.contents) {\n            traverseDocRec(doc.contents);\n            \n            console.log(\'test 3\')\n          }\n        }\n    \n        if (onExit) {\n          onExit(doc);\n        }\n      }\n    \n      traverseDocRec(doc);\n}\n\nfunction doLogging() {\n    const test = \'ignore\';\n}\n\nfunction logout() {\n    const test = \'ignore\';\n}\n';
 
 var simpleStrSwitch = '\n    function Test(a) {\n        var b;\n        \n        switch (a) {\n            case 1:\n                b = 0;\n                break;\n            case 2:\n                b = 2;\n                return;\n            default:\n                b = 3;\n                break;\n        }\n        \n        return a + 2;\n    }\n';
 
@@ -16400,10 +16400,12 @@ var simpleStr = '\n  \n';
 var t0 = performance.now();
 
 var flowTreeBuilder = (0, _FlowTreeBuilder.createFlowTreeBuilder)();
-
 //flowTreeBuilder.setAbstractionLevel(ABSTRACTION_LEVELS.FUNCTION);
 //flowTreeBuilder.setAbstractionLevel([ABSTRACTION_LEVELS.CLASS, ABSTRACTION_LEVELS.FUNCTION]);
 //flowTreeBuilder.setAbstractionLevel([ABSTRACTION_LEVELS.IMPORT, ABSTRACTION_LEVELS.EXPORT]);
+
+//flowTreeBuilder.setIgnoreFilter((entry) => entry.name.startsWith('console.log'));
+
 var flowTree = flowTreeBuilder.build(code);
 
 var svgRender = (0, _SVGRender.createSVGRender)(flowTree, { Circle: { strokeColor: 'black' } });
@@ -17544,9 +17546,7 @@ var createFlowTreeBuilder = exports.createFlowTreeBuilder = function createFlowT
 
         astVisitorConfig: _extends({
             definitionsMap: [].concat(_toConsumableArray(_entryDefinitionsMap.DefinitionsMap)),
-            globalIgnore: function globalIgnore(entry) {
-                //return entry.name === '';
-            }
+            globalIgnore: null
         }, astVisitorConfig)
     };
 
@@ -17555,8 +17555,9 @@ var createFlowTreeBuilder = exports.createFlowTreeBuilder = function createFlowT
             options.astVisitorConfig.definitionsMap = rebuildConfigForAbstractionLevel(level);
         },
 
-        ignore: function ignore() {},
-        highlight: function highlight() {},
+        setIgnoreFilter: function setIgnoreFilter(fn) {
+            options.astVisitorConfig.globalIgnore = fn;
+        },
 
         build: function build(code) {
             return buildFlowTree(code, options);

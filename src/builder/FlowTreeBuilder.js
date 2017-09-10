@@ -43,9 +43,7 @@ export const createFlowTreeBuilder = ({astParserConfig = {}, astVisitorConfig = 
 
         astVisitorConfig: {
             definitionsMap: [...DefinitionsMap],
-            globalIgnore(entry) {
-                //return entry.name === '';
-            },
+            globalIgnore: null,
             ...astVisitorConfig
         }
     };
@@ -55,8 +53,9 @@ export const createFlowTreeBuilder = ({astParserConfig = {}, astVisitorConfig = 
             options.astVisitorConfig.definitionsMap = rebuildConfigForAbstractionLevel(level)
         },
 
-        ignore: () => {},
-        highlight: () => {},
+        setIgnoreFilter: (fn) => {
+            options.astVisitorConfig.globalIgnore = fn;
+        },
 
         build: code => buildFlowTree(code, options)
     };

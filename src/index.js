@@ -2,9 +2,12 @@ import {createFlowTreeBuilder, ABSTRACTION_LEVELS} from './builder/FlowTreeBuild
 import {createSVGRender} from './render/svg/SVGRender';
 
 var code = `
+    console.log('test 0');
+    
     function traverseDoc(doc, onEnter, onExit, shouldTraverseConditionalGroups) {
       function traverseDocRec(doc) {
         let shouldRecurse = true;
+        console.log('test 1')
         if (onEnter) {
           if (onEnter(doc) === false) {
             shouldRecurse = false;
@@ -22,6 +25,7 @@ var code = `
             }
             if (doc.flatContents) {
               traverseDocRec(doc.flatContents);
+              console.log('test 2')
             }
           } else if (doc.type === "group" && doc.expandedStates) {
             if (shouldTraverseConditionalGroups) {
@@ -32,8 +36,7 @@ var code = `
           } else if (doc.contents) {
             traverseDocRec(doc.contents);
             
-            bob = 12;
-            if (bob) c = 13;
+            console.log('test 3')
           }
         }
     
@@ -149,10 +152,12 @@ const simpleStr = `
 var t0 = performance.now();
 
 const flowTreeBuilder = createFlowTreeBuilder();
-
 //flowTreeBuilder.setAbstractionLevel(ABSTRACTION_LEVELS.FUNCTION);
 //flowTreeBuilder.setAbstractionLevel([ABSTRACTION_LEVELS.CLASS, ABSTRACTION_LEVELS.FUNCTION]);
 //flowTreeBuilder.setAbstractionLevel([ABSTRACTION_LEVELS.IMPORT, ABSTRACTION_LEVELS.EXPORT]);
+
+//flowTreeBuilder.setIgnoreFilter((entry) => entry.name.startsWith('console.log'));
+
 const flowTree = flowTreeBuilder.build(code);
 
 const svgRender = createSVGRender(flowTree, {Circle: {strokeColor: 'black'}});
