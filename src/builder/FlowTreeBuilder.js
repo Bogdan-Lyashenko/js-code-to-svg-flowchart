@@ -1,6 +1,14 @@
 import traverse from 'babel-traverse';
 import {DefinitionsMap} from './entryDefinitionsMap';
 import {buildAST, buildVisitor} from './ASTBuilder';
+import {TOKEN_TYPES} from '../shared/constants'
+
+export const ABSTRACTION_LEVELS = {
+    FUNCTION: [TOKEN_TYPES.FUNCTION],
+    CLASS: [TOKEN_TYPES.CLASS_DECLARATION],
+    IMPORT: [TOKEN_TYPES.IMPORT_DECLARATION, TOKEN_TYPES.IMPORT_SPECIFIER, TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER],
+    EXPORT: [TOKEN_TYPES.EXPORT_NAMED_DECLARATION, TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION]
+};
 
 const buildFlowTree = (code, {astParserConfig, astVisitorConfig}) => {
     const treeNodes = [];
@@ -11,6 +19,20 @@ const buildFlowTree = (code, {astParserConfig, astVisitorConfig}) => {
     );
 
     return {name: '', body: treeNodes};
+};
+
+const rebuildConfigForAbstractionLevel = (level) => {
+    const levelList = [].concat(level).reduce((list, item) => {
+        if (typeof item === 'string') {
+            list.push(item);
+        } else {
+            list = list.concat([...item]);
+        }
+
+        return list;
+    }, []);
+
+    return DefinitionsMap.filter(item => levelList.indexOf(item.type) !== -1);
 };
 
 export const createFlowTreeBuilder = ({astParserConfig = {}, astVisitorConfig = {}} = {}) => {
@@ -26,6 +48,13 @@ export const createFlowTreeBuilder = ({astParserConfig = {}, astVisitorConfig = 
     };
 
     return {
+        setAbstractionLevel: level => {
+            options.astVisitorConfig.definitionsMap = rebuildConfigForAbstractionLevel(level)
+        },
+
+        ignore: () => {},
+        highlight: () => {},
+
         build: code => buildFlowTree(code, options)
     };
 };

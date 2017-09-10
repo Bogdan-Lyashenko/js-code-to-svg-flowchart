@@ -1,6 +1,7 @@
 export const TOKEN_TYPES = {
     FUNCTION: 'Function',
     FUNCTION_EXPRESSION: 'FunctionExpression',
+    FUNCTION_DECLARATION: 'FunctionDeclaration',
     VARIABLE_DECLARATOR: 'VariableDeclarator',
     ASSIGNMENT_EXPRESSION: 'AssignmentExpression',
     VARIABLE_DECLARATION: 'VariableDeclaration',
@@ -20,6 +21,7 @@ export const TOKEN_TYPES = {
     WITH_STATEMENT: 'WithStatement',
     THROW_STATEMENT: 'ThrowStatement',
     DEBUGGER_STATEMENT: 'DebuggerStatement',
+    IDENTIFIER: 'Identifier',
 
     //ES Harmony features
     ARROW_FUNCTION_EXPRESSION: 'ArrowFunctionExpression',

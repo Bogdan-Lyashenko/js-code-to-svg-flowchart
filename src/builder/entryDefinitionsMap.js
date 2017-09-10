@@ -22,7 +22,8 @@ import {
 
 import {
     importDeclarationConverter,
-    exportDeclarationConverter,
+    exportNamedDeclarationConverter,
+    exportDefaultDeclarationConverter,
     classDeclarationConverter
 } from  './converters/Harmony'
 
@@ -123,10 +124,12 @@ export const DefinitionsMap = [{
     getName: idleConverter
 },{
     type: TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION, //TODO: visual display as main result of module, => |a = 12| can be as big arrow shape at left side of main body
-    getName: exportDeclarationConverter
+    getName: exportDefaultDeclarationConverter,
+    body: true
 },{
     type: TOKEN_TYPES.EXPORT_NAMED_DECLARATION, //TODO: visual ' => |a = 12| ' can be as big arrow shape at left side of main body
-    getName: exportDeclarationConverter
+    getName: exportNamedDeclarationConverter,
+    body: true
 },{
     type: TOKEN_TYPES.CLASS_DECLARATION, //TODO: visual something like function declaration but more visible (class is bigger than function)
     getName: classDeclarationConverter, //if it has superClass -> render it with highlighting

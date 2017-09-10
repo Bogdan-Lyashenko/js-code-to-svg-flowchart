@@ -1991,6 +1991,7 @@ Object.defineProperty(exports, "__esModule", {
 var TOKEN_TYPES = exports.TOKEN_TYPES = {
     FUNCTION: 'Function',
     FUNCTION_EXPRESSION: 'FunctionExpression',
+    FUNCTION_DECLARATION: 'FunctionDeclaration',
     VARIABLE_DECLARATOR: 'VariableDeclarator',
     ASSIGNMENT_EXPRESSION: 'AssignmentExpression',
     VARIABLE_DECLARATION: 'VariableDeclaration',
@@ -2010,6 +2011,7 @@ var TOKEN_TYPES = exports.TOKEN_TYPES = {
     WITH_STATEMENT: 'WithStatement',
     THROW_STATEMENT: 'ThrowStatement',
     DEBUGGER_STATEMENT: 'DebuggerStatement',
+    IDENTIFIER: 'Identifier',
 
     //ES Harmony features
     ARROW_FUNCTION_EXPRESSION: 'ArrowFunctionExpression',
@@ -16381,7 +16383,7 @@ var _FlowTreeBuilder = __webpack_require__(184);
 
 var _SVGRender = __webpack_require__(169);
 
-var code = '\n    function traverseDoc(doc, onEnter, onExit, shouldTraverseConditionalGroups) {\n      function traverseDocRec(doc) {\n        let shouldRecurse = true;\n        if (onEnter) {\n          if (onEnter(doc) === false) {\n            shouldRecurse = false;\n          }\n        }\n    \n        if (shouldRecurse) {\n          if (doc.type === "concat" || doc.type === "fill") {\n            for (let i = 0; i < doc.parts.length; i++) {\n              traverseDocRec(doc.parts[i]);\n            }\n          } else if (doc.type === "if-break") {\n            if (doc.breakContents) {\n              traverseDocRec(doc.breakContents);\n            }\n            if (doc.flatContents) {\n              traverseDocRec(doc.flatContents);\n            }\n          } else if (doc.type === "group" && doc.expandedStates) {\n            if (shouldTraverseConditionalGroups) {\n              doc.expandedStates.forEach(traverseDocRec);\n            } else {\n              traverseDocRec(doc.contents);\n            }\n          } else if (doc.contents) {\n            traverseDocRec(doc.contents);\n          }\n        }\n    \n        if (onExit) {\n          onExit(doc);\n        }\n      }\n    \n      traverseDocRec(doc);\n}\n';
+var code = '\n    function traverseDoc(doc, onEnter, onExit, shouldTraverseConditionalGroups) {\n      function traverseDocRec(doc) {\n        let shouldRecurse = true;\n        if (onEnter) {\n          if (onEnter(doc) === false) {\n            shouldRecurse = false;\n          }\n        }\n    \n        if (shouldRecurse) {\n          if (doc.type === "concat" || doc.type === "fill") {\n            for (let i = 0; i < doc.parts.length; i++) {\n              traverseDocRec(doc.parts[i]);\n            }\n          } else if (doc.type === "if-break") {\n            if (doc.breakContents) {\n              traverseDocRec(doc.breakContents);\n            }\n            if (doc.flatContents) {\n              traverseDocRec(doc.flatContents);\n            }\n          } else if (doc.type === "group" && doc.expandedStates) {\n            if (shouldTraverseConditionalGroups) {\n              doc.expandedStates.forEach(traverseDocRec);\n            } else {\n              traverseDocRec(doc.contents);\n            }\n          } else if (doc.contents) {\n            traverseDocRec(doc.contents);\n          }\n        }\n    \n        if (onExit) {\n          onExit(doc);\n        }\n      }\n    \n      traverseDocRec(doc);\n}\n\nfunction doLogging() {\n    const test = \'ignore\';\n}\n\nfunction logout() {\n    const test = \'ignore\';\n}\n';
 
 var simpleStrSwitch = '\n    function Test(a) {\n        var b;\n        \n        switch (a) {\n            case 1:\n                b = 0;\n                break;\n            case 2:\n                b = 2;\n                return;\n            default:\n                b = 3;\n                break;\n        }\n        \n        return a + 2;\n    }\n';
 
@@ -16389,15 +16391,18 @@ var simpleStrTry = 'function Test() {\n    try {\n        abcdMethod();\n    } c
 
 var simpleStrContinue = '\nfunction Test() {\n    for (; i < obj.length; i++) {\n        c = 12;\n        if (c == 2) {\n            continue;\n        }\n        \n        b = 12;\n    } \n}\n';
 
-var simpleStrModules = '\nimport a, {b,c} from \'lib-bob\';\nimport d from \'./libbob/file\';\n\nvar o = 123;\n\nexport default function myMethod(b) {\n   let clickFn = 12;\n}\n\nexport const BOB = 12;\n';
+var simpleStrModules = '\nimport a, {b,c} from \'lib-bob\';\nimport d from \'./libbob/file\';\n\nfunction o(i, p) {};\n\nexport default o;\n\nfunction ll(b) {\n   let clickFn = 12;\n   b = 12;\n   c = 12;\n}\n\nexport const BOB = 12;\n';
 
-var simpleStrClass = '\nclass Animal extends Zero {\n    constructor(b) {\n        this.s = 12;\n    }\n    \n    getA(){\n        return this.a;\n    }\n    \n    setName(name) {\n        this.name = name;\n    }\n}\n';
+var simpleStrClass = '\nclass Animal extends Zero {\n    constructor(b) {\n        this.s = 12;\n    }\n    \n    getA(){\n        return this.a;\n    }\n    \n    setName(name) {\n        this.name = name;\n    }\n}\n\nclass Man {\n    constructor(n) {\n        this.name = n;\n    }\n    \n    sayName() {\n        return this.name\n    }\n}\n';
 
 var simpleStr = '\n  \n';
 
 var flowTreeBuilder = (0, _FlowTreeBuilder.createFlowTreeBuilder)();
+//flowTreeBuilder.setAbstractionLevel(ABSTRACTION_LEVELS.FUNCTION);
+//flowTreeBuilder.setAbstractionLevel([ABSTRACTION_LEVELS.CLASS, ABSTRACTION_LEVELS.FUNCTION]);
+//flowTreeBuilder.setAbstractionLevel([ABSTRACTION_LEVELS.IMPORT, ABSTRACTION_LEVELS.EXPORT]);
 
-var flowTree = flowTreeBuilder.build(code);
+var flowTree = flowTreeBuilder.build(simpleStrModules);
 
 var svgRender = (0, _SVGRender.createSVGRender)(flowTree, { Circle: { strokeColor: 'black' } });
 
@@ -17471,7 +17476,7 @@ module.exports = exports['default'];
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.createFlowTreeBuilder = undefined;
+exports.createFlowTreeBuilder = exports.ABSTRACTION_LEVELS = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -17483,9 +17488,18 @@ var _entryDefinitionsMap = __webpack_require__(372);
 
 var _ASTBuilder = __webpack_require__(458);
 
+var _constants = __webpack_require__(29);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var ABSTRACTION_LEVELS = exports.ABSTRACTION_LEVELS = {
+    FUNCTION: [_constants.TOKEN_TYPES.FUNCTION],
+    CLASS: [_constants.TOKEN_TYPES.CLASS_DECLARATION],
+    IMPORT: [_constants.TOKEN_TYPES.IMPORT_DECLARATION, _constants.TOKEN_TYPES.IMPORT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER],
+    EXPORT: [_constants.TOKEN_TYPES.EXPORT_NAMED_DECLARATION, _constants.TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION]
+};
 
 var buildFlowTree = function buildFlowTree(code, _ref) {
     var astParserConfig = _ref.astParserConfig,
@@ -17496,6 +17510,22 @@ var buildFlowTree = function buildFlowTree(code, _ref) {
     (0, _babelTraverse2.default)((0, _ASTBuilder.buildAST)(code, astParserConfig), (0, _ASTBuilder.buildVisitor)(astVisitorConfig, treeNodes));
 
     return { name: '', body: treeNodes };
+};
+
+var rebuildConfigForAbstractionLevel = function rebuildConfigForAbstractionLevel(level) {
+    var levelList = [].concat(level).reduce(function (list, item) {
+        if (typeof item === 'string') {
+            list.push(item);
+        } else {
+            list = list.concat([].concat(_toConsumableArray(item)));
+        }
+
+        return list;
+    }, []);
+
+    return _entryDefinitionsMap.DefinitionsMap.filter(function (item) {
+        return levelList.indexOf(item.type) !== -1;
+    });
 };
 
 var createFlowTreeBuilder = exports.createFlowTreeBuilder = function createFlowTreeBuilder() {
@@ -17514,6 +17544,13 @@ var createFlowTreeBuilder = exports.createFlowTreeBuilder = function createFlowT
     };
 
     return {
+        setAbstractionLevel: function setAbstractionLevel(level) {
+            options.astVisitorConfig.definitionsMap = rebuildConfigForAbstractionLevel(level);
+        },
+
+        ignore: function ignore() {},
+        highlight: function highlight() {},
+
         build: function build(code) {
             return buildFlowTree(code, options);
         }
@@ -29654,10 +29691,12 @@ var DefinitionsMap = exports.DefinitionsMap = [{
     getName: _core.idleConverter
 }, {
     type: _constants.TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION, //TODO: visual display as main result of module, => |a = 12| can be as big arrow shape at left side of main body
-    getName: _Harmony.exportDeclarationConverter
+    getName: _Harmony.exportDefaultDeclarationConverter,
+    body: true
 }, {
     type: _constants.TOKEN_TYPES.EXPORT_NAMED_DECLARATION, //TODO: visual ' => |a = 12| ' can be as big arrow shape at left side of main body
-    getName: _Harmony.exportDeclarationConverter
+    getName: _Harmony.exportNamedDeclarationConverter,
+    body: true
 }, {
     type: _constants.TOKEN_TYPES.CLASS_DECLARATION, //TODO: visual something like function declaration but more visible (class is bigger than function)
     getName: _Harmony.classDeclarationConverter, //if it has superClass -> render it with highlighting
@@ -36817,25 +36856,49 @@ var calculateChildOffsetPoint = exports.calculateChildOffsetPoint = function cal
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.classDeclarationConverter = exports.exportDeclarationConverter = exports.importDeclarationConverter = undefined;
+exports.classDeclarationConverter = exports.exportDefaultDeclarationConverter = exports.exportNamedDeclarationConverter = exports.importDeclarationConverter = undefined;
 
 var _babelGenerator = __webpack_require__(63);
 
 var _babelGenerator2 = _interopRequireDefault(_babelGenerator);
 
+var _constants = __webpack_require__(29);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var importDeclarationConverter = exports.importDeclarationConverter = function importDeclarationConverter(_ref) {
     var node = _ref.node;
-    return (0, _babelGenerator2.default)(node.source).code;
+    return 'import from' + (0, _babelGenerator2.default)(node.source).code;
 };
 
-var exportDeclarationConverter = exports.exportDeclarationConverter = function exportDeclarationConverter() {
-    return 'export';
-}; //TODO: translation?
-
-var classDeclarationConverter = exports.classDeclarationConverter = function classDeclarationConverter(_ref2) {
+var exportNamedDeclarationConverter = exports.exportNamedDeclarationConverter = function exportNamedDeclarationConverter(_ref2) {
     var node = _ref2.node;
+    return 'export ' + getExportedTokenName(node);
+};
+
+var exportDefaultDeclarationConverter = exports.exportDefaultDeclarationConverter = function exportDefaultDeclarationConverter(_ref3) {
+    var node = _ref3.node;
+    return 'export default ' + getExportedTokenName(node);
+};
+
+var getExportedTokenName = function getExportedTokenName(_ref4) {
+    var declaration = _ref4.declaration;
+
+    if ([_constants.TOKEN_TYPES.FUNCTION_DECLARATION, _constants.TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION].indexOf(declaration.type) !== -1) {
+        return declaration.id ? declaration.id.name : 'function';
+    }
+
+    if (declaration.type === _constants.TOKEN_TYPES.VARIABLE_DECLARATION) {
+        return declaration.declarations[0].id.name;
+    }
+
+    if (declaration.type === _constants.TOKEN_TYPES.IDENTIFIER) {
+        return declaration.name;
+    }
+};
+
+var classDeclarationConverter = exports.classDeclarationConverter = function classDeclarationConverter(_ref5) {
+    var node = _ref5.node;
 
     return 'class ' + (0, _babelGenerator2.default)(node.id).code + ' ' + (node.superClass ? ' extends ' + node.superClass.name : '');
 };

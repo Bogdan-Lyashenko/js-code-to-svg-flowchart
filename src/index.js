@@ -1,4 +1,4 @@
-import {createFlowTreeBuilder} from './builder/FlowTreeBuilder';
+import {createFlowTreeBuilder, ABSTRACTION_LEVELS} from './builder/FlowTreeBuilder';
 import {createSVGRender} from './render/svg/SVGRender';
 
 var code = `
@@ -40,6 +40,14 @@ var code = `
       }
     
       traverseDocRec(doc);
+}
+
+function doLogging() {
+    const test = 'ignore';
+}
+
+function logout() {
+    const test = 'ignore';
 }
 `;
 
@@ -91,10 +99,14 @@ const simpleStrModules = `
 import a, {b,c} from 'lib-bob';
 import d from './libbob/file';
 
-var o = 123;
+function o(i, p) {};
 
-export default function myMethod(b) {
+export default o;
+
+function ll(b) {
    let clickFn = 12;
+   b = 12;
+   c = 12;
 }
 
 export const BOB = 12;
@@ -115,6 +127,16 @@ class Animal extends Zero {
         this.name = name;
     }
 }
+
+class Man {
+    constructor(n) {
+        this.name = n;
+    }
+    
+    sayName() {
+        return this.name
+    }
+}
 `;
 
 const simpleStr = `
@@ -122,8 +144,11 @@ const simpleStr = `
 `;
 
 const flowTreeBuilder = createFlowTreeBuilder();
+//flowTreeBuilder.setAbstractionLevel(ABSTRACTION_LEVELS.FUNCTION);
+//flowTreeBuilder.setAbstractionLevel([ABSTRACTION_LEVELS.CLASS, ABSTRACTION_LEVELS.FUNCTION]);
+//flowTreeBuilder.setAbstractionLevel([ABSTRACTION_LEVELS.IMPORT, ABSTRACTION_LEVELS.EXPORT]);
 
-const flowTree = flowTreeBuilder.build(code);
+const flowTree = flowTreeBuilder.build(simpleStrModules);
 
 const svgRender = createSVGRender(flowTree, {Circle: {strokeColor: 'black'}});
 
