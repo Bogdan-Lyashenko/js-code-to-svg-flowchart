@@ -16408,16 +16408,16 @@ var flowTreeBuilder = (0, _FlowTreeBuilder.createFlowTreeBuilder)();
 
 var flowTree = flowTreeBuilder.build(code);
 
-var svgRender = (0, _SVGRender.createSVGRender)(flowTree, { Circle: { strokeColor: 'black' } });
+var svgRender = (0, _SVGRender.createSVGRender)({ Circle: { strokeColor: 'black' } });
+
+svgRender.buildShapesTree(flowTree);
 document.getElementById('svgImage').innerHTML = svgRender.render();
 
 var t1 = performance.now();
 console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
 
-exports.default = function (code) {/*
-                                   const flowTree = getFlowTree(code),
-                                   svgRender = createSVGRender(flowTree);
-                                   return svgRender.render();*/
+exports.default = function (code) {
+    //return rendered tree
 };
 
 module.exports = exports['default'];
@@ -16564,15 +16564,23 @@ var _render = function _render(tree) {
 };
 
 exports.render = _render;
-var createSVGRender = exports.createSVGRender = function createSVGRender(tree) {
-    var customStyleTheme = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+var createSVGRender = exports.createSVGRender = function createSVGRender() {
+    var customStyleTheme = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-    var svgObjectsTree = buildSVGObjectsTree(tree, customStyleTheme);
+    var svgObjectsTree = [],
+        theme = _extends({}, customStyleTheme);
 
     return {
-        getSVGObjectsTree: function getSVGObjectsTree() {
-            return svgObjectsTree;
+        buildShapesTree: function buildShapesTree(flowTree) {
+            svgObjectsTree = buildSVGObjectsTree(flowTree, theme);
         },
+
+        setStyles: function setStyles() {},
+
+        focus: function focus() {},
+
+        blur: function blur() {},
+
         render: function render() {
             return _render(svgObjectsTree);
         }

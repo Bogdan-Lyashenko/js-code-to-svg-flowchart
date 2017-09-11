@@ -160,15 +160,15 @@ const flowTreeBuilder = createFlowTreeBuilder();
 
 const flowTree = flowTreeBuilder.build(code);
 
-const svgRender = createSVGRender(flowTree, {Circle: {strokeColor: 'black'}});
+const svgRender = createSVGRender({Circle: {strokeColor: 'black'}});
+
+
+svgRender.buildShapesTree(flowTree);
 document.getElementById('svgImage').innerHTML = svgRender.render();
 
 var t1 = performance.now();
 console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
 
-export default (code) => {/*
-    const flowTree = getFlowTree(code),
-        svgRender = createSVGRender(flowTree);
-
-    return svgRender.render();*/
+export default (code) => {
+    //return rendered tree
 }

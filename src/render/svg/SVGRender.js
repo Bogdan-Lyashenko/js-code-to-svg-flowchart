@@ -122,11 +122,21 @@ export const render = (tree) => {
     return svgString;
 };
 
-export const createSVGRender = (tree, customStyleTheme = {}) => {
-    const svgObjectsTree = buildSVGObjectsTree(tree, customStyleTheme);
+export const createSVGRender = (customStyleTheme = {}) => {
+    let svgObjectsTree = [],
+        theme = {...customStyleTheme};
 
     return {
-        getSVGObjectsTree: () => svgObjectsTree,
+        buildShapesTree: (flowTree) => {
+            svgObjectsTree = buildSVGObjectsTree(flowTree, theme);
+        },
+
+        setStyles: () => {},
+
+        focus: () => {},
+
+        blur: () => {},
+
         render: () => render(svgObjectsTree)
     }
 };
