@@ -1,4 +1,5 @@
 import {getRoundedRectangle} from '../../../shared/utils/svgPrimitives';
+import {assignState} from '../../../shared/utils/composition';
 
 import {
     setupCompleteState,
@@ -27,14 +28,11 @@ const setupRectangleBehavior = (state) => ({
 export const Rectangle = (initialState) => {
     const state = setupCompleteState(initialState);
 
-    return Object.assign(
-        {state},
-        setupInitialSelectors(state),
-
-        setupBasicBehaviour(state),
-
-        setupRectangleBehavior(state)
-    );
+    return assignState(state, [
+        setupInitialSelectors,
+        setupBasicBehaviour,
+        setupRectangleBehavior
+    ]);
 };
 
 export default delegateInit(Rectangle, ENTITY_FIELD_NAME);

@@ -1,5 +1,6 @@
 import {TOKEN_KEYS} from '../../../shared/constants';
 import {getRhombus, getRoundedRectangle, getText} from '../../../shared/utils/svgPrimitives';
+import {assignState} from '../../../shared/utils/composition';
 
 import {
     setupBasicBehaviour,
@@ -127,15 +128,12 @@ export const ConditionRhombus = (initialState) => {
 
     state =  {...state, ...setupInitialProperties(state)};
 
-    return Object.assign(
-        {state},
-        setupInitialSelectors(state),
-        setupAdditionalSelectors(state),
-
-        setupBasicBehaviour(state),
-
-        setupConditionRhombusBehavior(state)
-    );
+    return assignState(state, [
+        setupInitialSelectors,
+        setupAdditionalSelectors,
+        setupBasicBehaviour,
+        setupConditionRhombusBehavior
+    ]);
 };
 
 export default delegateInit(ConditionRhombus, ENTITY_FIELD_NAME);

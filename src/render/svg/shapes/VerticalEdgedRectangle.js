@@ -1,4 +1,5 @@
 import {getRectangle, getLine} from '../../../shared/utils/svgPrimitives';
+import {assignState} from '../../../shared/utils/composition';
 
 import {
     setupBasicBehaviour,
@@ -52,14 +53,11 @@ export const VerticalEdgedRectangle = (initialState) => {
 
     state = {...state, ...setupInitialProperties(state)};
 
-    return Object.assign(
-        {state},
-        setupInitialSelectors(state),
-
-        setupBasicBehaviour(state),
-
-        setupVerticalEdgedRectangleBehavior(state)
-    );
+    return assignState(state, [
+        setupInitialSelectors,
+        setupBasicBehaviour,
+        setupVerticalEdgedRectangleBehavior
+    ]);
 };
 
 export default delegateInit(VerticalEdgedRectangle, ENTITY_FIELD_NAME);

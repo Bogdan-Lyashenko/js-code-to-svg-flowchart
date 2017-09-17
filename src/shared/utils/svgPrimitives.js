@@ -44,7 +44,10 @@ export const getClosedPath = (points, theme) => {
         return `L${point.x}, ${point.y}`;
     }).join(' ');
 
-    return `<path d="${pointStr} Z" fill="${theme.fillColor}"/>`
+    return `<path d="${pointStr} Z" 
+        ${theme.fillColor ? 'fill="'+ theme.fillColor + '"' : ''}
+        ${theme.strokeColor ? 'stroke="'+ theme.strokeColor + '"' : ''}
+        />`
 };
 
 export const getCurvedPath = (points, theme) => {
@@ -57,8 +60,8 @@ export const getCurvedPath = (points, theme) => {
             return getLinePointStr(point, previousPoint, theme.curveTurnRadius);
         }
 
-        return `Q${previousPoint.x} ${previousPoint.y} 
-                ${getArcEndPointStr(point, previousPoint, theme.curveTurnRadius)} 
+        return `Q${previousPoint.x} ${previousPoint.y}
+                ${getArcEndPointStr(point, previousPoint, theme.curveTurnRadius)}
                 ${getLinePointStr(point, previousPoint, 2*theme.curveTurnRadius)}`;
     }).join(' ');
 

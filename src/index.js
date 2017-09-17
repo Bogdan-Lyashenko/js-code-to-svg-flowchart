@@ -146,7 +146,15 @@ class Man {
 `;
 
 const simpleStr = `
-  
+  function test(b) {
+    var a = 12;
+    
+    if (b > 11) {
+        return 11;
+    }
+    
+    return a -1;
+  }
 `;
 
 var t0 = performance.now();

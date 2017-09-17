@@ -63,11 +63,13 @@ export const buildConnections = (shapesTree, customStyleTheme) => {
         pushArrow = (config) => { connections.push(createConnectionArrow(config, customStyleTheme)); };
 
     let latestShape = null,
+        startShape = null,
         latestParentShape = null;
 
     complexTraversal(shapesTree, shapesTree, (parentShape) => {
 
     }, (shape, parentShape) => {
+        startShape = parentShape;
         latestShape = shape;
 
         //TODO: add const startShape = ; because it's not always parent (like `continue` in loop actually change flow)
@@ -84,7 +86,7 @@ export const buildConnections = (shapesTree, customStyleTheme) => {
             config.startPoint = parentShape.getAlternateFromPoint();
             config.boundaryPoint = {x: boundaryPoint.x};
         } else {
-            config.startPoint = parentShape.getFromPoint();
+            config.startPoint = startShape.getFromPoint();
         }
 
         pushArrow(config);

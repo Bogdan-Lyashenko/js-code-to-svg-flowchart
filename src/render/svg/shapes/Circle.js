@@ -1,4 +1,5 @@
 import {getCircle} from '../../../shared/utils/svgPrimitives';
+import {assignState} from '../../../shared/utils/composition';
 
 import {
     extractBasicState,
@@ -45,14 +46,11 @@ export const Circle = (initialState) => {
 
     state =  {...state, ...setupInitialProperties(state)};
 
-    return Object.assign(
-        {state},
-        setupInitialSelectors(state),
-
-        setupBasicBehaviour(state),
-
-        setupCircleBehavior(state)
-    );
+    return assignState(state, [
+        setupInitialSelectors,
+        setupBasicBehaviour,
+        setupCircleBehavior
+    ]);
 };
 
 export default delegateInit(Circle, ENTITY_FIELD_NAME);

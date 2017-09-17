@@ -1,37 +1,42 @@
 import {TOKEN_TYPES, ARROW_TYPE} from '../../shared/constants';
 import {getTheme} from './appearance/StyleTheme';
+
 import VerticalEdgedRectangle from './shapes/VerticalEdgedRectangle';
 import Rectangle from './shapes/Rectangle';
 import ConditionRhombus from './shapes/ConditionRhombus';
 import LoopRhombus from './shapes/LoopRhombus';
 import Circle from './shapes/Circle';
+import ReturnStatement from './shapes/ReturnStatement';
+
 import ConnectionArrow from './ConnectionArrow';
 
 export const createShapeForNode = (node, position, customStyleTheme = {}) => {
-    let shape;
+    const shape = getShapeForNode(node),
+        DefaultTheme = getTheme();
 
-    switch (node.type) {
-        case TOKEN_TYPES.FUNCTION:
-            shape = VerticalEdgedRectangle;
-            break;
-
-        case TOKEN_TYPES.LOOP:
-            shape = LoopRhombus;
-            break;
-
-        case TOKEN_TYPES.CONDITIONAL:
-            shape = ConditionRhombus;
-            break;
-
-        default:
-            shape = Rectangle;
-    }
-
-    const DefaultTheme = getTheme();
     return shape(node, position, { //TODO: refactor duplication
         ...DefaultTheme[shape.getThemeFieldName()],
         ...(customStyleTheme[shape.getThemeFieldName()] || {})
     });
+};
+
+const getShapeForNode = (node) => {
+    switch (node.type) {
+        case TOKEN_TYPES.FUNCTION:
+            return VerticalEdgedRectangle;
+
+        case TOKEN_TYPES.LOOP:
+            return LoopRhombus;
+
+        case TOKEN_TYPES.CONDITIONAL:
+            return ConditionRhombus;
+
+        case TOKEN_TYPES.RETURN:
+            return ReturnStatement;
+
+        default:
+            return Rectangle;
+    }
 };
 
 export const createRootCircle = (node, customStyleTheme = {}) => {

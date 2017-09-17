@@ -1,4 +1,5 @@
 import {getRhombus, getRoundedRectangle, getText} from '../../../shared/utils/svgPrimitives';
+import {assignState} from '../../../shared/utils/composition';
 
 import {
     setupBasicBehaviour,
@@ -90,15 +91,12 @@ export const LoopRhombus = (initialState) => {
 
     state =  {...state, ...setupInitialProperties(state)};
 
-    return Object.assign(
-        {state},
-        setupInitialSelectors(state),
-        setupAdditionalSelectors(state),
-
-        setupBasicBehaviour(state),
-
-        setupLoopRhombusBehavior(state)
-    );
+    return assignState(state, [
+        setupInitialSelectors,
+        setupAdditionalSelectors,
+        setupBasicBehaviour,
+        setupLoopRhombusBehavior
+    ]);
 };
 
 export default delegateInit(LoopRhombus, ENTITY_FIELD_NAME);

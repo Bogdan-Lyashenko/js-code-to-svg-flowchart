@@ -86,6 +86,20 @@ export const Themes = {
             childOffset: {
                 x: 20, y: 50
             }
+        },
+
+        ReturnStatement: {
+            ...DefaultShape,
+            roundBorder: 3,
+            fillColor: '#b39ddb',
+            arrow: {
+                handlerLength: 5,
+                sizeX: 16,
+                sizeY: 22,
+                fillColor: '#b39ddb',
+                strokeColor: DefaultShape.strokeColor,
+                strokeWidth: DefaultShape.strokeWidth
+            }
         }
     }
 };

@@ -16395,7 +16395,7 @@ var simpleStrModules = '\nimport a, {b,c} from \'lib-bob\';\nimport d from \'./l
 
 var simpleStrClass = '\nclass Animal extends Zero {\n    constructor(b) {\n        this.s = 12;\n    }\n    \n    getA(){\n        return this.a;\n    }\n    \n    setName(name) {\n        this.name = name;\n    }\n}\n\nclass Man {\n    constructor(n) {\n        this.name = n;\n    }\n    \n    sayName() {\n        return this.name\n    }\n}\n';
 
-var simpleStr = '\n  \n';
+var simpleStr = '\n  function test(b) {\n    var a = 12;\n    \n    if (b > 11) {\n        return 11;\n    }\n    \n    return a -1;\n  }\n';
 
 var t0 = performance.now();
 
@@ -16503,9 +16503,11 @@ var buildConnections = exports.buildConnections = function buildConnections(shap
     };
 
     var latestShape = null,
+        startShape = null,
         latestParentShape = null;
 
     (0, _traversalWithTreeLevelsPointer.complexTraversal)(shapesTree, shapesTree, function (parentShape) {}, function (shape, parentShape) {
+        startShape = parentShape;
         latestShape = shape;
 
         //TODO: add const startShape = ; because it's not always parent (like `continue` in loop actually change flow)
@@ -16522,7 +16524,7 @@ var buildConnections = exports.buildConnections = function buildConnections(shap
             config.startPoint = parentShape.getAlternateFromPoint();
             config.boundaryPoint = { x: boundaryPoint.x };
         } else {
-            config.startPoint = parentShape.getFromPoint();
+            config.startPoint = startShape.getFromPoint();
         }
 
         pushArrow(config);
@@ -16718,6 +16720,10 @@ var _Circle = __webpack_require__(182);
 
 var _Circle2 = _interopRequireDefault(_Circle);
 
+var _ReturnStatement = __webpack_require__(460);
+
+var _ReturnStatement2 = _interopRequireDefault(_ReturnStatement);
+
 var _ConnectionArrow = __webpack_require__(183);
 
 var _ConnectionArrow2 = _interopRequireDefault(_ConnectionArrow);
@@ -16727,27 +16733,29 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var createShapeForNode = exports.createShapeForNode = function createShapeForNode(node, position) {
     var customStyleTheme = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-    var shape = void 0;
+    var shape = getShapeForNode(node),
+        DefaultTheme = (0, _StyleTheme.getTheme)();
 
+    return shape(node, position, _extends({}, DefaultTheme[shape.getThemeFieldName()], customStyleTheme[shape.getThemeFieldName()] || {}));
+};
+
+var getShapeForNode = function getShapeForNode(node) {
     switch (node.type) {
         case _constants.TOKEN_TYPES.FUNCTION:
-            shape = _VerticalEdgedRectangle2.default;
-            break;
+            return _VerticalEdgedRectangle2.default;
 
         case _constants.TOKEN_TYPES.LOOP:
-            shape = _LoopRhombus2.default;
-            break;
+            return _LoopRhombus2.default;
 
         case _constants.TOKEN_TYPES.CONDITIONAL:
-            shape = _ConditionRhombus2.default;
-            break;
+            return _ConditionRhombus2.default;
+
+        case _constants.TOKEN_TYPES.RETURN:
+            return _ReturnStatement2.default;
 
         default:
-            shape = _Rectangle2.default;
+            return _Rectangle2.default;
     }
-
-    var DefaultTheme = (0, _StyleTheme.getTheme)();
-    return shape(node, position, _extends({}, DefaultTheme[shape.getThemeFieldName()], customStyleTheme[shape.getThemeFieldName()] || {}));
 };
 
 var createRootCircle = exports.createRootCircle = function createRootCircle(node) {
@@ -16829,6 +16837,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _svgPrimitives = __webpack_require__(457);
 
+var _composition = __webpack_require__(459);
+
 var _BaseShape = __webpack_require__(454);
 
 var ENTITY_FIELD_NAME = 'VerticalEdgedRectangle';
@@ -16874,7 +16884,7 @@ var VerticalEdgedRectangle = exports.VerticalEdgedRectangle = function VerticalE
 
     state = _extends({}, state, (0, _BaseShape.setupInitialProperties)(state));
 
-    return Object.assign({ state: state }, (0, _BaseShape.setupInitialSelectors)(state), (0, _BaseShape.setupBasicBehaviour)(state), setupVerticalEdgedRectangleBehavior(state));
+    return (0, _composition.assignState)(state, [_BaseShape.setupInitialSelectors, _BaseShape.setupBasicBehaviour, setupVerticalEdgedRectangleBehavior]);
 };
 
 exports.default = (0, _BaseShape.delegateInit)(VerticalEdgedRectangle, ENTITY_FIELD_NAME);
@@ -17037,6 +17047,8 @@ exports.Rectangle = undefined;
 
 var _svgPrimitives = __webpack_require__(457);
 
+var _composition = __webpack_require__(459);
+
 var _BaseShape = __webpack_require__(454);
 
 var ENTITY_FIELD_NAME = 'Rectangle';
@@ -17061,7 +17073,7 @@ var setupRectangleBehavior = function setupRectangleBehavior(state) {
 var Rectangle = exports.Rectangle = function Rectangle(initialState) {
     var state = (0, _BaseShape.setupCompleteState)(initialState);
 
-    return Object.assign({ state: state }, (0, _BaseShape.setupInitialSelectors)(state), (0, _BaseShape.setupBasicBehaviour)(state), setupRectangleBehavior(state));
+    return (0, _composition.assignState)(state, [_BaseShape.setupInitialSelectors, _BaseShape.setupBasicBehaviour, setupRectangleBehavior]);
 };
 
 exports.default = (0, _BaseShape.delegateInit)(Rectangle, ENTITY_FIELD_NAME);
@@ -17083,6 +17095,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 var _constants = __webpack_require__(29);
 
 var _svgPrimitives = __webpack_require__(457);
+
+var _composition = __webpack_require__(459);
 
 var _BaseShape = __webpack_require__(454);
 
@@ -17207,7 +17221,7 @@ var ConditionRhombus = exports.ConditionRhombus = function ConditionRhombus(init
 
     state = _extends({}, state, setupInitialProperties(state));
 
-    return Object.assign({ state: state }, (0, _BaseShape.setupInitialSelectors)(state), setupAdditionalSelectors(state), (0, _BaseShape.setupBasicBehaviour)(state), setupConditionRhombusBehavior(state));
+    return (0, _composition.assignState)(state, [_BaseShape.setupInitialSelectors, setupAdditionalSelectors, _BaseShape.setupBasicBehaviour, setupConditionRhombusBehavior]);
 };
 
 exports.default = (0, _BaseShape.delegateInit)(ConditionRhombus, ENTITY_FIELD_NAME);
@@ -17227,6 +17241,8 @@ exports.LoopRhombus = undefined;
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _svgPrimitives = __webpack_require__(457);
+
+var _composition = __webpack_require__(459);
 
 var _BaseShape = __webpack_require__(454);
 
@@ -17320,7 +17336,7 @@ var LoopRhombus = exports.LoopRhombus = function LoopRhombus(initialState) {
 
     state = _extends({}, state, setupInitialProperties(state));
 
-    return Object.assign({ state: state }, (0, _BaseShape.setupInitialSelectors)(state), setupAdditionalSelectors(state), (0, _BaseShape.setupBasicBehaviour)(state), setupLoopRhombusBehavior(state));
+    return (0, _composition.assignState)(state, [_BaseShape.setupInitialSelectors, setupAdditionalSelectors, _BaseShape.setupBasicBehaviour, setupLoopRhombusBehavior]);
 };
 
 exports.default = (0, _BaseShape.delegateInit)(LoopRhombus, ENTITY_FIELD_NAME);
@@ -17340,6 +17356,8 @@ exports.Circle = undefined;
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _svgPrimitives = __webpack_require__(457);
+
+var _composition = __webpack_require__(459);
 
 var _BaseShape = __webpack_require__(454);
 
@@ -17383,7 +17401,7 @@ var Circle = exports.Circle = function Circle(initialState) {
 
     state = _extends({}, state, setupInitialProperties(state));
 
-    return Object.assign({ state: state }, (0, _BaseShape.setupInitialSelectors)(state), (0, _BaseShape.setupBasicBehaviour)(state), setupCircleBehavior(state));
+    return (0, _composition.assignState)(state, [_BaseShape.setupInitialSelectors, _BaseShape.setupBasicBehaviour, setupCircleBehavior]);
 };
 
 exports.default = (0, _BaseShape.delegateInit)(Circle, ENTITY_FIELD_NAME);
@@ -37013,7 +37031,20 @@ var Themes = exports.Themes = {
             childOffset: {
                 x: 20, y: 50
             }
-        }
+        },
+
+        ReturnStatement: _extends({}, DefaultShape, {
+            roundBorder: 3,
+            fillColor: '#b39ddb',
+            arrow: {
+                handlerLength: 5,
+                sizeX: 16,
+                sizeY: 22,
+                fillColor: '#b39ddb',
+                strokeColor: DefaultShape.strokeColor,
+                strokeWidth: DefaultShape.strokeWidth
+            }
+        })
     }
 };
 
@@ -37382,7 +37413,7 @@ var getClosedPath = exports.getClosedPath = function getClosedPath(points, theme
         return 'L' + point.x + ', ' + point.y;
     }).join(' ');
 
-    return '<path d="' + pointStr + ' Z" fill="' + theme.fillColor + '"/>';
+    return '<path d="' + pointStr + ' Z" \n        ' + (theme.fillColor ? 'fill="' + theme.fillColor + '"' : '') + '\n        ' + (theme.strokeColor ? 'stroke="' + theme.strokeColor + '"' : '') + '\n        />';
 };
 
 var getCurvedPath = exports.getCurvedPath = function getCurvedPath(points, theme) {
@@ -37395,7 +37426,7 @@ var getCurvedPath = exports.getCurvedPath = function getCurvedPath(points, theme
             return getLinePointStr(point, previousPoint, theme.curveTurnRadius);
         }
 
-        return 'Q' + previousPoint.x + ' ' + previousPoint.y + ' \n                ' + getArcEndPointStr(point, previousPoint, theme.curveTurnRadius) + ' \n                ' + getLinePointStr(point, previousPoint, 2 * theme.curveTurnRadius);
+        return 'Q' + previousPoint.x + ' ' + previousPoint.y + '\n                ' + getArcEndPointStr(point, previousPoint, theme.curveTurnRadius) + '\n                ' + getLinePointStr(point, previousPoint, 2 * theme.curveTurnRadius);
     }).join(' ');
 
     return '<path d="' + pointStr + '"\n        style="fill:none;stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />';
@@ -37567,6 +37598,104 @@ var getBasicEntryConfig = function getBasicEntryConfig(item, path) {
 
     return config;
 };
+
+/***/ }),
+/* 459 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var assignState = exports.assignState = function assignState(state, extensionsList) {
+    return Object.assign.apply(null, [{ state: state }].concat(_toConsumableArray(extensionsList.map(function (fn) {
+        return fn(state);
+    }))));
+};
+
+/***/ }),
+/* 460 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.ReturnStatement = undefined;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _svgPrimitives = __webpack_require__(457);
+
+var _composition = __webpack_require__(459);
+
+var _geometry = __webpack_require__(178);
+
+var _BaseShape = __webpack_require__(454);
+
+var ENTITY_FIELD_NAME = 'ReturnStatement';
+
+var setupReturnStatementBehaviour = function setupReturnStatementBehaviour(state) {
+    return {
+        print: function print() {
+            var theme = state.theme,
+                arrowTheme = theme.arrow;
+
+            var _state$position = state.position,
+                x = _state$position.x,
+                y = _state$position.y,
+                h = state.dimensions.h,
+                w = state.dimensions.w - arrowTheme.handlerLength - arrowTheme.sizeX,
+                namePosition = { x: x, y: y };
+
+            //TODO: refactor
+
+            var arrowSize = { x: arrowTheme.sizeX, y: arrowTheme.sizeY };
+
+            var arrow = (0, _svgPrimitives.getClosedPath)((0, _geometry.addOffsetToPoints)([{ x: 0, y: 0 }, { x: arrowSize.x, y: arrowSize.y / 2 }, { x: 0, y: arrowSize.y }], { x: x + w + arrowTheme.handlerLength, y: y + h / 2 - arrowSize.y / 2 }), arrowTheme);
+
+            return '\n            <g>\n                ' + (0, _svgPrimitives.getRoundedRectangle)(x, y, w, h, theme) + '\n                \n                ' + (0, _svgPrimitives.getLine)(x + w, y + h / 2 - arrowTheme.handlerLength, x + w + arrowTheme.handlerLength, y + h / 2 - arrowTheme.handlerLength, arrowTheme) + '\n                \n                ' + (0, _svgPrimitives.getLine)(x + w, y + h / 2 + arrowTheme.handlerLength, x + w + arrowTheme.handlerLength, y + h / 2 + arrowTheme.handlerLength, arrowTheme) + '\n\n                ' + arrow + '\n                             \n                ' + this.printName(namePosition) + '\n            </g>';
+        }
+    };
+};
+
+var calculateWidth = function calculateWidth(state) {
+    var theme = state.theme,
+        arrowTheme = theme.arrow;
+
+    return 2 * theme.horizontalPadding + arrowTheme.handlerLength + arrowTheme.sizeX + (0, _BaseShape.calculateNameBasedWidth)(state);
+};
+
+var calculateDimensions = function calculateDimensions(state) {
+    return {
+        w: calculateWidth(state),
+        h: (0, _BaseShape.calculateHeight)(state)
+    };
+};
+
+var extractBasicState = function extractBasicState(state) {
+    return _extends({}, state, {
+        position: (0, _BaseShape.calculatePosition)(state),
+        dimensions: calculateDimensions(state)
+    });
+};
+
+var ReturnStatement = exports.ReturnStatement = function ReturnStatement(initialState) {
+    var state = extractBasicState(initialState);
+
+    state = _extends({}, state, (0, _BaseShape.setupInitialProperties)(state));
+
+    return (0, _composition.assignState)(state, [_BaseShape.setupInitialSelectors, _BaseShape.setupBasicBehaviour, setupReturnStatementBehaviour]);
+};
+
+exports.default = (0, _BaseShape.delegateInit)(ReturnStatement, ENTITY_FIELD_NAME);
 
 /***/ })
 /******/ ]);
