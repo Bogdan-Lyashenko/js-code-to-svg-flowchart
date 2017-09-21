@@ -145,7 +145,7 @@ class Man {
 }
 `;
 
-const simpleStr = `
+const simpleStrReturn = `
   function test(b) {
     var a = 12;
     
@@ -154,6 +154,13 @@ const simpleStr = `
     }
     
     return a -1;
+  }
+`;
+
+const simpleStr = `
+function test(b) {
+    var a = 12;
+    
   }
 `;
 
@@ -168,10 +175,12 @@ const flowTreeBuilder = createFlowTreeBuilder();
 
 const flowTree = flowTreeBuilder.build(code);
 
-const svgRender = createSVGRender({Circle: {strokeColor: 'black'}});
-
+const svgRender = createSVGRender({Circle: {strokeColor: 'red'}});
 
 svgRender.buildShapesTree(flowTree);
+
+svgRender.blur((shape)=> shape.getName().indexOf('traverseDocRec(')!==-1 && shape.getNodeType() !== 'Function');
+
 document.getElementById('svgImage').innerHTML = svgRender.render();
 
 var t1 = performance.now();

@@ -14,9 +14,10 @@
     "webpack": "3.1.0"
   },
   "keywords": [
+    "svg",
+    "code analyzeing",
     "webpack",
     "es6",
-    "starter",
     "library",
     "universal",
     "umd",
@@ -29,6 +30,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-traverse": "^6.25.0",
     "babel-types": "^6.25.0",
-    "babylon": "^6.17.4"
+    "babylon": "^6.17.4",
+    "deepmerge": "^1.5.1"
   }
 }

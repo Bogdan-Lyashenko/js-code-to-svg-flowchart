@@ -1,7 +1,33 @@
+const SvgStyleFieldsMap = [{
+        from: 'fillColor', to: 'fill'
+    },{
+        from: 'strokeColor', to: 'stroke'
+    },{
+        from: 'strokeWidth', to: 'stroke-width'
+    },{
+        from: 'fillOpacity', to: 'fill-opacity'
+    },{
+        from: 'strokeOpacity', to: 'stroke-opacity'
+    }];
+
+export const extractStylePropsFromTheme = (theme) => {
+    return SvgStyleFieldsMap
+        .map((item)=> theme[item.from] ? `${item.to}:${theme[item.from]}` : null)
+        .filter(i => i)
+        .join('; ');
+};
+
+export const extractStyleAttrsFromTheme = (theme) => {
+    return SvgStyleFieldsMap
+        .map((item)=> theme[item.from] ? `${item.to}="${theme[item.from]}"` : null)
+        .filter(i => i)
+        .join(' ');
+};
+
 export const getRhombus = (x, y, w, h, theme) => {
     return `
         <polygon points="${x},${y + h/2} ${x + w / 2},${y} ${x + w},${y + h/2} ${x + w/2},${y + h}"
-            style="fill:${theme.fillColor};stroke:${theme.strokeColor};stroke-width:${theme.strokeWidth}" />`
+            style="${extractStylePropsFromTheme(theme)}" />`
 };
 
 export const getRoundedRectangle = (x, y, w, h, theme) => {
@@ -9,26 +35,26 @@ export const getRoundedRectangle = (x, y, w, h, theme) => {
         <rect x="${x}" y="${y}"
             width="${w}" height=${h}
             rx="${theme.roundBorder}" ry="${theme.roundBorder}"
-            style="fill:${theme.fillColor}; stroke-width:${theme.strokeWidth}; stroke:${theme.strokeColor}" />`;
+            style="${extractStylePropsFromTheme(theme)}" />`;
 };
 
 export const getRectangle = (x, y, w, h, theme) => {
     return `
         <rect x="${x}" y="${y}"
             width="${w}" height=${h}
-            style="fill:${theme.fillColor}; stroke-width:${theme.strokeWidth}; stroke:${theme.strokeColor}" />`;
+            style="${extractStylePropsFromTheme(theme)}" />`;
 };
 
 export const getLine = (x1, y1, x2, y2, theme) => {
     return `
          <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"
-                style="stroke:${theme.strokeColor};stroke-width:${theme.strokeWidth}" />`;
+                style="${extractStylePropsFromTheme(theme)}" />`;
 };
 
 export const getCircle = (x, y, r, theme) => {
     return `
        <circle cx="${x}" cy="${y}" r="${r}"
-        style="fill:${theme.fillColor};stroke:${theme.strokeColor};stroke-width:${theme.strokeWidth}" />`;
+        style="${extractStylePropsFromTheme(theme)}" />`;
 };
 
 export const getText = (x, y, theme, text) => {
@@ -45,8 +71,7 @@ export const getClosedPath = (points, theme) => {
     }).join(' ');
 
     return `<path d="${pointStr} Z" 
-        ${theme.fillColor ? 'fill="'+ theme.fillColor + '"' : ''}
-        ${theme.strokeColor ? 'stroke="'+ theme.strokeColor + '"' : ''}
+        ${extractStyleAttrsFromTheme(theme)}
         />`
 };
 
@@ -66,7 +91,7 @@ export const getCurvedPath = (points, theme) => {
     }).join(' ');
 
     return `<path d="${pointStr}"
-        style="fill:none;stroke:${theme.strokeColor};stroke-width:${theme.strokeWidth}" />`;
+        style="fill:none; ${extractStylePropsFromTheme(theme)}" />`;
 };
 
 const getLinePointStr = (point, previousPoint, radius) => {

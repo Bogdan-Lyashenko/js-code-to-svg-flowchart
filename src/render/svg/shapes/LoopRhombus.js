@@ -38,10 +38,18 @@ const setupInitialProperties = (state) => ({
 const setupAdditionalSelectors = (state) => ({
     getMidPoint() {
         return state.midPoint;
+    },
+
+    getLoopedConnectionArrow() {
+        return state.loopedConnectionArrow;
     }
 });
 
 const setupLoopRhombusBehavior = (state) => ({
+    assignLoopedConnectionArrow(loopedConnectionArrow) {
+        state.loopedConnectionArrow = loopedConnectionArrow;
+    },
+
     printConditionMarks() {
         const theme = state.theme;
         const {x, y} = state.position,

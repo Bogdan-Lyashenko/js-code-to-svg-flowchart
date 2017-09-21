@@ -1,54 +1,18 @@
-import {TOKEN_TYPES, ARROW_TYPE} from '../../shared/constants';
-import {getTheme} from './appearance/StyleTheme';
-
-import VerticalEdgedRectangle from './shapes/VerticalEdgedRectangle';
-import Rectangle from './shapes/Rectangle';
-import ConditionRhombus from './shapes/ConditionRhombus';
-import LoopRhombus from './shapes/LoopRhombus';
+import {ARROW_TYPE} from '../../shared/constants';
+import {getShapeForNode} from './shapesDefinitionsMap';
 import Circle from './shapes/Circle';
-import ReturnStatement from './shapes/ReturnStatement';
+import ConnectionArrow, {getFieldName as getConnectionArrowFieldName} from './ConnectionArrow';
 
-import ConnectionArrow from './ConnectionArrow';
-
-export const createShapeForNode = (node, position, customStyleTheme = {}) => {
+export const createShapeForNode = (node, position, styleTheme) => {
     const shape = getShapeForNode(node),
-        DefaultTheme = getTheme();
+        shapeStyle = styleTheme[shape.getThemeFieldName()];
 
-    return shape(node, position, { //TODO: refactor duplication
-        ...DefaultTheme[shape.getThemeFieldName()],
-        ...(customStyleTheme[shape.getThemeFieldName()] || {})
-    });
+    return shape(node, position, shapeStyle);
 };
 
-const getShapeForNode = (node) => {
-    switch (node.type) {
-        case TOKEN_TYPES.FUNCTION:
-            return VerticalEdgedRectangle;
-
-        case TOKEN_TYPES.LOOP:
-            return LoopRhombus;
-
-        case TOKEN_TYPES.CONDITIONAL:
-            return ConditionRhombus;
-
-        case TOKEN_TYPES.RETURN:
-            return ReturnStatement;
-
-        default:
-            return Rectangle;
-    }
-};
-
-export const createRootCircle = (node, customStyleTheme = {}) => {
-    const DefaultTheme = getTheme();
-    const circleTheme = {
-        ...DefaultTheme[Circle.getThemeFieldName()],//TODO: refactor duplication
-        ...(customStyleTheme[Circle.getThemeFieldName()] || {})
-    };
-    const { center, childOffset } = {
-        ...(customStyleTheme.RootStartPoint || {}),
-        ...DefaultTheme.RootStartPoint
-    };
+export const createRootCircle = (node, styleTheme) => {
+    const circleTheme = styleTheme[Circle.getThemeFieldName()];
+    const { center, childOffset } = { ...styleTheme.RootStartPoint };
 
     const root = Circle(node, center, circleTheme);
     root.setChildOffsetPoint(childOffset);
@@ -56,18 +20,14 @@ export const createRootCircle = (node, customStyleTheme = {}) => {
     return root;
 };
 
-export const createConnectionArrow = (config, customStyleTheme = {}) => {
-    const DefaultTheme = getTheme();
-    return ConnectionArrow(getConnectionConfig(config), {
-        ...DefaultTheme.ConnectionArrow,//TODO:  refactor duplication
-        ...(customStyleTheme.ConnectionArrow || {})
-    });
+export const createConnectionArrow = (config, styleTheme) => {
+    const connectionArrowStyle = styleTheme[getConnectionArrowFieldName()],
+        arrowConfig = getConnectionConfig(config, connectionArrowStyle);
+
+    return ConnectionArrow(arrowConfig, connectionArrowStyle);
 };
 
-export const getConnectionConfig = ({startPoint, endPoint, boundaryPoint, arrowType}) => {
-    const DefaultTheme = getTheme();//TODO: refactor redundant calls for building Theme
-    const theme = DefaultTheme.ConnectionArrow;
-
+export const getConnectionConfig = ({startPoint, endPoint, boundaryPoint, arrowType}, theme) => {
     const config = {
         linePoints: [],
         arrowPoint: {x: endPoint.x, y: endPoint.y},

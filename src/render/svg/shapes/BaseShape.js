@@ -1,7 +1,8 @@
+import {mergeObjectStructures} from '../../../shared/utils/composition';
 import {generateId, splitNameString, getMaxStringLengthFromList} from '../../../shared/utils/string';
 import {flatTree} from '../../../shared/utils/flatten';
 import {calculateShapesBoundaries} from '../../../shared/utils/geometry';
-import {MAX_NAME_STR_LENGTH, getNameSplitterTokensIterator} from '../appearance/TextContent';
+import {MAX_NAME_STR_LENGTH, getNameSplitterTokensIterator} from '../appearance/TextContentConfigurator';
 
 export const delegateInit = (shape, themeFieldName) => {
     function init(node, position, theme) {
@@ -62,6 +63,10 @@ export const setupInitialSelectors = (state) => ({
         return state.backPoint;
     },
 
+    getAssignedConnectionArrow() {
+        return state.connectionArrow;
+    },
+
     getChildOffsetPoint() {
         return state.childOffsetPoint;
     },
@@ -108,37 +113,29 @@ export const setupInitialSelectors = (state) => ({
 
     getToPoint() {
         return state.toPoint;
+    },
+
+    getShapeType() {
+        return state.type;
     }
 });
 
 
-export const setupPrintName = ({position, theme, nameParts}) => ({
+export const setupPrintName = (state) => ({
     //TODO: fix spacing for multi line name
     printName(newPosition) {
+        const {position, theme, nameParts} = state;
         const {x, y} = newPosition ? newPosition : position;
         const name = nameParts.map((part, i) =>
             `<tspan x="${x + theme.horizontalPadding}" y="${y + 2*theme.verticalPadding*(i+1)}">${part}</tspan>`
         ).join('');
 
+
+        //TODO: move to svg primitives
         return `<text x="${x + theme.horizontalPadding}" y="${y + 2*theme.verticalPadding}"
                 font-family="${theme.fontFamily}" font-size="${theme.fontSize}" fill="${theme.textColor}">
                 ${name}
             </text>`;
-    }
-});
-
-export const setupConnectChild = (state) => ({
-    addChild(child) {
-        state.body.push(child);
-    },
-
-    setParent(parent) {
-        state.parent = parent;
-    },
-
-    connectChild(child) {
-        this.addChild(child);
-        child.setParent(this);
     }
 });
 
@@ -162,11 +159,33 @@ export const setupGetChildBoundaries = (state) => ({
     }
 });
 
+export const setupStateModifiers = (state) => ({
+    addChild(child) {
+        state.body.push(child);
+    },
+
+    setParent(parent) {
+        state.parent = parent;
+    },
+
+    connectChild(child) {
+        this.addChild(child);
+        child.setParent(this);
+    },
+
+    updateTheme(newTheme) {
+        state.theme = mergeObjectStructures(state.theme, newTheme);
+    },
+    assignConnectionArrow(connectionArrow) {
+        state.connectionArrow = connectionArrow;
+    }
+});
+
 export const setupBasicBehaviour = (state) => Object.assign(
     {},
     setupPrintName(state),
-    setupConnectChild(state),
-    setupGetChildBoundaries(state)
+    setupGetChildBoundaries(state),
+    setupStateModifiers(state)
 );
 
 export const setupCompleteState = (initialState) => {

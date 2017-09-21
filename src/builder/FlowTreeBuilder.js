@@ -49,14 +49,16 @@ export const createFlowTreeBuilder = ({astParserConfig = {}, astVisitorConfig = 
     };
 
     return {
-        setAbstractionLevel: level => {
+        setAbstractionLevel(level) {
             options.astVisitorConfig.definitionsMap = rebuildConfigForAbstractionLevel(level)
         },
 
-        setIgnoreFilter: (fn) => {
+        setIgnoreFilter(fn) {
             options.astVisitorConfig.globalIgnore = fn;
         },
 
-        build: code => buildFlowTree(code, options)
+        build(code) {
+            return buildFlowTree(code, options);
+        }
     };
 };

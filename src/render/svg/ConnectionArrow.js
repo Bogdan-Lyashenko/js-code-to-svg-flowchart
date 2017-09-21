@@ -1,28 +1,39 @@
+import {assignState, mergeObjectStructures} from '../../shared/utils/composition';
 import {getCurvedPath, getClosedPath} from '../../shared/utils/svgPrimitives';
 import {addOffsetToPoints} from '../../shared/utils/geometry';
 
 import {ARROW_TYPE} from '../../shared/constants';
 
-class ConnectionArrow {
-    constructor(config, theme) {
-        this.theme = theme;
-        //TODO: move properties to state object
+const ENTITY_FIELD_NAME = 'ConnectionArrow';
 
-        this.config = config;
+export const getFieldName = () => {
+    return ENTITY_FIELD_NAME;
+};
+
+const setupSelectors = (state) => ({
+    getFieldName
+});
+
+const setupUpdateBehaviour = (state) => ({
+    updateTheme(newTheme) {
+        state.theme = mergeObjectStructures(state.theme, newTheme);
     }
+});
 
+const setupPrintBehaviour = (state) => ({
     printLine(points) {
-        return getCurvedPath(points, this.theme.line);
-    }
+        return getCurvedPath(points, state.theme.line);
+    },
 
     printArrow(point, arrowPoints) {
-        return getClosedPath(addOffsetToPoints(arrowPoints, point), this.theme.arrow);
-    }
+        return getClosedPath(addOffsetToPoints(arrowPoints, point), state.theme.arrow);
+    },
 
     printArrowByType(type, {x,y}) {
-        const arrowSize = this.theme.arrow.size;
+        const arrowSize = state.theme.arrow.size;
         let point;
 
+        //TODO: move to svgPrimitives
         switch (type) {
             case ARROW_TYPE.RIGHT:
                 point = {x: x - arrowSize.x, y: y - arrowSize.y/2};
@@ -57,10 +68,10 @@ class ConnectionArrow {
             default:
                 return '';
         }
-    }
+    },
 
     print() {
-        const {linePoints, arrowPoint, arrowType} = this.config;
+        const {linePoints, arrowPoint, arrowType} = state.config;
 
         return `
             <g>
@@ -68,6 +79,12 @@ class ConnectionArrow {
                ${this.printArrowByType(arrowType, arrowPoint)}
             </g>`
     }
-}
+});
 
-export default (config, theme) => new ConnectionArrow(config, theme);
+export const ConnectionArrow = (state) => assignState(state, [
+    setupUpdateBehaviour,
+    setupPrintBehaviour,
+    setupSelectors
+]);
+
+export default (config, theme) => ConnectionArrow({config, theme});

@@ -1,144 +1,71 @@
-import {complexTraversal} from '../../shared/utils/traversalWithTreeLevelsPointer';
-import {SVGBase} from './SVGBase';
-import {createShapeForNode, createRootCircle, createConnectionArrow} from './shapesFactory';
-
-import {TOKEN_TYPES, TOKEN_KEYS, ARROW_TYPE} from '../../shared/constants';
-
-export const buildSVGObjectsTree = (flowTree, customStyleTheme) => {
-    const svg = SVGBase();
-
-    const shapeStructures = buildShapeStructures(flowTree, customStyleTheme);
-    const connections = buildConnections(shapeStructures.root, customStyleTheme);
-
-    svg.add(shapeStructures.list).add(shapeStructures.root);
-    svg.add(connections);
-
-    return svg;
-};
-
-export const buildShapeStructures = (flowTree, customStyleTheme) => {
-    const root = createRootCircle(flowTree, customStyleTheme),
-        position = {...root.getChildOffsetPoint()},
-        shapesList = [];
-
-    complexTraversal(flowTree, root, (parentNode, parentShape) => {
-        position.x += parentShape.getChildOffsetPoint().x;
-    }, (node, parentShape) => {
-
-        if (parentShape.getNodeType() === TOKEN_TYPES.CONDITIONAL &&
-            node.key === TOKEN_KEYS.ALTERNATE &&
-            !parentShape.checkIfChildExist(TOKEN_KEYS.ALTERNATE)) {
-
-            const alternatePoint = parentShape.getAlternativeBranchChildOffsetPoint();
-            position.x = alternatePoint.x + parentShape.getMargin();
-            position.y = alternatePoint.y;
-        }
-
-        const shape = createShapeForNode(node, {x: position.x, y: position.y}, customStyleTheme);
-
-        position.x = shape.getPosition().x;
-        position.y = shape.getPosition().y;
-
-        shapesList.push(shape);
-        parentShape.connectChild(shape);
-        position.y += shape.getChildOffsetPoint().y;
-
-        return shape;
-    }, (parentNode, parentShape) => {
-        if (parentNode.type === TOKEN_TYPES.CONDITIONAL) {
-            position.y = parentShape.getChildBoundaries().max.y + parentShape.getMargin();
-        }
-
-        position.x = parentShape.getPosition().x;
-    });
-
-    return {
-        list: shapesList,
-        root: root
-    };
-};
-
-export const buildConnections = (shapesTree, customStyleTheme) => {
-    const connections = [],
-        pushArrow = (config) => { connections.push(createConnectionArrow(config, customStyleTheme)); };
-
-    let latestShape = null,
-        startShape = null,
-        latestParentShape = null;
-
-    complexTraversal(shapesTree, shapesTree, (parentShape) => {
-
-    }, (shape, parentShape) => {
-        startShape = parentShape;
-        latestShape = shape;
-
-        //TODO: add const startShape = ; because it's not always parent (like `continue` in loop actually change flow)
-
-
-        const config = {
-            endPoint: shape.getToPoint(),
-            arrowType: ARROW_TYPE.RIGHT
-        };
-
-        if (shape.getNodeKey() === TOKEN_KEYS.ALTERNATE) {
-            const boundaryPoint = parentShape.getAlternativeBranchChildOffsetPoint();
-
-            config.startPoint = parentShape.getAlternateFromPoint();
-            config.boundaryPoint = {x: boundaryPoint.x};
-        } else {
-            config.startPoint = startShape.getFromPoint();
-        }
-
-        pushArrow(config);
-
-        return shape;
-    }, (parentShape) => {
-        if (parentShape.getNodeType() !== TOKEN_TYPES.LOOP) return;
-
-        const {max} = parentShape.getChildBoundaries();
-
-        pushArrow({
-            startPoint: latestShape.getBackPoint(),
-            endPoint: parentShape.getMidPoint(),
-            boundaryPoint: {x: max.x},
-            arrowType: ARROW_TYPE.DOWN
-        });
-    }, {
-        getBody: node => node.getBody()
-    });
-
-    return connections;
-};
-
-export const render = (tree) => {
-    let svgString = ``;
-
-    [].concat(tree).forEach((node)=> {
-        if (node.children && node.children.length) {
-            svgString += node.print(render(node.children));
-        } else {
-            svgString += node.print();
-        }
-    });
-
-    return svgString;
-};
+import {getDefaultTheme, getBlurredTheme, getBlackAndWhiteTheme, applyStyleToTheme} from './appearance/StyleThemeFactory';
+import {buildSVGObjectsTree} from './SVGObjectsBuilder';
 
 export const createSVGRender = (customStyleTheme = {}) => {
-    let svgObjectsTree = [],
-        theme = {...customStyleTheme};
+    let svgObjectsTree = null,
+        theme = applyStyleToTheme(getDefaultTheme(), customStyleTheme);
+
+    const updateShapeTheme = (shape, shapeStyles, connectionArrowStyles) => {
+        if (shapeStyles) {
+            shape.updateTheme(shapeStyles);
+        }
+
+        if (connectionArrowStyles) {
+            shape.getAssignedConnectionArrow().updateTheme(connectionArrowStyles)
+        }
+    };
 
     return {
-        buildShapesTree: (flowTree) => {
+        buildShapesTree(flowTree) {
             svgObjectsTree = buildSVGObjectsTree(flowTree, theme);
         },
 
-        setStyles: () => {},
+        applyTheme(newThemeStyles) {
+            theme = applyStyleToTheme(theme, newThemeStyles);
+        },
 
-        focus: () => {},
+        applyDefaultTheme() {
+            this.applyTheme(getDefaultTheme());
+        },
+        applyBlackAndWhiteTheme() {
+            this.applyTheme(getBlackAndWhiteTheme());
+        },
+        applyBlurredTheme() {
+            this.applyTheme(getBlurredTheme());
+        },
 
-        blur: () => {},
+        findShape(fnTest, fnOnFind, fnOnMismatch) {
+            svgObjectsTree.getShapes().forEach((shape) => {
+                return fnTest(shape) ? fnOnFind(shape) : fnOnMismatch && fnOnMismatch(shape);
+            });
+        },
 
-        render: () => render(svgObjectsTree)
+        applyShapeStyles(fn, shapeStyles, connectionArrowStyles) {
+            this.findShape(fn, (shape) => {
+                updateShapeTheme(shape, shapeStyles, connectionArrowStyles);
+            });
+        },
+
+        focus(fn) {
+            this.blur((shape)=>!fn(shape));
+        },
+
+        blur(fn) {
+            const blurredTheme = getBlurredTheme();
+
+            this.findShape(fn, (shape) => {
+                const connectionArrow = shape.getAssignedConnectionArrow();
+
+                updateShapeTheme(
+                    shape,
+                    blurredTheme[shape.getShapeType()],
+                    connectionArrow ? blurredTheme[connectionArrow.getFieldName()] : null
+                );
+            });
+        },
+
+        render() {
+            return svgObjectsTree && svgObjectsTree.print()
+        }
     }
 };

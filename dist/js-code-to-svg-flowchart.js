@@ -16395,7 +16395,9 @@ var simpleStrModules = '\nimport a, {b,c} from \'lib-bob\';\nimport d from \'./l
 
 var simpleStrClass = '\nclass Animal extends Zero {\n    constructor(b) {\n        this.s = 12;\n    }\n    \n    getA(){\n        return this.a;\n    }\n    \n    setName(name) {\n        this.name = name;\n    }\n}\n\nclass Man {\n    constructor(n) {\n        this.name = n;\n    }\n    \n    sayName() {\n        return this.name\n    }\n}\n';
 
-var simpleStr = '\n  function test(b) {\n    var a = 12;\n    \n    if (b > 11) {\n        return 11;\n    }\n    \n    return a -1;\n  }\n';
+var simpleStrReturn = '\n  function test(b) {\n    var a = 12;\n    \n    if (b > 11) {\n        return 11;\n    }\n    \n    return a -1;\n  }\n';
+
+var simpleStr = '\nfunction test(b) {\n    var a = 12;\n    \n  }\n';
 
 var t0 = performance.now();
 
@@ -16408,9 +16410,14 @@ var flowTreeBuilder = (0, _FlowTreeBuilder.createFlowTreeBuilder)();
 
 var flowTree = flowTreeBuilder.build(code);
 
-var svgRender = (0, _SVGRender.createSVGRender)({ Circle: { strokeColor: 'black' } });
+var svgRender = (0, _SVGRender.createSVGRender)({ Circle: { strokeColor: 'red' } });
 
 svgRender.buildShapesTree(flowTree);
+
+svgRender.blur(function (shape) {
+    return shape.getName().indexOf('traverseDocRec(') !== -1 && shape.getNodeType() !== 'Function';
+});
+
 document.getElementById('svgImage').innerHTML = svgRender.render();
 
 var t1 = performance.now();
@@ -16432,159 +16439,70 @@ module.exports = exports['default'];
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.createSVGRender = exports.render = exports.buildConnections = exports.buildShapeStructures = exports.buildSVGObjectsTree = undefined;
+exports.createSVGRender = undefined;
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _StyleThemeFactory = __webpack_require__(463);
 
-var _traversalWithTreeLevelsPointer = __webpack_require__(170);
+var _SVGObjectsBuilder = __webpack_require__(461);
 
-var _SVGBase = __webpack_require__(172);
-
-var _shapesFactory = __webpack_require__(173);
-
-var _constants = __webpack_require__(29);
-
-var buildSVGObjectsTree = exports.buildSVGObjectsTree = function buildSVGObjectsTree(flowTree, customStyleTheme) {
-    var svg = (0, _SVGBase.SVGBase)();
-
-    var shapeStructures = buildShapeStructures(flowTree, customStyleTheme);
-    var connections = buildConnections(shapeStructures.root, customStyleTheme);
-
-    svg.add(shapeStructures.list).add(shapeStructures.root);
-    svg.add(connections);
-
-    return svg;
-};
-
-var buildShapeStructures = exports.buildShapeStructures = function buildShapeStructures(flowTree, customStyleTheme) {
-    var root = (0, _shapesFactory.createRootCircle)(flowTree, customStyleTheme),
-        position = _extends({}, root.getChildOffsetPoint()),
-        shapesList = [];
-
-    (0, _traversalWithTreeLevelsPointer.complexTraversal)(flowTree, root, function (parentNode, parentShape) {
-        position.x += parentShape.getChildOffsetPoint().x;
-    }, function (node, parentShape) {
-
-        if (parentShape.getNodeType() === _constants.TOKEN_TYPES.CONDITIONAL && node.key === _constants.TOKEN_KEYS.ALTERNATE && !parentShape.checkIfChildExist(_constants.TOKEN_KEYS.ALTERNATE)) {
-
-            var alternatePoint = parentShape.getAlternativeBranchChildOffsetPoint();
-            position.x = alternatePoint.x + parentShape.getMargin();
-            position.y = alternatePoint.y;
-        }
-
-        var shape = (0, _shapesFactory.createShapeForNode)(node, { x: position.x, y: position.y }, customStyleTheme);
-
-        position.x = shape.getPosition().x;
-        position.y = shape.getPosition().y;
-
-        shapesList.push(shape);
-        parentShape.connectChild(shape);
-        position.y += shape.getChildOffsetPoint().y;
-
-        return shape;
-    }, function (parentNode, parentShape) {
-        if (parentNode.type === _constants.TOKEN_TYPES.CONDITIONAL) {
-            position.y = parentShape.getChildBoundaries().max.y + parentShape.getMargin();
-        }
-
-        position.x = parentShape.getPosition().x;
-    });
-
-    return {
-        list: shapesList,
-        root: root
-    };
-};
-
-var buildConnections = exports.buildConnections = function buildConnections(shapesTree, customStyleTheme) {
-    var connections = [],
-        pushArrow = function pushArrow(config) {
-        connections.push((0, _shapesFactory.createConnectionArrow)(config, customStyleTheme));
-    };
-
-    var latestShape = null,
-        startShape = null,
-        latestParentShape = null;
-
-    (0, _traversalWithTreeLevelsPointer.complexTraversal)(shapesTree, shapesTree, function (parentShape) {}, function (shape, parentShape) {
-        startShape = parentShape;
-        latestShape = shape;
-
-        //TODO: add const startShape = ; because it's not always parent (like `continue` in loop actually change flow)
-
-
-        var config = {
-            endPoint: shape.getToPoint(),
-            arrowType: _constants.ARROW_TYPE.RIGHT
-        };
-
-        if (shape.getNodeKey() === _constants.TOKEN_KEYS.ALTERNATE) {
-            var boundaryPoint = parentShape.getAlternativeBranchChildOffsetPoint();
-
-            config.startPoint = parentShape.getAlternateFromPoint();
-            config.boundaryPoint = { x: boundaryPoint.x };
-        } else {
-            config.startPoint = startShape.getFromPoint();
-        }
-
-        pushArrow(config);
-
-        return shape;
-    }, function (parentShape) {
-        if (parentShape.getNodeType() !== _constants.TOKEN_TYPES.LOOP) return;
-
-        var _parentShape$getChild = parentShape.getChildBoundaries(),
-            max = _parentShape$getChild.max;
-
-        pushArrow({
-            startPoint: latestShape.getBackPoint(),
-            endPoint: parentShape.getMidPoint(),
-            boundaryPoint: { x: max.x },
-            arrowType: _constants.ARROW_TYPE.DOWN
-        });
-    }, {
-        getBody: function getBody(node) {
-            return node.getBody();
-        }
-    });
-
-    return connections;
-};
-
-var _render = function _render(tree) {
-    var svgString = '';
-
-    [].concat(tree).forEach(function (node) {
-        if (node.children && node.children.length) {
-            svgString += node.print(_render(node.children));
-        } else {
-            svgString += node.print();
-        }
-    });
-
-    return svgString;
-};
-
-exports.render = _render;
 var createSVGRender = exports.createSVGRender = function createSVGRender() {
     var customStyleTheme = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-    var svgObjectsTree = [],
-        theme = _extends({}, customStyleTheme);
+    var svgObjectsTree = null,
+        theme = (0, _StyleThemeFactory.applyStyleToTheme)((0, _StyleThemeFactory.getDefaultTheme)(), customStyleTheme);
+
+    var updateShapeTheme = function updateShapeTheme(shape, shapeStyles, connectionArrowStyles) {
+        if (shapeStyles) {
+            shape.updateTheme(shapeStyles);
+        }
+
+        if (connectionArrowStyles) {
+            shape.getAssignedConnectionArrow().updateTheme(connectionArrowStyles);
+        }
+    };
 
     return {
         buildShapesTree: function buildShapesTree(flowTree) {
-            svgObjectsTree = buildSVGObjectsTree(flowTree, theme);
+            svgObjectsTree = (0, _SVGObjectsBuilder.buildSVGObjectsTree)(flowTree, theme);
         },
+        applyTheme: function applyTheme(newThemeStyles) {
+            theme = (0, _StyleThemeFactory.applyStyleToTheme)(theme, newThemeStyles);
+        },
+        applyDefaultTheme: function applyDefaultTheme() {
+            this.applyTheme((0, _StyleThemeFactory.getDefaultTheme)());
+        },
+        applyBlackAndWhiteTheme: function applyBlackAndWhiteTheme() {
+            this.applyTheme((0, _StyleThemeFactory.getBlackAndWhiteTheme)());
+        },
+        applyBlurredTheme: function applyBlurredTheme() {
+            this.applyTheme((0, _StyleThemeFactory.getBlurredTheme)());
+        },
+        findShape: function findShape(fnTest, fnOnFind, fnOnMismatch) {
+            svgObjectsTree.getShapes().forEach(function (shape) {
+                return fnTest(shape) ? fnOnFind(shape) : fnOnMismatch && fnOnMismatch(shape);
+            });
+        },
+        applyShapeStyles: function applyShapeStyles(fn, shapeStyles, connectionArrowStyles) {
+            this.findShape(fn, function (shape) {
+                updateShapeTheme(shape, shapeStyles, connectionArrowStyles);
+            });
+        },
+        focus: function focus(fn) {
+            this.blur(function (shape) {
+                return !fn(shape);
+            });
+        },
+        blur: function blur(fn) {
+            var blurredTheme = (0, _StyleThemeFactory.getBlurredTheme)();
 
-        setStyles: function setStyles() {},
+            this.findShape(fn, function (shape) {
+                var connectionArrow = shape.getAssignedConnectionArrow();
 
-        focus: function focus() {},
-
-        blur: function blur() {},
-
+                updateShapeTheme(shape, blurredTheme[shape.getShapeType()], connectionArrow ? blurredTheme[connectionArrow.getFieldName()] : null);
+            });
+        },
         render: function render() {
-            return _render(svgObjectsTree);
+            return svgObjectsTree && svgObjectsTree.print();
         }
     };
 };
@@ -16609,7 +16527,7 @@ var complexTraversal = exports.complexTraversal = function complexTraversal(tree
     var levelsPointer = (0, _treeLevelsPointer.setupPointer)();
     var latestShape = root;
 
-    (0, _traversal.traversal)(tree, function (parentNode) {
+    (0, _traversal.levelsTraversal)(tree, function (parentNode) {
         levelsPointer.stepIn(latestShape);
         onStepIn(parentNode, levelsPointer.getCurrent());
     }, function (node) {
@@ -16630,7 +16548,7 @@ var complexTraversal = exports.complexTraversal = function complexTraversal(tree
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-var traversal = exports.traversal = function traversal(tree, stepIn, onNode, stepOut) {
+var levelsTraversal = exports.levelsTraversal = function levelsTraversal(tree, stepIn, onNode, stepOut) {
     var options = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
 
     var getBody = options.getBody || function (node) {
@@ -16642,11 +16560,21 @@ var traversal = exports.traversal = function traversal(tree, stepIn, onNode, ste
         onNode(node);
 
         if (getBody(node)) {
-            traversal(node, stepIn, onNode, stepOut, options);
+            levelsTraversal(node, stepIn, onNode, stepOut, options);
         }
     });
 
     stepOut(tree);
+};
+
+var traversal = exports.traversal = function traversal(tree, fn) {
+    [].concat(tree).forEach(function (node) {
+        if (node.children && node.children.length) {
+            traversal(node.children, fn);
+        } else {
+            fn(node);
+        }
+    });
 };
 
 /***/ }),
@@ -16660,24 +16588,44 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 var SVGBase = exports.SVGBase = function SVGBase() {
-    return {
+    var state = {
         //TODO: add calculation based on children boundaries
         dimensions: {
             h: 3000,
             w: 3000
         },
-        children: [],
-        add: function add(shape) {
-            this.children = this.children.concat(shape);
+        shapes: [],
+        arrowConnections: []
+    };
+
+    return {
+        getShapes: function getShapes() {
+            return state.shapes;
+        },
+        addShapes: function addShapes(shapes) {
+            state.shapes = state.shapes.concat(shapes);
             return this;
         },
-        print: function print(content) {
-            var _dimensions = this.dimensions,
-                w = _dimensions.w,
-                h = _dimensions.h;
+        addArrowConnections: function addArrowConnections(arrowConnections) {
+            state.arrowConnections = state.arrowConnections.concat(arrowConnections);
+            return this;
+        },
+        printChildren: function printChildren() {
+            var svgString = "";
+
+            [].concat(state.shapes, state.arrowConnections).forEach(function (node) {
+                svgString += node.print();
+            });
+
+            return svgString;
+        },
+        print: function print() {
+            var _state$dimensions = state.dimensions,
+                w = _state$dimensions.w,
+                h = _state$dimensions.h;
 
 
-            return "<svg width=\"" + w + "\" height=\"" + h + "\">\n                " + content + "\n            </svg>";
+            return "<svg width=\"" + w + "\" height=\"" + h + "\">\n                " + this.printChildren() + "\n            </svg>";
         }
     };
 };
@@ -16698,31 +16646,11 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _constants = __webpack_require__(29);
 
-var _StyleTheme = __webpack_require__(453);
-
-var _VerticalEdgedRectangle = __webpack_require__(175);
-
-var _VerticalEdgedRectangle2 = _interopRequireDefault(_VerticalEdgedRectangle);
-
-var _Rectangle = __webpack_require__(179);
-
-var _Rectangle2 = _interopRequireDefault(_Rectangle);
-
-var _ConditionRhombus = __webpack_require__(180);
-
-var _ConditionRhombus2 = _interopRequireDefault(_ConditionRhombus);
-
-var _LoopRhombus = __webpack_require__(181);
-
-var _LoopRhombus2 = _interopRequireDefault(_LoopRhombus);
+var _shapesDefinitionsMap = __webpack_require__(462);
 
 var _Circle = __webpack_require__(182);
 
 var _Circle2 = _interopRequireDefault(_Circle);
-
-var _ReturnStatement = __webpack_require__(460);
-
-var _ReturnStatement2 = _interopRequireDefault(_ReturnStatement);
 
 var _ConnectionArrow = __webpack_require__(183);
 
@@ -16730,43 +16658,19 @@ var _ConnectionArrow2 = _interopRequireDefault(_ConnectionArrow);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var createShapeForNode = exports.createShapeForNode = function createShapeForNode(node, position) {
-    var customStyleTheme = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+var createShapeForNode = exports.createShapeForNode = function createShapeForNode(node, position, styleTheme) {
+    var shape = (0, _shapesDefinitionsMap.getShapeForNode)(node),
+        shapeStyle = styleTheme[shape.getThemeFieldName()];
 
-    var shape = getShapeForNode(node),
-        DefaultTheme = (0, _StyleTheme.getTheme)();
-
-    return shape(node, position, _extends({}, DefaultTheme[shape.getThemeFieldName()], customStyleTheme[shape.getThemeFieldName()] || {}));
+    return shape(node, position, shapeStyle);
 };
 
-var getShapeForNode = function getShapeForNode(node) {
-    switch (node.type) {
-        case _constants.TOKEN_TYPES.FUNCTION:
-            return _VerticalEdgedRectangle2.default;
+var createRootCircle = exports.createRootCircle = function createRootCircle(node, styleTheme) {
+    var circleTheme = styleTheme[_Circle2.default.getThemeFieldName()];
 
-        case _constants.TOKEN_TYPES.LOOP:
-            return _LoopRhombus2.default;
-
-        case _constants.TOKEN_TYPES.CONDITIONAL:
-            return _ConditionRhombus2.default;
-
-        case _constants.TOKEN_TYPES.RETURN:
-            return _ReturnStatement2.default;
-
-        default:
-            return _Rectangle2.default;
-    }
-};
-
-var createRootCircle = exports.createRootCircle = function createRootCircle(node) {
-    var customStyleTheme = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-    var DefaultTheme = (0, _StyleTheme.getTheme)();
-    var circleTheme = _extends({}, DefaultTheme[_Circle2.default.getThemeFieldName()], customStyleTheme[_Circle2.default.getThemeFieldName()] || {});
-
-    var _DefaultTheme$RootSta = _extends({}, customStyleTheme.RootStartPoint || {}, DefaultTheme.RootStartPoint),
-        center = _DefaultTheme$RootSta.center,
-        childOffset = _DefaultTheme$RootSta.childOffset;
+    var _styleTheme$RootStart = _extends({}, styleTheme.RootStartPoint),
+        center = _styleTheme$RootStart.center,
+        childOffset = _styleTheme$RootStart.childOffset;
 
     var root = (0, _Circle2.default)(node, center, circleTheme);
     root.setChildOffsetPoint(childOffset);
@@ -16774,21 +16678,18 @@ var createRootCircle = exports.createRootCircle = function createRootCircle(node
     return root;
 };
 
-var createConnectionArrow = exports.createConnectionArrow = function createConnectionArrow(config) {
-    var customStyleTheme = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+var createConnectionArrow = exports.createConnectionArrow = function createConnectionArrow(config, styleTheme) {
+    var connectionArrowStyle = styleTheme[(0, _ConnectionArrow.getFieldName)()],
+        arrowConfig = getConnectionConfig(config, connectionArrowStyle);
 
-    var DefaultTheme = (0, _StyleTheme.getTheme)();
-    return (0, _ConnectionArrow2.default)(getConnectionConfig(config), _extends({}, DefaultTheme.ConnectionArrow, customStyleTheme.ConnectionArrow || {}));
+    return (0, _ConnectionArrow2.default)(arrowConfig, connectionArrowStyle);
 };
 
-var getConnectionConfig = exports.getConnectionConfig = function getConnectionConfig(_ref) {
+var getConnectionConfig = exports.getConnectionConfig = function getConnectionConfig(_ref, theme) {
     var startPoint = _ref.startPoint,
         endPoint = _ref.endPoint,
         boundaryPoint = _ref.boundaryPoint,
         arrowType = _ref.arrowType;
-
-    var DefaultTheme = (0, _StyleTheme.getTheme)(); //TODO: refactor redundant calls for building Theme
-    var theme = DefaultTheme.ConnectionArrow;
 
     var config = {
         linePoints: [],
@@ -17275,12 +17176,18 @@ var setupAdditionalSelectors = function setupAdditionalSelectors(state) {
     return {
         getMidPoint: function getMidPoint() {
             return state.midPoint;
+        },
+        getLoopedConnectionArrow: function getLoopedConnectionArrow() {
+            return state.loopedConnectionArrow;
         }
     };
 };
 
 var setupLoopRhombusBehavior = function setupLoopRhombusBehavior(state) {
     return {
+        assignLoopedConnectionArrow: function assignLoopedConnectionArrow(loopedConnectionArrow) {
+            state.loopedConnectionArrow = loopedConnectionArrow;
+        },
         printConditionMarks: function printConditionMarks() {
             var theme = state.theme;
             var _state$position = state.position,
@@ -17416,8 +17323,9 @@ exports.default = (0, _BaseShape.delegateInit)(Circle, ENTITY_FIELD_NAME);
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.ConnectionArrow = exports.getFieldName = undefined;
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _composition = __webpack_require__(459);
 
 var _svgPrimitives = __webpack_require__(457);
 
@@ -17425,37 +17333,42 @@ var _geometry = __webpack_require__(178);
 
 var _constants = __webpack_require__(29);
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var ENTITY_FIELD_NAME = 'ConnectionArrow';
 
-var ConnectionArrow = function () {
-    function ConnectionArrow(config, theme) {
-        _classCallCheck(this, ConnectionArrow);
+var getFieldName = exports.getFieldName = function getFieldName() {
+    return ENTITY_FIELD_NAME;
+};
 
-        this.theme = theme;
-        //TODO: move properties to state object
+var setupSelectors = function setupSelectors(state) {
+    return {
+        getFieldName: getFieldName
+    };
+};
 
-        this.config = config;
-    }
-
-    _createClass(ConnectionArrow, [{
-        key: 'printLine',
-        value: function printLine(points) {
-            return (0, _svgPrimitives.getCurvedPath)(points, this.theme.line);
+var setupUpdateBehaviour = function setupUpdateBehaviour(state) {
+    return {
+        updateTheme: function updateTheme(newTheme) {
+            state.theme = (0, _composition.mergeObjectStructures)(state.theme, newTheme);
         }
-    }, {
-        key: 'printArrow',
-        value: function printArrow(point, arrowPoints) {
-            return (0, _svgPrimitives.getClosedPath)((0, _geometry.addOffsetToPoints)(arrowPoints, point), this.theme.arrow);
-        }
-    }, {
-        key: 'printArrowByType',
-        value: function printArrowByType(type, _ref) {
+    };
+};
+
+var setupPrintBehaviour = function setupPrintBehaviour(state) {
+    return {
+        printLine: function printLine(points) {
+            return (0, _svgPrimitives.getCurvedPath)(points, state.theme.line);
+        },
+        printArrow: function printArrow(point, arrowPoints) {
+            return (0, _svgPrimitives.getClosedPath)((0, _geometry.addOffsetToPoints)(arrowPoints, point), state.theme.arrow);
+        },
+        printArrowByType: function printArrowByType(type, _ref) {
             var x = _ref.x,
                 y = _ref.y;
 
-            var arrowSize = this.theme.arrow.size;
+            var arrowSize = state.theme.arrow.size;
             var point = void 0;
 
+            //TODO: move to svgPrimitives
             switch (type) {
                 case _constants.ARROW_TYPE.RIGHT:
                     point = { x: x - arrowSize.x, y: y - arrowSize.y / 2 };
@@ -17475,28 +17388,26 @@ var ConnectionArrow = function () {
                 default:
                     return '';
             }
-        }
-    }, {
-        key: 'print',
-        value: function print() {
-            var _config = this.config,
-                linePoints = _config.linePoints,
-                arrowPoint = _config.arrowPoint,
-                arrowType = _config.arrowType;
+        },
+        print: function print() {
+            var _state$config = state.config,
+                linePoints = _state$config.linePoints,
+                arrowPoint = _state$config.arrowPoint,
+                arrowType = _state$config.arrowType;
 
 
             return '\n            <g>\n               ' + this.printLine(linePoints) + '\n               ' + this.printArrowByType(arrowType, arrowPoint) + '\n            </g>';
         }
-    }]);
-
-    return ConnectionArrow;
-}();
-
-exports.default = function (config, theme) {
-    return new ConnectionArrow(config, theme);
+    };
 };
 
-module.exports = exports['default'];
+var ConnectionArrow = exports.ConnectionArrow = function ConnectionArrow(state) {
+    return (0, _composition.assignState)(state, [setupUpdateBehaviour, setupPrintBehaviour, setupSelectors]);
+};
+
+exports.default = function (config, theme) {
+    return ConnectionArrow({ config: config, theme: theme });
+};
 
 /***/ }),
 /* 184 */
@@ -17580,11 +17491,9 @@ var createFlowTreeBuilder = exports.createFlowTreeBuilder = function createFlowT
         setAbstractionLevel: function setAbstractionLevel(level) {
             options.astVisitorConfig.definitionsMap = rebuildConfigForAbstractionLevel(level);
         },
-
         setIgnoreFilter: function setIgnoreFilter(fn) {
             options.astVisitorConfig.globalIgnore = fn;
         },
-
         build: function build(code) {
             return buildFlowTree(code, options);
         }
@@ -36938,124 +36847,7 @@ var classDeclarationConverter = exports.classDeclarationConverter = function cla
 };
 
 /***/ }),
-/* 453 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var DefaultShape = {
-    strokeColor: '#333',
-    strokeWidth: 1,
-    fillColor: '#fff',
-    textColor: '#111',
-    fontFamily: 'monospace',
-    fontSize: 13,
-    lineHeight: 5,
-    symbolHeight: 10,
-    symbolWidth: 7.8,
-    horizontalPadding: 10,
-    verticalPadding: 10,
-    childOffset: 40,
-    margin: 10
-};
-
-var Themes = exports.Themes = {
-    DEFAULT: {
-        ConnectionArrow: {
-            arrow: {
-                size: {
-                    x: 8,
-                    y: 6
-                },
-                fillColor: '#222'
-            },
-            line: {
-                strokeColor: '#333',
-                strokeWidth: 1,
-                curveTurnRadius: 4
-            },
-            lineTurnOffset: 20
-        },
-
-        Shape: _extends({}, DefaultShape),
-
-        Rectangle: _extends({}, DefaultShape, {
-            fillColor: '#b39ddb',
-            roundBorder: 3
-        }),
-
-        VerticalEdgedRectangle: _extends({}, DefaultShape, {
-            fillColor: '#a5d6a7',
-            edgeOffset: 10
-        }),
-
-        Circle: _extends({}, DefaultShape, {
-            fillColor: '#fff59d'
-        }),
-
-        LoopRhombus: _extends({}, DefaultShape, {
-            fillColor: '#90CAF9',
-            thinPartOffset: 15,
-            rhombusSize: 50,
-            roundBorder: 3,
-            doubleLayerOffsetA: 4,
-            doubleLayerOffsetB: 8,
-            childOffset: 20,
-            positionTopShift: 20
-        }),
-
-        ConditionRhombus: _extends({}, DefaultShape, {
-            fillColor: '#ce93d8',
-            thinPartOffset: 15,
-            roundBorder: 3,
-            childOffset: 20,
-            alternateBranchOffset: 40,
-            markOffset: {
-                x: 15,
-                y: 5
-            },
-            margin: 20
-        }),
-
-        RootStartPoint: {
-            center: {
-                x: 15, y: 15
-            },
-            childOffset: {
-                x: 20, y: 50
-            }
-        },
-
-        ReturnStatement: _extends({}, DefaultShape, {
-            roundBorder: 3,
-            fillColor: '#b39ddb',
-            arrow: {
-                handlerLength: 5,
-                sizeX: 16,
-                sizeY: 22,
-                fillColor: '#b39ddb',
-                strokeColor: DefaultShape.strokeColor,
-                strokeWidth: DefaultShape.strokeWidth
-            }
-        })
-    }
-};
-
-var getTheme = exports.getTheme = function getTheme(currentTheme) {
-    switch (currentTheme) {
-        default:
-            return Themes.DEFAULT;
-    }
-};
-
-/***/ }),
+/* 453 */,
 /* 454 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -37065,9 +36857,11 @@ var getTheme = exports.getTheme = function getTheme(currentTheme) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.calculateBoundaries = exports.calculateChildOffsetPoint = exports.calculateBackPoint = exports.calculateToPoint = exports.calculateFromPoint = exports.calculatePosition = exports.calculateDimensions = exports.calculateHeight = exports.calculateWidth = exports.calculateNameBasedHeight = exports.calculateNameBasedWidth = exports.setupCompleteState = exports.setupBasicBehaviour = exports.setupGetChildBoundaries = exports.setupConnectChild = exports.setupPrintName = exports.setupInitialSelectors = exports.extractBasicState = exports.setupInitialProperties = exports.getInitialState = exports.delegateInit = undefined;
+exports.calculateBoundaries = exports.calculateChildOffsetPoint = exports.calculateBackPoint = exports.calculateToPoint = exports.calculateFromPoint = exports.calculatePosition = exports.calculateDimensions = exports.calculateHeight = exports.calculateWidth = exports.calculateNameBasedHeight = exports.calculateNameBasedWidth = exports.setupCompleteState = exports.setupBasicBehaviour = exports.setupStateModifiers = exports.setupGetChildBoundaries = exports.setupPrintName = exports.setupInitialSelectors = exports.extractBasicState = exports.setupInitialProperties = exports.getInitialState = exports.delegateInit = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _composition = __webpack_require__(459);
 
 var _string = __webpack_require__(176);
 
@@ -37075,7 +36869,7 @@ var _flatten = __webpack_require__(177);
 
 var _geometry = __webpack_require__(178);
 
-var _TextContent = __webpack_require__(455);
+var _TextContentConfigurator = __webpack_require__(465);
 
 var delegateInit = exports.delegateInit = function delegateInit(shape, themeFieldName) {
     function init(node, position, theme) {
@@ -37093,7 +36887,7 @@ var getInitialState = exports.getInitialState = function getInitialState(node, _
     var x = _ref.x,
         y = _ref.y;
 
-    var nameParts = (0, _string.splitNameString)(node.name, _TextContent.MAX_NAME_STR_LENGTH, (0, _TextContent.getNameSplitterTokensIterator)()),
+    var nameParts = (0, _string.splitNameString)(node.name, _TextContentConfigurator.MAX_NAME_STR_LENGTH, (0, _TextContentConfigurator.getNameSplitterTokensIterator)()),
         totalNamePartsNumber = nameParts.length,
         maxNamePartLength = (0, _string.getMaxStringLengthFromList)(nameParts);
 
@@ -37139,6 +36933,9 @@ var setupInitialSelectors = exports.setupInitialSelectors = function setupInitia
         getBackPoint: function getBackPoint() {
             return state.backPoint;
         },
+        getAssignedConnectionArrow: function getAssignedConnectionArrow() {
+            return state.connectionArrow;
+        },
         getChildOffsetPoint: function getChildOffsetPoint() {
             return state.childOffsetPoint;
         },
@@ -37174,41 +36971,31 @@ var setupInitialSelectors = exports.setupInitialSelectors = function setupInitia
         },
         getToPoint: function getToPoint() {
             return state.toPoint;
+        },
+        getShapeType: function getShapeType() {
+            return state.type;
         }
     };
 };
 
-var setupPrintName = exports.setupPrintName = function setupPrintName(_ref2) {
-    var position = _ref2.position,
-        theme = _ref2.theme,
-        nameParts = _ref2.nameParts;
+var setupPrintName = exports.setupPrintName = function setupPrintName(state) {
     return {
         //TODO: fix spacing for multi line name
         printName: function printName(newPosition) {
-            var _ref3 = newPosition ? newPosition : position,
-                x = _ref3.x,
-                y = _ref3.y;
+            var position = state.position,
+                theme = state.theme,
+                nameParts = state.nameParts;
+
+            var _ref2 = newPosition ? newPosition : position,
+                x = _ref2.x,
+                y = _ref2.y;
 
             var name = nameParts.map(function (part, i) {
                 return '<tspan x="' + (x + theme.horizontalPadding) + '" y="' + (y + 2 * theme.verticalPadding * (i + 1)) + '">' + part + '</tspan>';
             }).join('');
 
+            //TODO: move to svg primitives
             return '<text x="' + (x + theme.horizontalPadding) + '" y="' + (y + 2 * theme.verticalPadding) + '"\n                font-family="' + theme.fontFamily + '" font-size="' + theme.fontSize + '" fill="' + theme.textColor + '">\n                ' + name + '\n            </text>';
-        }
-    };
-};
-
-var setupConnectChild = exports.setupConnectChild = function setupConnectChild(state) {
-    return {
-        addChild: function addChild(child) {
-            state.body.push(child);
-        },
-        setParent: function setParent(parent) {
-            state.parent = parent;
-        },
-        connectChild: function connectChild(child) {
-            this.addChild(child);
-            child.setParent(this);
         }
     };
 };
@@ -37245,8 +37032,29 @@ var setupGetChildBoundaries = exports.setupGetChildBoundaries = function setupGe
     };
 };
 
+var setupStateModifiers = exports.setupStateModifiers = function setupStateModifiers(state) {
+    return {
+        addChild: function addChild(child) {
+            state.body.push(child);
+        },
+        setParent: function setParent(parent) {
+            state.parent = parent;
+        },
+        connectChild: function connectChild(child) {
+            this.addChild(child);
+            child.setParent(this);
+        },
+        updateTheme: function updateTheme(newTheme) {
+            state.theme = (0, _composition.mergeObjectStructures)(state.theme, newTheme);
+        },
+        assignConnectionArrow: function assignConnectionArrow(connectionArrow) {
+            state.connectionArrow = connectionArrow;
+        }
+    };
+};
+
 var setupBasicBehaviour = exports.setupBasicBehaviour = function setupBasicBehaviour(state) {
-    return Object.assign({}, setupPrintName(state), setupConnectChild(state), setupGetChildBoundaries(state));
+    return Object.assign({}, setupPrintName(state), setupGetChildBoundaries(state), setupStateModifiers(state));
 };
 
 var setupCompleteState = exports.setupCompleteState = function setupCompleteState(initialState) {
@@ -37254,15 +37062,15 @@ var setupCompleteState = exports.setupCompleteState = function setupCompleteStat
     return _extends({}, state, setupInitialProperties(state));
 };
 
-var calculateNameBasedWidth = exports.calculateNameBasedWidth = function calculateNameBasedWidth(_ref4) {
-    var maxNamePartLength = _ref4.maxNamePartLength,
-        theme = _ref4.theme;
+var calculateNameBasedWidth = exports.calculateNameBasedWidth = function calculateNameBasedWidth(_ref3) {
+    var maxNamePartLength = _ref3.maxNamePartLength,
+        theme = _ref3.theme;
     return maxNamePartLength * theme.symbolWidth;
 };
 
-var calculateNameBasedHeight = exports.calculateNameBasedHeight = function calculateNameBasedHeight(_ref5) {
-    var totalNamePartsNumber = _ref5.totalNamePartsNumber,
-        theme = _ref5.theme;
+var calculateNameBasedHeight = exports.calculateNameBasedHeight = function calculateNameBasedHeight(_ref4) {
+    var totalNamePartsNumber = _ref4.totalNamePartsNumber,
+        theme = _ref4.theme;
     return totalNamePartsNumber * theme.symbolHeight + (totalNamePartsNumber - 1) * theme.lineHeight;
 };
 
@@ -37282,46 +37090,46 @@ var calculatePosition = exports.calculatePosition = function calculatePosition(s
     return _extends({}, state.initialPosition);
 };
 
-var calculateFromPoint = exports.calculateFromPoint = function calculateFromPoint(_ref6) {
-    var position = _ref6.position,
-        dimensions = _ref6.dimensions,
-        theme = _ref6.theme;
+var calculateFromPoint = exports.calculateFromPoint = function calculateFromPoint(_ref5) {
+    var position = _ref5.position,
+        dimensions = _ref5.dimensions,
+        theme = _ref5.theme;
     return {
         x: position.x + theme.childOffset / 2,
         y: position.y + dimensions.h
     };
 };
 
-var calculateToPoint = exports.calculateToPoint = function calculateToPoint(_ref7) {
-    var position = _ref7.position,
-        dimensions = _ref7.dimensions;
+var calculateToPoint = exports.calculateToPoint = function calculateToPoint(_ref6) {
+    var position = _ref6.position,
+        dimensions = _ref6.dimensions;
     return {
         x: position.x,
         y: position.y + dimensions.h / 2
     };
 };
 
-var calculateBackPoint = exports.calculateBackPoint = function calculateBackPoint(_ref8) {
-    var position = _ref8.position,
-        dimensions = _ref8.dimensions;
+var calculateBackPoint = exports.calculateBackPoint = function calculateBackPoint(_ref7) {
+    var position = _ref7.position,
+        dimensions = _ref7.dimensions;
     return {
         x: position.x + dimensions.w,
         y: position.y + dimensions.h / 2
     };
 };
 
-var calculateChildOffsetPoint = exports.calculateChildOffsetPoint = function calculateChildOffsetPoint(_ref9) {
-    var theme = _ref9.theme,
-        dimensions = _ref9.dimensions;
+var calculateChildOffsetPoint = exports.calculateChildOffsetPoint = function calculateChildOffsetPoint(_ref8) {
+    var theme = _ref8.theme,
+        dimensions = _ref8.dimensions;
     return {
         x: theme.childOffset,
         y: dimensions.h + theme.childOffset / 2
     };
 };
 
-var calculateBoundaries = exports.calculateBoundaries = function calculateBoundaries(_ref10) {
-    var position = _ref10.position,
-        dimensions = _ref10.dimensions;
+var calculateBoundaries = exports.calculateBoundaries = function calculateBoundaries(_ref9) {
+    var position = _ref9.position,
+        dimensions = _ref9.dimensions;
     return {
         min: { x: position.x, y: position.y },
         max: { x: position.x + dimensions.w, y: position.y + dimensions.h }
@@ -37329,28 +37137,7 @@ var calculateBoundaries = exports.calculateBoundaries = function calculateBounda
 };
 
 /***/ }),
-/* 455 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getNameSplitterTokensIterator = exports.NAME_SPLITTER_TOKENS = exports.MAX_NAME_STR_LENGTH = undefined;
-
-var _iteratorBuilder = __webpack_require__(456);
-
-var MAX_NAME_STR_LENGTH = exports.MAX_NAME_STR_LENGTH = 20;
-
-var NAME_SPLITTER_TOKENS = exports.NAME_SPLITTER_TOKENS = ['||', '&&', '=', '?', ':', '<==', '>==', '<', '>', '===', '==', ',', '.', '('];
-
-var getNameSplitterTokensIterator = exports.getNameSplitterTokensIterator = function getNameSplitterTokensIterator() {
-  return (0, _iteratorBuilder.buildIterator)(NAME_SPLITTER_TOKENS);
-};
-
-/***/ }),
+/* 455 */,
 /* 456 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -37382,24 +37169,52 @@ var buildIterator = exports.buildIterator = function buildIterator(list) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+var SvgStyleFieldsMap = [{
+    from: 'fillColor', to: 'fill'
+}, {
+    from: 'strokeColor', to: 'stroke'
+}, {
+    from: 'strokeWidth', to: 'stroke-width'
+}, {
+    from: 'fillOpacity', to: 'fill-opacity'
+}, {
+    from: 'strokeOpacity', to: 'stroke-opacity'
+}];
+
+var extractStylePropsFromTheme = exports.extractStylePropsFromTheme = function extractStylePropsFromTheme(theme) {
+    return SvgStyleFieldsMap.map(function (item) {
+        return theme[item.from] ? item.to + ':' + theme[item.from] : null;
+    }).filter(function (i) {
+        return i;
+    }).join('; ');
+};
+
+var extractStyleAttrsFromTheme = exports.extractStyleAttrsFromTheme = function extractStyleAttrsFromTheme(theme) {
+    return SvgStyleFieldsMap.map(function (item) {
+        return theme[item.from] ? item.to + '="' + theme[item.from] + '"' : null;
+    }).filter(function (i) {
+        return i;
+    }).join(' ');
+};
+
 var getRhombus = exports.getRhombus = function getRhombus(x, y, w, h, theme) {
-    return '\n        <polygon points="' + x + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + y + ' ' + (x + w) + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + (y + h) + '"\n            style="fill:' + theme.fillColor + ';stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />';
+    return '\n        <polygon points="' + x + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + y + ' ' + (x + w) + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + (y + h) + '"\n            style="' + extractStylePropsFromTheme(theme) + '" />';
 };
 
 var getRoundedRectangle = exports.getRoundedRectangle = function getRoundedRectangle(x, y, w, h, theme) {
-    return '\n        <rect x="' + x + '" y="' + y + '"\n            width="' + w + '" height=' + h + '\n            rx="' + theme.roundBorder + '" ry="' + theme.roundBorder + '"\n            style="fill:' + theme.fillColor + '; stroke-width:' + theme.strokeWidth + '; stroke:' + theme.strokeColor + '" />';
+    return '\n        <rect x="' + x + '" y="' + y + '"\n            width="' + w + '" height=' + h + '\n            rx="' + theme.roundBorder + '" ry="' + theme.roundBorder + '"\n            style="' + extractStylePropsFromTheme(theme) + '" />';
 };
 
 var getRectangle = exports.getRectangle = function getRectangle(x, y, w, h, theme) {
-    return '\n        <rect x="' + x + '" y="' + y + '"\n            width="' + w + '" height=' + h + '\n            style="fill:' + theme.fillColor + '; stroke-width:' + theme.strokeWidth + '; stroke:' + theme.strokeColor + '" />';
+    return '\n        <rect x="' + x + '" y="' + y + '"\n            width="' + w + '" height=' + h + '\n            style="' + extractStylePropsFromTheme(theme) + '" />';
 };
 
 var getLine = exports.getLine = function getLine(x1, y1, x2, y2, theme) {
-    return '\n         <line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '"\n                style="stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />';
+    return '\n         <line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '"\n                style="' + extractStylePropsFromTheme(theme) + '" />';
 };
 
 var getCircle = exports.getCircle = function getCircle(x, y, r, theme) {
-    return '\n       <circle cx="' + x + '" cy="' + y + '" r="' + r + '"\n        style="fill:' + theme.fillColor + ';stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />';
+    return '\n       <circle cx="' + x + '" cy="' + y + '" r="' + r + '"\n        style="' + extractStylePropsFromTheme(theme) + '" />';
 };
 
 var getText = exports.getText = function getText(x, y, theme, text) {
@@ -37413,7 +37228,7 @@ var getClosedPath = exports.getClosedPath = function getClosedPath(points, theme
         return 'L' + point.x + ', ' + point.y;
     }).join(' ');
 
-    return '<path d="' + pointStr + ' Z" \n        ' + (theme.fillColor ? 'fill="' + theme.fillColor + '"' : '') + '\n        ' + (theme.strokeColor ? 'stroke="' + theme.strokeColor + '"' : '') + '\n        />';
+    return '<path d="' + pointStr + ' Z" \n        ' + extractStyleAttrsFromTheme(theme) + '\n        />';
 };
 
 var getCurvedPath = exports.getCurvedPath = function getCurvedPath(points, theme) {
@@ -37429,7 +37244,7 @@ var getCurvedPath = exports.getCurvedPath = function getCurvedPath(points, theme
         return 'Q' + previousPoint.x + ' ' + previousPoint.y + '\n                ' + getArcEndPointStr(point, previousPoint, theme.curveTurnRadius) + '\n                ' + getLinePointStr(point, previousPoint, 2 * theme.curveTurnRadius);
     }).join(' ');
 
-    return '<path d="' + pointStr + '"\n        style="fill:none;stroke:' + theme.strokeColor + ';stroke-width:' + theme.strokeWidth + '" />';
+    return '<path d="' + pointStr + '"\n        style="fill:none; ' + extractStylePropsFromTheme(theme) + '" />';
 };
 
 var getLinePointStr = function getLinePointStr(point, previousPoint, radius) {
@@ -37609,6 +37424,13 @@ var getBasicEntryConfig = function getBasicEntryConfig(item, path) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.mergeObjectStructures = exports.assignState = undefined;
+
+var _deepmerge = __webpack_require__(467);
+
+var _deepmerge2 = _interopRequireDefault(_deepmerge);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -37616,6 +37438,10 @@ var assignState = exports.assignState = function assignState(state, extensionsLi
     return Object.assign.apply(null, [{ state: state }].concat(_toConsumableArray(extensionsList.map(function (fn) {
         return fn(state);
     }))));
+};
+
+var mergeObjectStructures = exports.mergeObjectStructures = function mergeObjectStructures(destination, source) {
+    return (0, _deepmerge2.default)(destination, source);
 };
 
 /***/ }),
@@ -37696,6 +37522,585 @@ var ReturnStatement = exports.ReturnStatement = function ReturnStatement(initial
 };
 
 exports.default = (0, _BaseShape.delegateInit)(ReturnStatement, ENTITY_FIELD_NAME);
+
+/***/ }),
+/* 461 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.buildConnections = exports.buildShapeStructures = exports.buildSVGObjectsTree = undefined;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _traversalWithTreeLevelsPointer = __webpack_require__(170);
+
+var _SVGBase = __webpack_require__(172);
+
+var _shapesFactory = __webpack_require__(173);
+
+var _constants = __webpack_require__(29);
+
+var buildSVGObjectsTree = exports.buildSVGObjectsTree = function buildSVGObjectsTree(flowTree, styleTheme) {
+    var svg = (0, _SVGBase.SVGBase)();
+
+    var shapeStructures = buildShapeStructures(flowTree, styleTheme);
+    var connections = buildConnections(shapeStructures.root, styleTheme);
+
+    svg.addShapes(shapeStructures.list).addShapes(shapeStructures.root);
+    svg.addArrowConnections(connections);
+
+    return svg;
+};
+
+var buildShapeStructures = exports.buildShapeStructures = function buildShapeStructures(flowTree, styleTheme) {
+    var root = (0, _shapesFactory.createRootCircle)(flowTree, styleTheme),
+        position = _extends({}, root.getChildOffsetPoint()),
+        shapesList = [];
+
+    (0, _traversalWithTreeLevelsPointer.complexTraversal)(flowTree, root, function (parentNode, parentShape) {
+        position.x += parentShape.getChildOffsetPoint().x;
+    }, function (node, parentShape) {
+
+        //TODO: refactor, move cases out of func, it will to many of them soon
+        if (parentShape.getNodeType() === _constants.TOKEN_TYPES.CONDITIONAL && node.key === _constants.TOKEN_KEYS.ALTERNATE && !parentShape.checkIfChildExist(_constants.TOKEN_KEYS.ALTERNATE)) {
+
+            var alternatePoint = parentShape.getAlternativeBranchChildOffsetPoint();
+            position.x = alternatePoint.x + parentShape.getMargin();
+            position.y = alternatePoint.y;
+        }
+
+        var shape = (0, _shapesFactory.createShapeForNode)(node, { x: position.x, y: position.y }, styleTheme);
+
+        position.x = shape.getPosition().x;
+        position.y = shape.getPosition().y;
+
+        shapesList.push(shape);
+        parentShape.connectChild(shape);
+        position.y += shape.getChildOffsetPoint().y;
+
+        return shape;
+    }, function (parentNode, parentShape) {
+        if (parentNode.type === _constants.TOKEN_TYPES.CONDITIONAL) {
+            position.y = parentShape.getChildBoundaries().max.y + parentShape.getMargin();
+        }
+
+        position.x = parentShape.getPosition().x;
+    });
+
+    return {
+        list: shapesList,
+        root: root
+    };
+};
+
+var buildConnections = exports.buildConnections = function buildConnections(shapesTree, styleTheme) {
+    var connections = [],
+        pushArrow = function pushArrow(config) {
+        var connection = (0, _shapesFactory.createConnectionArrow)(config, styleTheme);
+        connections.push(connection);
+
+        return connection;
+    };
+
+    var latestShape = null,
+        startShape = null,
+        latestParentShape = null;
+
+    (0, _traversalWithTreeLevelsPointer.complexTraversal)(shapesTree, shapesTree, function (parentShape) {}, function (shape, parentShape) {
+        startShape = parentShape;
+        latestShape = shape;
+
+        //TODO: add const startShape = ; because it's not always parent (like `continue` in loop actually change flow)
+
+
+        var config = {
+            endPoint: shape.getToPoint(),
+            arrowType: _constants.ARROW_TYPE.RIGHT
+        };
+
+        if (shape.getNodeKey() === _constants.TOKEN_KEYS.ALTERNATE) {
+            var boundaryPoint = parentShape.getAlternativeBranchChildOffsetPoint();
+
+            config.startPoint = parentShape.getAlternateFromPoint();
+            config.boundaryPoint = { x: boundaryPoint.x };
+        } else {
+            config.startPoint = startShape.getFromPoint();
+        }
+
+        shape.assignConnectionArrow(pushArrow(config));
+
+        return shape;
+    }, function (parentShape) {
+        if (parentShape.getNodeType() !== _constants.TOKEN_TYPES.LOOP) return;
+
+        var _parentShape$getChild = parentShape.getChildBoundaries(),
+            max = _parentShape$getChild.max;
+
+        parentShape.assignLoopedConnectionArrow(pushArrow({
+            startPoint: latestShape.getBackPoint(),
+            endPoint: parentShape.getMidPoint(),
+            boundaryPoint: { x: max.x },
+            arrowType: _constants.ARROW_TYPE.DOWN
+        }));
+    }, {
+        getBody: function getBody(node) {
+            return node.getBody();
+        }
+    });
+
+    return connections;
+};
+
+/***/ }),
+/* 462 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.getShapeForNode = undefined;
+
+var _constants = __webpack_require__(29);
+
+var _VerticalEdgedRectangle = __webpack_require__(175);
+
+var _VerticalEdgedRectangle2 = _interopRequireDefault(_VerticalEdgedRectangle);
+
+var _Rectangle = __webpack_require__(179);
+
+var _Rectangle2 = _interopRequireDefault(_Rectangle);
+
+var _ConditionRhombus = __webpack_require__(180);
+
+var _ConditionRhombus2 = _interopRequireDefault(_ConditionRhombus);
+
+var _LoopRhombus = __webpack_require__(181);
+
+var _LoopRhombus2 = _interopRequireDefault(_LoopRhombus);
+
+var _Circle = __webpack_require__(182);
+
+var _Circle2 = _interopRequireDefault(_Circle);
+
+var _ReturnStatement = __webpack_require__(460);
+
+var _ReturnStatement2 = _interopRequireDefault(_ReturnStatement);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
+    switch (node.type) {
+        case _constants.TOKEN_TYPES.FUNCTION:
+            return _VerticalEdgedRectangle2.default;
+
+        case _constants.TOKEN_TYPES.LOOP:
+            return _LoopRhombus2.default;
+
+        case _constants.TOKEN_TYPES.CONDITIONAL:
+            return _ConditionRhombus2.default;
+
+        case _constants.TOKEN_TYPES.RETURN:
+            return _ReturnStatement2.default;
+
+        default:
+            return _Rectangle2.default;
+    }
+};
+
+/***/ }),
+/* 463 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.applyStyleToTheme = exports.getBlurredTheme = exports.getBlackAndWhiteTheme = exports.getDefaultTheme = exports.getTheme = exports.Themes = undefined;
+
+var _Themes;
+
+var _composition = __webpack_require__(459);
+
+var _DefaultBaseTheme = __webpack_require__(468);
+
+var _DefaultBaseTheme2 = _interopRequireDefault(_DefaultBaseTheme);
+
+var _BlackAndWhite = __webpack_require__(469);
+
+var _BlackAndWhite2 = _interopRequireDefault(_BlackAndWhite);
+
+var _Blurred = __webpack_require__(470);
+
+var _Blurred2 = _interopRequireDefault(_Blurred);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var ThemeNamesMap = {
+    DEFAULT: 'DEFAULT',
+    BLACK_AND_WHITE: 'BLACK_AND_WHITE',
+    BLURRED: 'BLURRED'
+};
+
+var Themes = exports.Themes = (_Themes = {}, _defineProperty(_Themes, ThemeNamesMap.DEFAULT, _DefaultBaseTheme2.default), _defineProperty(_Themes, ThemeNamesMap.BLACK_AND_WHITE, _BlackAndWhite2.default), _defineProperty(_Themes, ThemeNamesMap.BLURRED, _Blurred2.default), _Themes);
+
+var getTheme = exports.getTheme = function getTheme(themeName) {
+    if (!Themes[themeName] === themeName === ThemeNamesMap.DEFAULT) {
+        return Themes.DEFAULT;
+    }
+
+    return applyStyleToTheme(_DefaultBaseTheme2.default, Themes[themeName]);
+};
+
+var getDefaultTheme = exports.getDefaultTheme = function getDefaultTheme() {
+    return getTheme(ThemeNamesMap.DEFAULT);
+};
+
+var getBlackAndWhiteTheme = exports.getBlackAndWhiteTheme = function getBlackAndWhiteTheme() {
+    return getTheme(ThemeNamesMap.BLACK_AND_WHITE);
+};
+
+var getBlurredTheme = exports.getBlurredTheme = function getBlurredTheme() {
+    return getTheme(ThemeNamesMap.BLURRED);
+};
+
+var applyStyleToTheme = exports.applyStyleToTheme = function applyStyleToTheme(theme, styles) {
+    return (0, _composition.mergeObjectStructures)(theme, styles);
+};
+
+/***/ }),
+/* 464 */,
+/* 465 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getNameSplitterTokensIterator = exports.NAME_SPLITTER_TOKENS = exports.MAX_NAME_STR_LENGTH = undefined;
+
+var _iteratorBuilder = __webpack_require__(456);
+
+var MAX_NAME_STR_LENGTH = exports.MAX_NAME_STR_LENGTH = 20;
+
+var NAME_SPLITTER_TOKENS = exports.NAME_SPLITTER_TOKENS = ['||', '&&', '=', '?', ':', '<==', '>==', '<', '>', '===', '==', ',', '.', '('];
+
+var getNameSplitterTokensIterator = exports.getNameSplitterTokensIterator = function getNameSplitterTokensIterator() {
+  return (0, _iteratorBuilder.buildIterator)(NAME_SPLITTER_TOKENS);
+};
+
+/***/ }),
+/* 466 */,
+/* 467 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var index$2 = function isMergeableObject(value) {
+	return isNonNullObject(value) && isNotSpecial(value)
+};
+
+function isNonNullObject(value) {
+	return !!value && typeof value === 'object'
+}
+
+function isNotSpecial(value) {
+	var stringValue = Object.prototype.toString.call(value);
+
+	return stringValue !== '[object RegExp]'
+		&& stringValue !== '[object Date]'
+}
+
+function emptyTarget(val) {
+    return Array.isArray(val) ? [] : {}
+}
+
+function cloneIfNecessary(value, optionsArgument) {
+    var clone = optionsArgument && optionsArgument.clone === true;
+    return (clone && index$2(value)) ? deepmerge(emptyTarget(value), value, optionsArgument) : value
+}
+
+function defaultArrayMerge(target, source, optionsArgument) {
+    var destination = target.slice();
+    source.forEach(function(e, i) {
+        if (typeof destination[i] === 'undefined') {
+            destination[i] = cloneIfNecessary(e, optionsArgument);
+        } else if (index$2(e)) {
+            destination[i] = deepmerge(target[i], e, optionsArgument);
+        } else if (target.indexOf(e) === -1) {
+            destination.push(cloneIfNecessary(e, optionsArgument));
+        }
+    });
+    return destination
+}
+
+function mergeObject(target, source, optionsArgument) {
+    var destination = {};
+    if (index$2(target)) {
+        Object.keys(target).forEach(function(key) {
+            destination[key] = cloneIfNecessary(target[key], optionsArgument);
+        });
+    }
+    Object.keys(source).forEach(function(key) {
+        if (!index$2(source[key]) || !target[key]) {
+            destination[key] = cloneIfNecessary(source[key], optionsArgument);
+        } else {
+            destination[key] = deepmerge(target[key], source[key], optionsArgument);
+        }
+    });
+    return destination
+}
+
+function deepmerge(target, source, optionsArgument) {
+    var sourceIsArray = Array.isArray(source);
+    var targetIsArray = Array.isArray(target);
+    var options = optionsArgument || { arrayMerge: defaultArrayMerge };
+    var sourceAndTargetTypesMatch = sourceIsArray === targetIsArray;
+
+    if (!sourceAndTargetTypesMatch) {
+        return cloneIfNecessary(source, optionsArgument)
+    } else if (sourceIsArray) {
+        var arrayMerge = options.arrayMerge || defaultArrayMerge;
+        return arrayMerge(target, source, optionsArgument)
+    } else {
+        return mergeObject(target, source, optionsArgument)
+    }
+}
+
+deepmerge.all = function deepmergeAll(array, optionsArgument) {
+    if (!Array.isArray(array) || array.length < 2) {
+        throw new Error('first argument should be an array with at least two elements')
+    }
+
+    // we are sure there are at least 2 values, so it is safe to have no initial value
+    return array.reduce(function(prev, next) {
+        return deepmerge(prev, next, optionsArgument)
+    })
+};
+
+var index = deepmerge;
+
+module.exports = index;
+
+
+/***/ }),
+/* 468 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var BaseShape = exports.BaseShape = {
+    strokeColor: '#333',
+    strokeWidth: 1,
+    fillColor: '#fff',
+    textColor: '#111',
+    fontFamily: 'monospace',
+    fontSize: 13,
+    lineHeight: 5,
+    symbolHeight: 10,
+    symbolWidth: 7.8,
+    horizontalPadding: 10,
+    verticalPadding: 10,
+    childOffset: 40,
+    margin: 10
+};
+
+exports.default = {
+    ConnectionArrow: {
+        arrow: {
+            size: {
+                x: 8,
+                y: 6
+            },
+            fillColor: '#222'
+        },
+        line: {
+            strokeColor: '#333',
+            strokeWidth: 1,
+            curveTurnRadius: 4
+        },
+        lineTurnOffset: 20
+    },
+
+    Shape: _extends({}, BaseShape),
+
+    Rectangle: _extends({}, BaseShape, {
+        fillColor: '#b39ddb',
+        roundBorder: 3
+    }),
+
+    VerticalEdgedRectangle: _extends({}, BaseShape, {
+        fillColor: '#a5d6a7',
+        edgeOffset: 10
+    }),
+
+    Circle: _extends({}, BaseShape, {
+        fillColor: '#fff59d'
+    }),
+
+    LoopRhombus: _extends({}, BaseShape, {
+        fillColor: '#90CAF9',
+        thinPartOffset: 15,
+        rhombusSize: 50,
+        roundBorder: 3,
+        doubleLayerOffsetA: 4,
+        doubleLayerOffsetB: 8,
+        childOffset: 20,
+        positionTopShift: 20
+    }),
+
+    ConditionRhombus: _extends({}, BaseShape, {
+        fillColor: '#ce93d8',
+        thinPartOffset: 15,
+        roundBorder: 3,
+        childOffset: 20,
+        alternateBranchOffset: 40,
+        markOffset: {
+            x: 15,
+            y: 5
+        },
+        margin: 20
+    }),
+
+    RootStartPoint: {
+        center: {
+            x: 15, y: 15
+        },
+        childOffset: {
+            x: 20, y: 50
+        }
+    },
+
+    ReturnStatement: _extends({}, BaseShape, {
+        roundBorder: 3,
+        fillColor: '#b39ddb',
+        arrow: _extends({}, BaseShape, {
+            handlerLength: 5,
+            sizeX: 16,
+            sizeY: 22,
+            fillColor: '#b39ddb'
+        })
+    })
+};
+
+/***/ }),
+/* 469 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var BaseShape = exports.BaseShape = {
+    strokeColor: '#333',
+    fillColor: '#A6A6A6',
+    textColor: '#333'
+};
+
+exports.default = {
+    ConnectionArrow: {
+        arrow: _extends({}, BaseShape, {
+            fillColor: '#222'
+        }),
+        line: {
+            strokeColor: '#333'
+        }
+    },
+
+    Shape: _extends({}, BaseShape),
+
+    Rectangle: _extends({}, BaseShape, {
+        fillColor: '#A6A6A6'
+    }),
+
+    VerticalEdgedRectangle: _extends({}, BaseShape, {
+        fillColor: '#C8C8C8'
+    }),
+
+    Circle: _extends({}, BaseShape, {
+        fillColor: '#F1F1F1'
+    }),
+
+    LoopRhombus: _extends({}, BaseShape, {
+        fillColor: '#C1C1C1'
+    }),
+
+    ConditionRhombus: _extends({}, BaseShape, {
+        fillColor: '#A5A5A5'
+    }),
+
+    ReturnStatement: _extends({}, BaseShape, {
+        arrow: _extends({}, BaseShape)
+    })
+};
+
+/***/ }),
+/* 470 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var BaseShape = exports.BaseShape = {
+    strokeOpacity: 0.1,
+    fillOpacity: 0.1,
+    textColor: '#ccc'
+};
+
+exports.default = {
+    ConnectionArrow: {
+        arrow: _extends({}, BaseShape),
+        line: _extends({}, BaseShape)
+    },
+
+    Shape: _extends({}, BaseShape),
+
+    Rectangle: _extends({}, BaseShape),
+
+    VerticalEdgedRectangle: _extends({}, BaseShape),
+
+    Circle: _extends({}, BaseShape),
+
+    LoopRhombus: _extends({}, BaseShape),
+
+    ConditionRhombus: _extends({}, BaseShape),
+
+    ReturnStatement: _extends({}, BaseShape, {
+        arrow: _extends({}, BaseShape)
+    })
+};
 
 /***/ })
 /******/ ]);

@@ -1,4 +1,4 @@
-export const traversal = (tree, stepIn, onNode, stepOut, options={}) => {
+export const levelsTraversal = (tree, stepIn, onNode, stepOut, options={}) => {
     const getBody = options.getBody || (node => node.body);
     stepIn(tree);
 
@@ -6,9 +6,19 @@ export const traversal = (tree, stepIn, onNode, stepOut, options={}) => {
         onNode(node);
 
         if (getBody(node)) {
-            traversal(node, stepIn, onNode, stepOut, options);
+            levelsTraversal(node, stepIn, onNode, stepOut, options);
         }
     });
 
     stepOut(tree);
+};
+
+export const traversal = (tree, fn)=> {
+    [].concat(tree).forEach((node)=> {
+        if (node.children && node.children.length) {
+            traversal(node.children, fn);
+        } else {
+            fn(node);
+        }
+    });
 };
