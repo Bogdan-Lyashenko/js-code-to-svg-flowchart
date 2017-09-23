@@ -178,7 +178,7 @@ export const setupStateModifiers = state => ({
     }
 });
 
-export const setupBasicBehaviour = state => Object.assign({}, setupPrintName(state), setupGetChildBoundaries(state), setupStateModifiers(state));
+export const setupBasicBehaviour = (state) => Object.assign({}, setupPrintName(state), setupGetChildBoundaries(state), setupStateModifiers(state));
 
 export const setupCompleteState = initialState => {
     let state = extractBasicState(initialState);

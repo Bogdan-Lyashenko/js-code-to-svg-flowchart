@@ -1,5 +1,5 @@
 {
-  "printWidth": 180,
+  "printWidth": 100,
   "parser": "babylon",
   "singleQuote": true,
   "tabWidth": 4
