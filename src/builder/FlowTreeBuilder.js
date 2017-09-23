@@ -1,7 +1,7 @@
 import traverse from 'babel-traverse';
-import {DefinitionsMap} from './entryDefinitionsMap';
-import {buildAST, buildVisitor} from './ASTBuilder';
-import {TOKEN_TYPES} from '../shared/constants'
+import { DefinitionsMap } from './entryDefinitionsMap';
+import { buildAST, buildVisitor } from './ASTBuilder';
+import { TOKEN_TYPES } from '../shared/constants';
 
 export const ABSTRACTION_LEVELS = {
     FUNCTION: [TOKEN_TYPES.FUNCTION],
@@ -10,18 +10,15 @@ export const ABSTRACTION_LEVELS = {
     EXPORT: [TOKEN_TYPES.EXPORT_NAMED_DECLARATION, TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION]
 };
 
-const buildFlowTree = (code, {astParserConfig, astVisitorConfig}) => {
+const buildFlowTree = (code, { astParserConfig, astVisitorConfig }) => {
     const treeNodes = [];
 
-    traverse(
-        buildAST(code, astParserConfig),
-        buildVisitor(astVisitorConfig, treeNodes)
-    );
+    traverse(buildAST(code, astParserConfig), buildVisitor(astVisitorConfig, treeNodes));
 
-    return {name: '', body: treeNodes};
+    return { name: '', body: treeNodes };
 };
 
-const rebuildConfigForAbstractionLevel = (level) => {
+const rebuildConfigForAbstractionLevel = level => {
     const levelList = [].concat(level).reduce((list, item) => {
         if (typeof item === 'string') {
             list.push(item);
@@ -35,7 +32,7 @@ const rebuildConfigForAbstractionLevel = (level) => {
     return DefinitionsMap.filter(item => levelList.indexOf(item.type) !== -1);
 };
 
-export const createFlowTreeBuilder = ({astParserConfig = {}, astVisitorConfig = {}} = {}) => {
+export const createFlowTreeBuilder = ({ astParserConfig = {}, astVisitorConfig = {} } = {}) => {
     const options = {
         astParserConfig: {
             ...astParserConfig
@@ -50,7 +47,7 @@ export const createFlowTreeBuilder = ({astParserConfig = {}, astVisitorConfig = 
 
     return {
         setAbstractionLevel(level) {
-            options.astVisitorConfig.definitionsMap = rebuildConfigForAbstractionLevel(level)
+            options.astVisitorConfig.definitionsMap = rebuildConfigForAbstractionLevel(level);
         },
 
         setIgnoreFilter(fn) {

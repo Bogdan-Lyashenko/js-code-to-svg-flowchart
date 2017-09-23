@@ -80,10 +80,12 @@ export default {
 
     RootStartPoint: {
         center: {
-            x: 15, y: 15
+            x: 15,
+            y: 15
         },
         childOffset: {
-            x: 20, y: 50
+            x: 20,
+            y: 50
         }
     },
 

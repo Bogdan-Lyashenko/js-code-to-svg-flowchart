@@ -1,4 +1,4 @@
-export const setupPointer = (cache) => ({
+export const setupPointer = cache => ({
     list: cache ? [cache] : [],
 
     getCurrent() {

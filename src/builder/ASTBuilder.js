@@ -1,8 +1,8 @@
 import * as babylon from 'babylon';
-import traverse from 'babel-traverse';//TODO: remove, needed only for debug now
+import traverse from 'babel-traverse'; //TODO: remove, needed only for debug now
 
-import {TOKEN_KEYS} from '../shared/constants';
-import {setupPointer} from '../shared/utils/treeLevelsPointer';
+import { TOKEN_KEYS } from '../shared/constants';
+import { setupPointer } from '../shared/utils/treeLevelsPointer';
 
 export const buildAST = (code, config) => {
     //TODO: remove when finish with defining types
@@ -24,16 +24,16 @@ export const buildAST = (code, config) => {
     });*/
 
     return babylon.parse(code, {
-        sourceType: 'module',//TODO: move to multiple files support, make it configurable
+        sourceType: 'module', //TODO: move to multiple files support, make it configurable
         plugins: [
             'objectRestSpread' //TODO: plugins should be configurable
         ]
     });
 };
 
-export const buildVisitor = ({definitionsMap, globalIgnore}, treeNodesDestination) => {
+export const buildVisitor = ({ definitionsMap, globalIgnore }, treeNodesDestination) => {
     const pointer = setupPointer(treeNodesDestination),
-        wrapByGlobalIgnore = (visit) => (path) => visit(path, globalIgnore);
+        wrapByGlobalIgnore = visit => path => visit(path, globalIgnore);
 
     return definitionsMap.reduce((acc, item) => {
         if (!item.body) {
@@ -79,12 +79,12 @@ const enterComplexEntry = (item, pointer) => (path, globalIgnore) => {
     pointer.stepIn(entryConfig.body);
 };
 
-const getStatementParentKey = (path) => {
+const getStatementParentKey = path => {
     const statementParent = path.find(path => path.parentKey === TOKEN_KEYS.PROGRAM || path.isStatementOrBlock()) || {};
     return statementParent.key;
 };
 
-const exitComplexEntry = (item, pointer) => (path) => {
+const exitComplexEntry = (item, pointer) => path => {
     if (item.ignore && item.ignore(path)) return;
 
     pointer.stepOut();

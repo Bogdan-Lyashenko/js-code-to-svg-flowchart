@@ -24,18 +24,18 @@ export const SVGBase = () => {
         printChildren() {
             let svgString = ``;
 
-            [].concat(state.shapes, state.arrowConnections).forEach((node) => {
+            [].concat(state.shapes, state.arrowConnections).forEach(node => {
                 svgString += node.print();
             });
 
             return svgString;
         },
         print() {
-            const {w, h} = state.dimensions;
+            const { w, h } = state.dimensions;
 
             return `<svg width="${w}" height="${h}">
                 ${this.printChildren()}
-            </svg>`
+            </svg>`;
         }
     };
 };

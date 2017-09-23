@@ -1,4 +1,4 @@
-import {mergeObjectStructures} from '../../../shared/utils/composition';
+import { mergeObjectStructures } from '../../../shared/utils/composition';
 
 import DefaultBaseTheme from './themes/DefaultBaseTheme';
 import BlackAndWhiteTheme from './themes/BlackAndWhite';
@@ -13,11 +13,11 @@ const ThemeNamesMap = {
 export const Themes = {
     [ThemeNamesMap.DEFAULT]: DefaultBaseTheme,
     [ThemeNamesMap.BLACK_AND_WHITE]: BlackAndWhiteTheme,
-    [ThemeNamesMap.BLURRED]: BluredTheme,
+    [ThemeNamesMap.BLURRED]: BluredTheme
 };
 
-export const getTheme = (themeName) => {
-    if (!Themes[themeName] === themeName === ThemeNamesMap.DEFAULT) {
+export const getTheme = themeName => {
+    if ((!Themes[themeName] === themeName) === ThemeNamesMap.DEFAULT) {
         return Themes.DEFAULT;
     }
 

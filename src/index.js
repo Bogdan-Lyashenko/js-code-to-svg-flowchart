@@ -1,5 +1,5 @@
-import {createFlowTreeBuilder, ABSTRACTION_LEVELS} from './builder/FlowTreeBuilder';
-import {createSVGRender} from './render/svg/SVGRender';
+import { createFlowTreeBuilder, ABSTRACTION_LEVELS } from './builder/FlowTreeBuilder';
+import { createSVGRender } from './render/svg/SVGRender';
 
 var code = `
     console.log('test 0');
@@ -56,7 +56,6 @@ function logout() {
     const test = 'ignore';
 }
 `;
-
 
 const simpleStrSwitch = `
     function Test(a) {
@@ -118,7 +117,6 @@ function ll(b) {
 export const BOB = 12;
 `;
 
-
 const simpleStrClass = `
 class Animal extends Zero {
     constructor(b) {
@@ -167,25 +165,18 @@ function test(b) {
 var t0 = performance.now();
 
 const flowTreeBuilder = createFlowTreeBuilder();
-//flowTreeBuilder.setAbstractionLevel(ABSTRACTION_LEVELS.FUNCTION);
-//flowTreeBuilder.setAbstractionLevel([ABSTRACTION_LEVELS.CLASS, ABSTRACTION_LEVELS.FUNCTION]);
-//flowTreeBuilder.setAbstractionLevel([ABSTRACTION_LEVELS.IMPORT, ABSTRACTION_LEVELS.EXPORT]);
-
-//flowTreeBuilder.setIgnoreFilter((entry) => entry.name.startsWith('console.log'));
 
 const flowTree = flowTreeBuilder.build(code);
 
-const svgRender = createSVGRender({Circle: {strokeColor: 'red'}});
+const svgRender = createSVGRender({ Circle: { strokeColor: 'red' } });
 
 svgRender.buildShapesTree(flowTree);
-
-svgRender.blur((shape)=> shape.getName().indexOf('traverseDocRec(')!==-1 && shape.getNodeType() !== 'Function');
 
 document.getElementById('svgImage').innerHTML = svgRender.render();
 
 var t1 = performance.now();
-console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
+console.log('Call to doSomething took ' + (t1 - t0) + ' milliseconds.');
 
-export default (code) => {
+export default code => {
     //return rendered tree
-}
+};

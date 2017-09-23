@@ -16402,11 +16402,6 @@ var simpleStr = '\nfunction test(b) {\n    var a = 12;\n    \n  }\n';
 var t0 = performance.now();
 
 var flowTreeBuilder = (0, _FlowTreeBuilder.createFlowTreeBuilder)();
-//flowTreeBuilder.setAbstractionLevel(ABSTRACTION_LEVELS.FUNCTION);
-//flowTreeBuilder.setAbstractionLevel([ABSTRACTION_LEVELS.CLASS, ABSTRACTION_LEVELS.FUNCTION]);
-//flowTreeBuilder.setAbstractionLevel([ABSTRACTION_LEVELS.IMPORT, ABSTRACTION_LEVELS.EXPORT]);
-
-//flowTreeBuilder.setIgnoreFilter((entry) => entry.name.startsWith('console.log'));
 
 var flowTree = flowTreeBuilder.build(code);
 
@@ -16414,14 +16409,10 @@ var svgRender = (0, _SVGRender.createSVGRender)({ Circle: { strokeColor: 'red' }
 
 svgRender.buildShapesTree(flowTree);
 
-svgRender.blur(function (shape) {
-    return shape.getName().indexOf('traverseDocRec(') !== -1 && shape.getNodeType() !== 'Function';
-});
-
 document.getElementById('svgImage').innerHTML = svgRender.render();
 
 var t1 = performance.now();
-console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
+console.log('Call to doSomething took ' + (t1 - t0) + ' milliseconds.');
 
 exports.default = function (code) {
     //return rendered tree
@@ -16713,9 +16704,11 @@ var getConnectionConfig = exports.getConnectionConfig = function getConnectionCo
             break;
 
         case _constants.ARROW_TYPE.DOWN:
-            config.linePoints = [{ x: startPoint.x, y: startPoint.y }, { x: boundaryPoint.x + theme.lineTurnOffset, y: startPoint.y }, { x: boundaryPoint.x + theme.lineTurnOffset, y: endPoint.y - theme.lineTurnOffset }, { x: endPoint.x, y: endPoint.y - theme.lineTurnOffset }, { x: endPoint.x, y: endPoint.y }];
+            config.linePoints = [{ x: startPoint.x, y: startPoint.y }, { x: boundaryPoint.x + theme.lineTurnOffset, y: startPoint.y }, {
+                x: boundaryPoint.x + theme.lineTurnOffset,
+                y: endPoint.y - theme.lineTurnOffset
+            }, { x: endPoint.x, y: endPoint.y - theme.lineTurnOffset }, { x: endPoint.x, y: endPoint.y }];
             break;
-
     }
 
     return config;
@@ -16900,7 +16893,6 @@ var calculateShapesBoundaries = exports.calculateShapesBoundaries = function cal
     list.forEach(function (_ref) {
         var min = _ref.min,
             max = _ref.max;
-
 
         if (min.x < minX) {
             minX = min.x;
@@ -29558,7 +29550,6 @@ var DefinitionsMap = exports.DefinitionsMap = [{
 
         return statementParent.isVariableDeclaration() || statementParent.isConditional() || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION;
     }
-
 }, {
     type: _constants.TOKEN_TYPES.UPDATE_EXPRESSION,
     getName: _core.idleConverter,
@@ -37018,7 +37009,6 @@ var setupGetChildBoundaries = exports.setupGetChildBoundaries = function setupGe
                 getBoundaries: function getBoundaries() {
                     return boundaries;
                 }
-
             }, {
                 getBody: function getBody(node) {
                     return node.getBody();
@@ -37083,7 +37073,10 @@ var calculateHeight = exports.calculateHeight = function calculateHeight(state) 
 };
 
 var calculateDimensions = exports.calculateDimensions = function calculateDimensions(state) {
-    return { w: calculateWidth(state), h: calculateHeight(state) };
+    return {
+        w: calculateWidth(state),
+        h: calculateHeight(state)
+    };
 };
 
 var calculatePosition = exports.calculatePosition = function calculatePosition(state) {
@@ -37170,15 +37163,20 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 var SvgStyleFieldsMap = [{
-    from: 'fillColor', to: 'fill'
+    from: 'fillColor',
+    to: 'fill'
 }, {
-    from: 'strokeColor', to: 'stroke'
+    from: 'strokeColor',
+    to: 'stroke'
 }, {
-    from: 'strokeWidth', to: 'stroke-width'
+    from: 'strokeWidth',
+    to: 'stroke-width'
 }, {
-    from: 'fillOpacity', to: 'fill-opacity'
+    from: 'fillOpacity',
+    to: 'fill-opacity'
 }, {
-    from: 'strokeOpacity', to: 'stroke-opacity'
+    from: 'strokeOpacity',
+    to: 'stroke-opacity'
 }];
 
 var extractStylePropsFromTheme = exports.extractStylePropsFromTheme = function extractStylePropsFromTheme(theme) {
@@ -37485,7 +37483,10 @@ var setupReturnStatementBehaviour = function setupReturnStatementBehaviour(state
 
             var arrowSize = { x: arrowTheme.sizeX, y: arrowTheme.sizeY };
 
-            var arrow = (0, _svgPrimitives.getClosedPath)((0, _geometry.addOffsetToPoints)([{ x: 0, y: 0 }, { x: arrowSize.x, y: arrowSize.y / 2 }, { x: 0, y: arrowSize.y }], { x: x + w + arrowTheme.handlerLength, y: y + h / 2 - arrowSize.y / 2 }), arrowTheme);
+            var arrow = (0, _svgPrimitives.getClosedPath)((0, _geometry.addOffsetToPoints)([{ x: 0, y: 0 }, { x: arrowSize.x, y: arrowSize.y / 2 }, { x: 0, y: arrowSize.y }], {
+                x: x + w + arrowTheme.handlerLength,
+                y: y + h / 2 - arrowSize.y / 2
+            }), arrowTheme);
 
             return '\n            <g>\n                ' + (0, _svgPrimitives.getRoundedRectangle)(x, y, w, h, theme) + '\n                \n                ' + (0, _svgPrimitives.getLine)(x + w, y + h / 2 - arrowTheme.handlerLength, x + w + arrowTheme.handlerLength, y + h / 2 - arrowTheme.handlerLength, arrowTheme) + '\n                \n                ' + (0, _svgPrimitives.getLine)(x + w, y + h / 2 + arrowTheme.handlerLength, x + w + arrowTheme.handlerLength, y + h / 2 + arrowTheme.handlerLength, arrowTheme) + '\n\n                ' + arrow + '\n                             \n                ' + this.printName(namePosition) + '\n            </g>';
         }
@@ -37565,10 +37566,8 @@ var buildShapeStructures = exports.buildShapeStructures = function buildShapeStr
     (0, _traversalWithTreeLevelsPointer.complexTraversal)(flowTree, root, function (parentNode, parentShape) {
         position.x += parentShape.getChildOffsetPoint().x;
     }, function (node, parentShape) {
-
         //TODO: refactor, move cases out of func, it will to many of them soon
         if (parentShape.getNodeType() === _constants.TOKEN_TYPES.CONDITIONAL && node.key === _constants.TOKEN_KEYS.ALTERNATE && !parentShape.checkIfChildExist(_constants.TOKEN_KEYS.ALTERNATE)) {
-
             var alternatePoint = parentShape.getAlternativeBranchChildOffsetPoint();
             position.x = alternatePoint.x + parentShape.getMargin();
             position.y = alternatePoint.y;
@@ -37616,7 +37615,6 @@ var buildConnections = exports.buildConnections = function buildConnections(shap
         latestShape = shape;
 
         //TODO: add const startShape = ; because it's not always parent (like `continue` in loop actually change flow)
-
 
         var config = {
             endPoint: shape.getToPoint(),
@@ -37985,10 +37983,12 @@ exports.default = {
 
     RootStartPoint: {
         center: {
-            x: 15, y: 15
+            x: 15,
+            y: 15
         },
         childOffset: {
-            x: 20, y: 50
+            x: 20,
+            y: 50
         }
     },
 

@@ -1,13 +1,13 @@
 import generate from 'babel-generator';
-import {TOKEN_TYPES} from '../../shared/constants';
+import { TOKEN_TYPES } from '../../shared/constants';
 
-export const importDeclarationConverter = ({node}) => 'import from' + generate(node.source).code;
+export const importDeclarationConverter = ({ node }) => 'import from' + generate(node.source).code;
 
-export const exportNamedDeclarationConverter = ({node}) => `export ${getExportedTokenName(node)}`;
+export const exportNamedDeclarationConverter = ({ node }) => `export ${getExportedTokenName(node)}`;
 
-export const exportDefaultDeclarationConverter = ({node}) => `export default ${getExportedTokenName(node)}`;
+export const exportDefaultDeclarationConverter = ({ node }) => `export default ${getExportedTokenName(node)}`;
 
-const getExportedTokenName = ({declaration}) => {
+const getExportedTokenName = ({ declaration }) => {
     if ([TOKEN_TYPES.FUNCTION_DECLARATION, TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION].indexOf(declaration.type) !== -1) {
         return declaration.id ? declaration.id.name : 'function';
     }
@@ -21,6 +21,6 @@ const getExportedTokenName = ({declaration}) => {
     }
 };
 
-export const classDeclarationConverter = ({node}) => {
+export const classDeclarationConverter = ({ node }) => {
     return `class ${generate(node.id).code} ${node.superClass ? ` extends ${node.superClass.name}` : ''}`;
 };

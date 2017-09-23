@@ -1,9 +1,9 @@
-export const buildIterator = (list) => ({
+export const buildIterator = list => ({
     index: 0,
     getNext() {
         return list[this.index++];
     },
-    reset(){
+    reset() {
         this.index = 0;
     }
 });

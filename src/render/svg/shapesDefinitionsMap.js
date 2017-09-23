@@ -1,4 +1,4 @@
-import {TOKEN_TYPES} from '../../shared/constants';
+import { TOKEN_TYPES } from '../../shared/constants';
 
 import VerticalEdgedRectangle from './shapes/VerticalEdgedRectangle';
 import Rectangle from './shapes/Rectangle';
@@ -7,7 +7,7 @@ import LoopRhombus from './shapes/LoopRhombus';
 import Circle from './shapes/Circle';
 import ReturnStatement from './shapes/ReturnStatement';
 
-export const getShapeForNode = (node) => {
+export const getShapeForNode = node => {
     switch (node.type) {
         case TOKEN_TYPES.FUNCTION:
             return VerticalEdgedRectangle;
