@@ -80,7 +80,8 @@ const enterComplexEntry = (item, pointer) => (path, globalIgnore) => {
 };
 
 const getStatementParentKey = path => {
-    const statementParent = path.find(path => path.parentKey === TOKEN_KEYS.PROGRAM || path.isStatementOrBlock()) || {};
+    const statementParent =
+        path.find(path => path.parentKey === TOKEN_KEYS.PROGRAM || path.isStatementOrBlock()) || {};
     return statementParent.key;
 };
 

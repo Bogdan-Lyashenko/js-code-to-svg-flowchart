@@ -22,20 +22,25 @@ const SvgStyleFieldsMap = [
 ];
 
 export const extractStylePropsFromTheme = theme => {
-    return SvgStyleFieldsMap.map(item => (theme[item.from] ? `${item.to}:${theme[item.from]}` : null))
+    return SvgStyleFieldsMap.map(
+        item => (theme[item.from] ? `${item.to}:${theme[item.from]}` : null)
+    )
         .filter(i => i)
         .join('; ');
 };
 
 export const extractStyleAttrsFromTheme = theme => {
-    return SvgStyleFieldsMap.map(item => (theme[item.from] ? `${item.to}="${theme[item.from]}"` : null))
+    return SvgStyleFieldsMap.map(
+        item => (theme[item.from] ? `${item.to}="${theme[item.from]}"` : null)
+    )
         .filter(i => i)
         .join(' ');
 };
 
 export const getRhombus = (x, y, w, h, theme) => {
     return `
-        <polygon points="${x},${y + h / 2} ${x + w / 2},${y} ${x + w},${y + h / 2} ${x + w / 2},${y + h}"
+        <polygon points="${x},${y + h / 2} ${x + w / 2},${y} ${x + w},${y + h / 2} ${x +
+        w / 2},${y + h}"
             style="${extractStylePropsFromTheme(theme)}" />`;
 };
 
@@ -117,7 +122,8 @@ const getLinePointStr = (point, previousPoint, radius) => {
     }
 };
 
-const getShiftedByArcNextPointValue = (pointValue, previousPointValue, radius) => (pointValue > previousPointValue ? pointValue - radius : pointValue + radius);
+const getShiftedByArcNextPointValue = (pointValue, previousPointValue, radius) =>
+    pointValue > previousPointValue ? pointValue - radius : pointValue + radius;
 
 const getArcEndPointStr = (point, previousPoint, radius) => {
     if (point.x === previousPoint.x) {
@@ -129,4 +135,5 @@ const getArcEndPointStr = (point, previousPoint, radius) => {
     }
 };
 
-const getArcEndPointValue = (pointValue, previousPointValue, radius) => (pointValue > previousPointValue ? previousPointValue + radius : previousPointValue - radius);
+const getArcEndPointValue = (pointValue, previousPointValue, radius) =>
+    pointValue > previousPointValue ? previousPointValue + radius : previousPointValue - radius;

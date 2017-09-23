@@ -37786,7 +37786,7 @@ var applyStyleToTheme = exports.applyStyleToTheme = function applyStyleToTheme(t
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 exports.getNameSplitterTokensIterator = exports.NAME_SPLITTER_TOKENS = exports.MAX_NAME_STR_LENGTH = undefined;
 
@@ -37797,7 +37797,7 @@ var MAX_NAME_STR_LENGTH = exports.MAX_NAME_STR_LENGTH = 20;
 var NAME_SPLITTER_TOKENS = exports.NAME_SPLITTER_TOKENS = ['||', '&&', '=', '?', ':', '<==', '>==', '<', '>', '===', '==', ',', '.', '('];
 
 var getNameSplitterTokensIterator = exports.getNameSplitterTokensIterator = function getNameSplitterTokensIterator() {
-  return (0, _iteratorBuilder.buildIterator)(NAME_SPLITTER_TOKENS);
+    return (0, _iteratorBuilder.buildIterator)(NAME_SPLITTER_TOKENS);
 };
 
 /***/ }),

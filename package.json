@@ -3,7 +3,8 @@
   "version": "0",
   "scripts": {
     "build": "webpack --env build",
-    "dev": "webpack --progress --colors --watch --env dev"
+    "dev": "webpack --progress --colors --watch --env dev",
+    "pretty": "prettier  --write \"./src/**/*.js\""
   },
   "devDependencies": {
     "babel-cli": "6.24.1",

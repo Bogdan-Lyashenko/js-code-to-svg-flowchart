@@ -38,17 +38,29 @@ const setupPrintBehaviour = state => ({
             case ARROW_TYPE.RIGHT:
                 point = { x: x - arrowSize.x, y: y - arrowSize.y / 2 };
 
-                return this.printArrow(point, [{ x: 0, y: 0 }, { x: arrowSize.x, y: arrowSize.y / 2 }, { x: 0, y: arrowSize.y }]);
+                return this.printArrow(point, [
+                    { x: 0, y: 0 },
+                    { x: arrowSize.x, y: arrowSize.y / 2 },
+                    { x: 0, y: arrowSize.y }
+                ]);
 
             case ARROW_TYPE.LEFT:
                 point = { x: x, y: y - arrowSize.y / 2 };
 
-                return this.printArrow(point, [{ x: 0, y: arrowSize.y / 2 }, { x: arrowSize.x, y: 0 }, { x: arrowSize.x, y: arrowSize.y }]);
+                return this.printArrow(point, [
+                    { x: 0, y: arrowSize.y / 2 },
+                    { x: arrowSize.x, y: 0 },
+                    { x: arrowSize.x, y: arrowSize.y }
+                ]);
 
             case ARROW_TYPE.DOWN:
                 point = { x: x - arrowSize.y / 2, y: y - arrowSize.x };
 
-                return this.printArrow(point, [{ x: 0, y: 0 }, { x: arrowSize.y / 2, y: arrowSize.x }, { x: arrowSize.y, y: 0 }]);
+                return this.printArrow(point, [
+                    { x: 0, y: 0 },
+                    { x: arrowSize.y / 2, y: arrowSize.x },
+                    { x: arrowSize.y, y: 0 }
+                ]);
 
             default:
                 return '';
@@ -66,6 +78,7 @@ const setupPrintBehaviour = state => ({
     }
 });
 
-export const ConnectionArrow = state => assignState(state, [setupUpdateBehaviour, setupPrintBehaviour, setupSelectors]);
+export const ConnectionArrow = state =>
+    assignState(state, [setupUpdateBehaviour, setupPrintBehaviour, setupSelectors]);
 
 export default (config, theme) => ConnectionArrow({ config, theme });

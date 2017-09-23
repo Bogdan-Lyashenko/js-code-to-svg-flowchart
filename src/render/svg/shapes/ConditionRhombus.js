@@ -2,7 +2,14 @@ import { TOKEN_KEYS } from '../../../shared/constants';
 import { getRhombus, getRoundedRectangle, getText } from '../../../shared/utils/svgPrimitives';
 import { assignState } from '../../../shared/utils/composition';
 
-import { setupBasicBehaviour, setupInitialSelectors, calculateBackPoint, calculateBoundaries, calculatePosition, delegateInit } from './BaseShape';
+import {
+    setupBasicBehaviour,
+    setupInitialSelectors,
+    calculateBackPoint,
+    calculateBoundaries,
+    calculatePosition,
+    delegateInit
+} from './BaseShape';
 
 import { calculateDimensions, calculateFromPoint, calculateChildOffsetPoint } from './Rhombus';
 
@@ -72,11 +79,28 @@ export const setupConditionRhombusBehavior = state => ({
             alternative = '-';
 
         return `
-            ${getText(x + R / 2 - text.length * theme.symbolWidth / 2, y + R / 2 + theme.symbolHeight / 2, theme, text)}
+            ${getText(
+                x + R / 2 - text.length * theme.symbolWidth / 2,
+                y + R / 2 + theme.symbolHeight / 2,
+                theme,
+                text
+            )}
             
-            ${getText(x + R / 2 + theme.symbolWidth, y + R + theme.symbolWidth / 4, theme, positive)}
+            ${getText(
+                x + R / 2 + theme.symbolWidth,
+                y + R + theme.symbolWidth / 4,
+                theme,
+                positive
+            )}
             
-            ${this.checkIfChildExist(TOKEN_KEYS.ALTERNATE) ? getText(x + w + theme.symbolWidth / 2, y + R / 2 - theme.symbolWidth / 4, theme, alternative) : ''}
+            ${this.checkIfChildExist(TOKEN_KEYS.ALTERNATE)
+                ? getText(
+                      x + w + theme.symbolWidth / 2,
+                      y + R / 2 - theme.symbolWidth / 4,
+                      theme,
+                      alternative
+                  )
+                : ''}
         `;
     },
 
@@ -113,7 +137,12 @@ export const ConditionRhombus = initialState => {
 
     state = { ...state, ...setupInitialProperties(state) };
 
-    return assignState(state, [setupInitialSelectors, setupAdditionalSelectors, setupBasicBehaviour, setupConditionRhombusBehavior]);
+    return assignState(state, [
+        setupInitialSelectors,
+        setupAdditionalSelectors,
+        setupBasicBehaviour,
+        setupConditionRhombusBehavior
+    ]);
 };
 
 export default delegateInit(ConditionRhombus, ENTITY_FIELD_NAME);

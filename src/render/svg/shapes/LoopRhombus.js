@@ -1,7 +1,14 @@
 import { getRhombus, getRoundedRectangle, getText } from '../../../shared/utils/svgPrimitives';
 import { assignState } from '../../../shared/utils/composition';
 
-import { setupBasicBehaviour, setupInitialSelectors, calculateToPoint, calculateBackPoint, calculateBoundaries, delegateInit } from './BaseShape';
+import {
+    setupBasicBehaviour,
+    setupInitialSelectors,
+    calculateToPoint,
+    calculateBackPoint,
+    calculateBoundaries,
+    delegateInit
+} from './BaseShape';
 
 import { calculateDimensions, calculateFromPoint, calculateChildOffsetPoint } from './Rhombus';
 
@@ -43,7 +50,12 @@ const setupLoopRhombusBehavior = state => ({
             R = state.dimensions.h,
             text = 'for';
 
-        return getText(x + R / 2 - text.length * theme.symbolWidth / 2, y + R / 2 + theme.symbolHeight / 2, theme, text);
+        return getText(
+            x + R / 2 - text.length * theme.symbolWidth / 2,
+            y + R / 2 + theme.symbolHeight / 2,
+            theme,
+            text
+        );
     },
 
     print() {
@@ -86,7 +98,12 @@ export const LoopRhombus = initialState => {
 
     state = { ...state, ...setupInitialProperties(state) };
 
-    return assignState(state, [setupInitialSelectors, setupAdditionalSelectors, setupBasicBehaviour, setupLoopRhombusBehavior]);
+    return assignState(state, [
+        setupInitialSelectors,
+        setupAdditionalSelectors,
+        setupBasicBehaviour,
+        setupLoopRhombusBehavior
+    ]);
 };
 
 export default delegateInit(LoopRhombus, ENTITY_FIELD_NAME);

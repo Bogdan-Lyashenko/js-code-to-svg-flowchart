@@ -39,9 +39,16 @@ export const getConnectionConfig = ({ startPoint, endPoint, boundaryPoint, arrow
             config.linePoints = [{ x: startPoint.x, y: startPoint.y }];
 
             if (boundaryPoint) {
-                config.linePoints = config.linePoints.concat([{ x: boundaryPoint.x, y: startPoint.y }, { x: boundaryPoint.x, y: endPoint.y }, { x: endPoint.x, y: endPoint.y }]);
+                config.linePoints = config.linePoints.concat([
+                    { x: boundaryPoint.x, y: startPoint.y },
+                    { x: boundaryPoint.x, y: endPoint.y },
+                    { x: endPoint.x, y: endPoint.y }
+                ]);
             } else {
-                config.linePoints = config.linePoints.concat([{ x: startPoint.x, y: endPoint.y }, { x: endPoint.x, y: endPoint.y }]);
+                config.linePoints = config.linePoints.concat([
+                    { x: startPoint.x, y: endPoint.y },
+                    { x: endPoint.x, y: endPoint.y }
+                ]);
             }
             break;
 

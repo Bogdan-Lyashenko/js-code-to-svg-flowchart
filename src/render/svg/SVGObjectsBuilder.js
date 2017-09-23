@@ -28,7 +28,11 @@ export const buildShapeStructures = (flowTree, styleTheme) => {
         },
         (node, parentShape) => {
             //TODO: refactor, move cases out of func, it will to many of them soon
-            if (parentShape.getNodeType() === TOKEN_TYPES.CONDITIONAL && node.key === TOKEN_KEYS.ALTERNATE && !parentShape.checkIfChildExist(TOKEN_KEYS.ALTERNATE)) {
+            if (
+                parentShape.getNodeType() === TOKEN_TYPES.CONDITIONAL &&
+                node.key === TOKEN_KEYS.ALTERNATE &&
+                !parentShape.checkIfChildExist(TOKEN_KEYS.ALTERNATE)
+            ) {
                 const alternatePoint = parentShape.getAlternativeBranchChildOffsetPoint();
                 position.x = alternatePoint.x + parentShape.getMargin();
                 position.y = alternatePoint.y;

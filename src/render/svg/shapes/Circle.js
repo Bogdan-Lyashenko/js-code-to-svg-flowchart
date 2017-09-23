@@ -1,7 +1,13 @@
 import { getCircle } from '../../../shared/utils/svgPrimitives';
 import { assignState } from '../../../shared/utils/composition';
 
-import { extractBasicState, setupBasicBehaviour, setupInitialSelectors, calculateBoundaries, delegateInit } from './BaseShape';
+import {
+    extractBasicState,
+    setupBasicBehaviour,
+    setupInitialSelectors,
+    calculateBoundaries,
+    delegateInit
+} from './BaseShape';
 
 const ENTITY_FIELD_NAME = 'Circle';
 

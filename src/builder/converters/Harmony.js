@@ -5,10 +5,15 @@ export const importDeclarationConverter = ({ node }) => 'import from' + generate
 
 export const exportNamedDeclarationConverter = ({ node }) => `export ${getExportedTokenName(node)}`;
 
-export const exportDefaultDeclarationConverter = ({ node }) => `export default ${getExportedTokenName(node)}`;
+export const exportDefaultDeclarationConverter = ({ node }) =>
+    `export default ${getExportedTokenName(node)}`;
 
 const getExportedTokenName = ({ declaration }) => {
-    if ([TOKEN_TYPES.FUNCTION_DECLARATION, TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION].indexOf(declaration.type) !== -1) {
+    if (
+        [TOKEN_TYPES.FUNCTION_DECLARATION, TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION].indexOf(
+            declaration.type
+        ) !== -1
+    ) {
         return declaration.id ? declaration.id.name : 'function';
     }
 
@@ -22,5 +27,7 @@ const getExportedTokenName = ({ declaration }) => {
 };
 
 export const classDeclarationConverter = ({ node }) => {
-    return `class ${generate(node.id).code} ${node.superClass ? ` extends ${node.superClass.name}` : ''}`;
+    return `class ${generate(node.id).code} ${node.superClass
+        ? ` extends ${node.superClass.name}`
+        : ''}`;
 };

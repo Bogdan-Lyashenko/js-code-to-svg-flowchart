@@ -20,7 +20,12 @@ import {
     debuggerConverter
 } from './converters/core';
 
-import { importDeclarationConverter, exportNamedDeclarationConverter, exportDefaultDeclarationConverter, classDeclarationConverter } from './converters/Harmony';
+import {
+    importDeclarationConverter,
+    exportNamedDeclarationConverter,
+    exportDefaultDeclarationConverter,
+    classDeclarationConverter
+} from './converters/Harmony';
 
 export const DefinitionsMap = [
     {
@@ -48,7 +53,11 @@ export const DefinitionsMap = [
         ignore: path => {
             const statementParent = path.getStatementParent();
 
-            return statementParent.isVariableDeclaration() || statementParent.isConditional() || path.parent.type === TOKEN_TYPES.ASSIGNMENT_EXPRESSION;
+            return (
+                statementParent.isVariableDeclaration() ||
+                statementParent.isConditional() ||
+                path.parent.type === TOKEN_TYPES.ASSIGNMENT_EXPRESSION
+            );
         }
     },
     {
@@ -59,7 +68,9 @@ export const DefinitionsMap = [
     {
         type: TOKEN_TYPES.NEW_EXPRESSION,
         getName: idleConverter,
-        ignore: path => path.getStatementParent().isVariableDeclaration() || path.parent.type === TOKEN_TYPES.ASSIGNMENT_EXPRESSION
+        ignore: path =>
+            path.getStatementParent().isVariableDeclaration() ||
+            path.parent.type === TOKEN_TYPES.ASSIGNMENT_EXPRESSION
     },
     {
         type: TOKEN_TYPES.LOOP,

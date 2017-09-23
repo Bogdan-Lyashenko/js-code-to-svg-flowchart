@@ -1,4 +1,9 @@
-import { getDefaultTheme, getBlurredTheme, getBlackAndWhiteTheme, applyStyleToTheme } from './appearance/StyleThemeFactory';
+import {
+    getDefaultTheme,
+    getBlurredTheme,
+    getBlackAndWhiteTheme,
+    applyStyleToTheme
+} from './appearance/StyleThemeFactory';
 import { buildSVGObjectsTree } from './SVGObjectsBuilder';
 
 export const createSVGRender = (customStyleTheme = {}) => {
@@ -56,7 +61,11 @@ export const createSVGRender = (customStyleTheme = {}) => {
             this.findShape(fn, shape => {
                 const connectionArrow = shape.getAssignedConnectionArrow();
 
-                updateShapeTheme(shape, blurredTheme[shape.getShapeType()], connectionArrow ? blurredTheme[connectionArrow.getFieldName()] : null);
+                updateShapeTheme(
+                    shape,
+                    blurredTheme[shape.getShapeType()],
+                    connectionArrow ? blurredTheme[connectionArrow.getFieldName()] : null
+                );
             });
         },
 

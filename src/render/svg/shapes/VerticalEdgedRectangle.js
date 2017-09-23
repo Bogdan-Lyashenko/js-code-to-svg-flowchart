@@ -1,7 +1,15 @@
 import { getRectangle, getLine } from '../../../shared/utils/svgPrimitives';
 import { assignState } from '../../../shared/utils/composition';
 
-import { setupBasicBehaviour, setupInitialProperties, setupInitialSelectors, calculateHeight, calculateNameBasedWidth, calculatePosition, delegateInit } from './BaseShape';
+import {
+    setupBasicBehaviour,
+    setupInitialProperties,
+    setupInitialSelectors,
+    calculateHeight,
+    calculateNameBasedWidth,
+    calculatePosition,
+    delegateInit
+} from './BaseShape';
 
 const ENTITY_FIELD_NAME = 'VerticalEdgedRectangle';
 
@@ -24,7 +32,8 @@ const setupVerticalEdgedRectangleBehavior = state => ({
     }
 });
 
-const calculateWidth = state => 2 * (state.theme.horizontalPadding + state.theme.edgeOffset) + calculateNameBasedWidth(state);
+const calculateWidth = state =>
+    2 * (state.theme.horizontalPadding + state.theme.edgeOffset) + calculateNameBasedWidth(state);
 
 const calculateDimensions = state => ({
     w: calculateWidth(state),
@@ -42,7 +51,11 @@ export const VerticalEdgedRectangle = initialState => {
 
     state = { ...state, ...setupInitialProperties(state) };
 
-    return assignState(state, [setupInitialSelectors, setupBasicBehaviour, setupVerticalEdgedRectangleBehavior]);
+    return assignState(state, [
+        setupInitialSelectors,
+        setupBasicBehaviour,
+        setupVerticalEdgedRectangleBehavior
+    ]);
 };
 
 export default delegateInit(VerticalEdgedRectangle, ENTITY_FIELD_NAME);

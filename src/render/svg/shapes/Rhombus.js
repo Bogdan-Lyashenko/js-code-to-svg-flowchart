@@ -1,4 +1,7 @@
-import { calculateWidth as calculateWidthBaseShape, calculateHeight as calculateHeightBaseHeight } from './BaseShape';
+import {
+    calculateWidth as calculateWidthBaseShape,
+    calculateHeight as calculateHeightBaseHeight
+} from './BaseShape';
 
 export const calculateDimensions = state => ({
     w: calculateWidth(state),
@@ -6,7 +9,8 @@ export const calculateDimensions = state => ({
 });
 
 export const calculateWidth = state => calculateHeight(state) + calculateWidthBaseShape(state);
-export const calculateHeight = state => 2 * state.theme.thinPartOffset + calculateHeightBaseHeight(state);
+export const calculateHeight = state =>
+    2 * state.theme.thinPartOffset + calculateHeightBaseHeight(state);
 
 export const calculateFromPoint = ({ position, dimensions }) => ({
     x: position.x + dimensions.h / 2,

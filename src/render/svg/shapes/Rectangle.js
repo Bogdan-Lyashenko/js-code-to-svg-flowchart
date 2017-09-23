@@ -1,7 +1,12 @@
 import { getRoundedRectangle } from '../../../shared/utils/svgPrimitives';
 import { assignState } from '../../../shared/utils/composition';
 
-import { setupCompleteState, setupBasicBehaviour, setupInitialSelectors, delegateInit } from './BaseShape';
+import {
+    setupCompleteState,
+    setupBasicBehaviour,
+    setupInitialSelectors,
+    delegateInit
+} from './BaseShape';
 
 const ENTITY_FIELD_NAME = 'Rectangle';
 

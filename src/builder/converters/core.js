@@ -18,7 +18,9 @@ export const functionConverter = ({ node }) => {
     }
 
     if (node.type === TOKEN_TYPES.CLASS_METHOD) {
-        return node.kind === CLASS_FUNCTION_KINDS.CONSTRUCTOR ? 'constructor' + paramsCode : node.key.name + paramsCode;
+        return node.kind === CLASS_FUNCTION_KINDS.CONSTRUCTOR
+            ? 'constructor' + paramsCode
+            : node.key.name + paramsCode;
     }
 
     return 'function' + paramsCode;
@@ -41,7 +43,10 @@ export const loopConverter = ({ node }) => {
 
     if (node.left && node.right) {
         const innerPart = node.type === TOKEN_TYPES.FOR_OF_STATEMENT ? 'of' : 'in';
-        const leftPart = node.left.type === TOKEN_TYPES.VARIABLE_DECLARATION ? getVariableDeclarations(node.left.declarations) : generate(node.left).code;
+        const leftPart =
+            node.left.type === TOKEN_TYPES.VARIABLE_DECLARATION
+                ? getVariableDeclarations(node.left.declarations)
+                : generate(node.left).code;
 
         return `${leftPart} ${innerPart} ${generate(node.right).code}`;
     }
@@ -104,7 +109,8 @@ export const debuggerConverter = path => {
     return `debugger`;
 };
 
-export const getVariableDeclarations = variables => variables.map(v => variableDeclaratorConverter({ node: v })).join(', ');
+export const getVariableDeclarations = variables =>
+    variables.map(v => variableDeclaratorConverter({ node: v })).join(', ');
 
 export const variableDeclaratorConverter = ({ node }) => {
     if (isNodeContainsFunc(node.init)) {
@@ -128,7 +134,9 @@ export const callExpressionConverter = ({ node }) => {
         return generate(node).code;
     }
 
-    const argumentsCode = node.arguments.map(argument => (isNodeContainsFunc(argument) ? '*' : argument.name || argument.value)).join(', ');
+    const argumentsCode = node.arguments
+        .map(argument => (isNodeContainsFunc(argument) ? '*' : argument.name || argument.value))
+        .join(', ');
 
     return `${generate(node.callee).code}(${argumentsCode})`;
 };

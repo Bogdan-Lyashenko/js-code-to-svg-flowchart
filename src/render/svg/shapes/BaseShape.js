@@ -1,8 +1,15 @@
 import { mergeObjectStructures } from '../../../shared/utils/composition';
-import { generateId, splitNameString, getMaxStringLengthFromList } from '../../../shared/utils/string';
+import {
+    generateId,
+    splitNameString,
+    getMaxStringLengthFromList
+} from '../../../shared/utils/string';
 import { flatTree } from '../../../shared/utils/flatten';
 import { calculateShapesBoundaries } from '../../../shared/utils/geometry';
-import { MAX_NAME_STR_LENGTH, getNameSplitterTokensIterator } from '../appearance/TextContentConfigurator';
+import {
+    MAX_NAME_STR_LENGTH,
+    getNameSplitterTokensIterator
+} from '../appearance/TextContentConfigurator';
 
 export const delegateInit = (shape, themeFieldName) => {
     function init(node, position, theme) {
@@ -17,7 +24,11 @@ export const delegateInit = (shape, themeFieldName) => {
 };
 
 export const getInitialState = (node, { x, y }, theme, type) => {
-    const nameParts = splitNameString(node.name, MAX_NAME_STR_LENGTH, getNameSplitterTokensIterator()),
+    const nameParts = splitNameString(
+            node.name,
+            MAX_NAME_STR_LENGTH,
+            getNameSplitterTokensIterator()
+        ),
         totalNamePartsNumber = nameParts.length,
         maxNamePartLength = getMaxStringLengthFromList(nameParts);
 
@@ -124,7 +135,13 @@ export const setupPrintName = state => ({
     printName(newPosition) {
         const { position, theme, nameParts } = state;
         const { x, y } = newPosition ? newPosition : position;
-        const name = nameParts.map((part, i) => `<tspan x="${x + theme.horizontalPadding}" y="${y + 2 * theme.verticalPadding * (i + 1)}">${part}</tspan>`).join('');
+        const name = nameParts
+            .map(
+                (part, i) =>
+                    `<tspan x="${x + theme.horizontalPadding}" y="${y +
+                        2 * theme.verticalPadding * (i + 1)}">${part}</tspan>`
+            )
+            .join('');
 
         //TODO: move to svg primitives
         return `<text x="${x + theme.horizontalPadding}" y="${y + 2 * theme.verticalPadding}"
@@ -178,20 +195,30 @@ export const setupStateModifiers = state => ({
     }
 });
 
-export const setupBasicBehaviour = (state) => Object.assign({}, setupPrintName(state), setupGetChildBoundaries(state), setupStateModifiers(state));
+export const setupBasicBehaviour = state =>
+    Object.assign(
+        {},
+        setupPrintName(state),
+        setupGetChildBoundaries(state),
+        setupStateModifiers(state)
+    );
 
 export const setupCompleteState = initialState => {
     let state = extractBasicState(initialState);
     return { ...state, ...setupInitialProperties(state) };
 };
 
-export const calculateNameBasedWidth = ({ maxNamePartLength, theme }) => maxNamePartLength * theme.symbolWidth;
+export const calculateNameBasedWidth = ({ maxNamePartLength, theme }) =>
+    maxNamePartLength * theme.symbolWidth;
 
-export const calculateNameBasedHeight = ({ totalNamePartsNumber, theme }) => totalNamePartsNumber * theme.symbolHeight + (totalNamePartsNumber - 1) * theme.lineHeight;
+export const calculateNameBasedHeight = ({ totalNamePartsNumber, theme }) =>
+    totalNamePartsNumber * theme.symbolHeight + (totalNamePartsNumber - 1) * theme.lineHeight;
 
-export const calculateWidth = state => 2 * state.theme.horizontalPadding + calculateNameBasedWidth(state);
+export const calculateWidth = state =>
+    2 * state.theme.horizontalPadding + calculateNameBasedWidth(state);
 
-export const calculateHeight = state => 2 * state.theme.verticalPadding + calculateNameBasedHeight(state);
+export const calculateHeight = state =>
+    2 * state.theme.verticalPadding + calculateNameBasedHeight(state);
 
 export const calculateDimensions = state => ({
     w: calculateWidth(state),
