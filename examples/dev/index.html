@@ -113,9 +113,14 @@
     `;
 
     const simpleStr = `
-        function test(b) {
-            var a = 12;
+        function print() {
+            var list = [1, 2, 4];
 
+            list.forEach((i)=> {
+                console.log(i);
+            });
+
+            return false;
         }
     `;
 
@@ -125,6 +130,9 @@
     //===================================
 
     const flowTreeBuilder = JsCode2SvgFlowChart.createFlowTreeBuilder();
+
+    flowTreeBuilder.setModifier(JsCode2SvgFlowChart.map.DEFINED_MODIFIERS.forEach);
+
 
     const flowTree = flowTreeBuilder.build(simpleStr);
 

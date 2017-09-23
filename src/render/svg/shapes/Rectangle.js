@@ -1,5 +1,5 @@
-import { getRoundedRectangle } from '../../../shared/utils/svgPrimitives';
-import { assignState } from '../../../shared/utils/composition';
+import { getRoundedRectangle } from 'shared/utils/svgPrimitives';
+import { assignState } from 'shared/utils/composition';
 
 import {
     setupCompleteState,

@@ -1,6 +1,6 @@
-import { TOKEN_KEYS } from '../../../shared/constants';
-import { getRhombus, getRoundedRectangle, getText } from '../../../shared/utils/svgPrimitives';
-import { assignState } from '../../../shared/utils/composition';
+import { TOKEN_KEYS } from 'shared/constants';
+import { getRhombus, getRoundedRectangle, getText } from 'shared/utils/svgPrimitives';
+import { assignState } from 'shared/utils/composition';
 
 import {
     setupBasicBehaviour,

@@ -1,8 +1,8 @@
 import * as babylon from 'babylon';
 import traverse from 'babel-traverse'; //TODO: remove, needed only for debug now
 
-import { TOKEN_KEYS } from '../shared/constants';
-import { setupPointer } from '../shared/utils/treeLevelsPointer';
+import { TOKEN_KEYS } from 'shared/constants';
+import { setupPointer } from 'shared/utils/treeLevelsPointer';
 
 export const buildAST = (code, config) => {
     //TODO: remove when finish with defining types

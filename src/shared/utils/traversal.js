@@ -13,12 +13,18 @@ export const levelsTraversal = (tree, stepIn, onNode, stepOut, options = {}) => 
     stepOut(tree);
 };
 
-export const traversal = (tree, fn) => {
-    [].concat(tree).forEach(node => {
-        if (node.children && node.children.length) {
-            traversal(node.children, fn);
-        } else {
-            fn(node);
+export const traversalSearch = (tree, fn) => {
+    let queue = [].concat(tree);
+
+    while (queue.length) {
+        let node = queue.shift();
+
+        if (fn(node)) {
+            return node;
         }
-    });
+
+        if (node.body) {
+            queue = [...queue, ...node.body];
+        }
+    }
 };

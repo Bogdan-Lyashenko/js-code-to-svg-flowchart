@@ -1,4 +1,4 @@
-import { TOKEN_TYPES } from '../../shared/constants';
+import { TOKEN_TYPES } from 'shared/constants';
 
 import VerticalEdgedRectangle from './shapes/VerticalEdgedRectangle';
 import Rectangle from './shapes/Rectangle';

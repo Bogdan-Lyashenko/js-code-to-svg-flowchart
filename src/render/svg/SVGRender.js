@@ -4,7 +4,7 @@ import {
     getBlackAndWhiteTheme,
     applyStyleToTheme
 } from './appearance/StyleThemeFactory';
-import { buildSVGObjectsTree } from './SVGObjectsBuilder';
+import { buildSVGObjectsTree } from './svgObjectsBuilder';
 
 export default (customStyleTheme = {}) => {
     let svgObjectsTree = null,

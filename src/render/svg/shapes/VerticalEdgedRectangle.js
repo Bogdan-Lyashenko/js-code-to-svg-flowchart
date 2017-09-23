@@ -1,5 +1,5 @@
-import { getRectangle, getLine } from '../../../shared/utils/svgPrimitives';
-import { assignState } from '../../../shared/utils/composition';
+import { getRectangle, getLine } from 'shared/utils/svgPrimitives';
+import { assignState } from 'shared/utils/composition';
 
 import {
     setupBasicBehaviour,

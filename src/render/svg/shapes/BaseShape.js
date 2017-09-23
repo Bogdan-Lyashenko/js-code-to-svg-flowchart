@@ -1,11 +1,7 @@
-import { mergeObjectStructures } from '../../../shared/utils/composition';
-import {
-    generateId,
-    splitNameString,
-    getMaxStringLengthFromList
-} from '../../../shared/utils/string';
-import { flatTree } from '../../../shared/utils/flatten';
-import { calculateShapesBoundaries } from '../../../shared/utils/geometry';
+import { mergeObjectStructures } from 'shared/utils/composition';
+import { generateId, splitNameString, getMaxStringLengthFromList } from 'shared/utils/string';
+import { flatTree } from 'shared/utils/flatten';
+import { calculateShapesBoundaries } from 'shared/utils/geometry';
 import {
     MAX_NAME_STR_LENGTH,
     getNameSplitterTokensIterator

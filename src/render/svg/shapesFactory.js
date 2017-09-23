@@ -1,4 +1,4 @@
-import { ARROW_TYPE } from '../../shared/constants';
+import { ARROW_TYPE } from 'shared/constants';
 import { getShapeForNode } from './shapesDefinitionsMap';
 import Circle from './shapes/Circle';
 import ConnectionArrow, { getFieldName as getConnectionArrowFieldName } from './ConnectionArrow';

@@ -1,7 +1,7 @@
-import { complexTraversal } from '../../shared/utils/traversalWithTreeLevelsPointer';
+import { complexTraversal } from 'shared/utils/traversalWithTreeLevelsPointer';
 import { SVGBase } from './SVGBase';
 import { createShapeForNode, createRootCircle, createConnectionArrow } from './shapesFactory';
-import { TOKEN_TYPES, TOKEN_KEYS, ARROW_TYPE } from '../../shared/constants';
+import { TOKEN_TYPES, TOKEN_KEYS, ARROW_TYPE } from 'shared/constants';
 
 export const buildSVGObjectsTree = (flowTree, styleTheme) => {
     const svg = SVGBase();

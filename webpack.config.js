@@ -29,7 +29,10 @@ const config = {
     ]
   },
   resolve: {
-    modules: [path.resolve('./node_modules'), path.resolve('./src')],
+    modules: [
+        path.resolve('./node_modules'), path.resolve('./src'),
+        path.resolve('./src/shared'), path.resolve('./src/render'), path.resolve('./src/builder')
+    ],
     extensions: ['.json', '.js']
   },
   plugins: plugins

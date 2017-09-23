@@ -1,5 +1,5 @@
-import { getCircle } from '../../../shared/utils/svgPrimitives';
-import { assignState } from '../../../shared/utils/composition';
+import { getCircle } from 'shared/utils/svgPrimitives';
+import { assignState } from 'shared/utils/composition';
 
 import {
     extractBasicState,

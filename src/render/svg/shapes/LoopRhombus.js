@@ -1,5 +1,5 @@
-import { getRhombus, getRoundedRectangle, getText } from '../../../shared/utils/svgPrimitives';
-import { assignState } from '../../../shared/utils/composition';
+import { getRhombus, getRoundedRectangle, getText } from 'shared/utils/svgPrimitives';
+import { assignState } from 'shared/utils/composition';
 
 import {
     setupBasicBehaviour,

@@ -1,6 +1,6 @@
-import { getRoundedRectangle, getLine, getClosedPath } from '../../../shared/utils/svgPrimitives';
-import { assignState } from '../../../shared/utils/composition';
-import { addOffsetToPoints } from '../../../shared/utils/geometry';
+import { getRoundedRectangle, getLine, getClosedPath } from 'shared/utils/svgPrimitives';
+import { assignState } from 'shared/utils/composition';
+import { addOffsetToPoints } from 'shared/utils/geometry';
 
 import {
     setupBasicBehaviour,

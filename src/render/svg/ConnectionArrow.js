@@ -1,8 +1,8 @@
-import { assignState, mergeObjectStructures } from '../../shared/utils/composition';
-import { getCurvedPath, getClosedPath } from '../../shared/utils/svgPrimitives';
-import { addOffsetToPoints } from '../../shared/utils/geometry';
+import { assignState, mergeObjectStructures } from 'shared/utils/composition';
+import { getCurvedPath, getClosedPath } from 'shared/utils/svgPrimitives';
+import { addOffsetToPoints } from 'shared/utils/geometry';
 
-import { ARROW_TYPE } from '../../shared/constants';
+import { ARROW_TYPE } from 'shared/constants';
 
 const ENTITY_FIELD_NAME = 'ConnectionArrow';
 

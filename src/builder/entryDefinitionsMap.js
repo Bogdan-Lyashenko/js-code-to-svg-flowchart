@@ -1,4 +1,4 @@
-import { TOKEN_TYPES } from '../shared/constants';
+import { TOKEN_TYPES } from 'shared/constants';
 import {
     idleConverter,
     functionConverter,
@@ -49,6 +49,7 @@ export const DefinitionsMap = [
     },
     {
         type: TOKEN_TYPES.CALL_EXPRESSION,
+        body: true,
         getName: callExpressionConverter,
         ignore: path => {
             const statementParent = path.getStatementParent();

@@ -1,18 +1,13 @@
 import traverse from 'babel-traverse';
-import { DefinitionsMap } from './entryDefinitionsMap';
-import { buildAST, buildVisitor } from './ASTBuilder';
-import { TOKEN_TYPES } from '../shared/constants';
 
-export const ABSTRACTION_LEVELS = {
-    FUNCTION: [TOKEN_TYPES.FUNCTION],
-    CLASS: [TOKEN_TYPES.CLASS_DECLARATION],
-    IMPORT: [
-        TOKEN_TYPES.IMPORT_DECLARATION,
-        TOKEN_TYPES.IMPORT_SPECIFIER,
-        TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER
-    ],
-    EXPORT: [TOKEN_TYPES.EXPORT_NAMED_DECLARATION, TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION]
-};
+import { DefinitionsMap } from './entryDefinitionsMap';
+import { buildAST, buildVisitor } from './astBuilder';
+import {
+    ABSTRACTION_LEVELS,
+    rebuildConfigForAbstractionLevel
+} from './abstractionLevelsConfigurator';
+import createFlowTreeModifier, { destructTree } from './FlowTreeModifier';
+import { DEFINED_MODIFIERS } from './modifiers/modifiersFactory';
 
 const buildFlowTree = (code, { astParserConfig, astVisitorConfig }) => {
     const treeNodes = [];
@@ -20,20 +15,6 @@ const buildFlowTree = (code, { astParserConfig, astVisitorConfig }) => {
     traverse(buildAST(code, astParserConfig), buildVisitor(astVisitorConfig, treeNodes));
 
     return { name: '', body: treeNodes };
-};
-
-const rebuildConfigForAbstractionLevel = level => {
-    const levelList = [].concat(level).reduce((list, item) => {
-        if (typeof item === 'string') {
-            list.push(item);
-        } else {
-            list = list.concat([...item]);
-        }
-
-        return list;
-    }, []);
-
-    return DefinitionsMap.filter(item => levelList.indexOf(item.type) !== -1);
 };
 
 export default ({ astParserConfig = {}, astVisitorConfig = {} } = {}) => {
@@ -49,6 +30,8 @@ export default ({ astParserConfig = {}, astVisitorConfig = {} } = {}) => {
         }
     };
 
+    const modifiers = createFlowTreeModifier();
+
     return {
         setAbstractionLevel(level) {
             options.astVisitorConfig.definitionsMap = rebuildConfigForAbstractionLevel(level);
@@ -58,8 +41,22 @@ export default ({ astParserConfig = {}, astVisitorConfig = {} } = {}) => {
             options.astVisitorConfig.globalIgnore = fn;
         },
 
+        setModifier(modifier) {
+            modifiers.addModifier(modifier);
+        },
+
+        registerNewModifier(test, updates) {
+            modifiers.create(test, updates);
+        },
+
         build(code) {
-            return buildFlowTree(code, options);
+            const tree = buildFlowTree(code, options);
+
+            modifiers.applyTo(tree);
+
+            return tree;
         }
     };
 };
+
+export { DEFINED_MODIFIERS, ABSTRACTION_LEVELS };
