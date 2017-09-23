@@ -36,7 +36,7 @@ const rebuildConfigForAbstractionLevel = level => {
     return DefinitionsMap.filter(item => levelList.indexOf(item.type) !== -1);
 };
 
-export const createFlowTreeBuilder = ({ astParserConfig = {}, astVisitorConfig = {} } = {}) => {
+export default ({ astParserConfig = {}, astVisitorConfig = {} } = {}) => {
     const options = {
         astParserConfig: {
             ...astParserConfig

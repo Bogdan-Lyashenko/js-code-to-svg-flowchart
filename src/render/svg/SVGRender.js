@@ -6,7 +6,7 @@ import {
 } from './appearance/StyleThemeFactory';
 import { buildSVGObjectsTree } from './SVGObjectsBuilder';
 
-export const createSVGRender = (customStyleTheme = {}) => {
+export default (customStyleTheme = {}) => {
     let svgObjectsTree = null,
         theme = applyStyleToTheme(getDefaultTheme(), customStyleTheme);
 

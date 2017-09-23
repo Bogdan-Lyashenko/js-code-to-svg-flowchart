@@ -16378,47 +16378,29 @@ function needsParens(node, parent, printStack) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.convertCodeToSvg = exports.createSVGRender = exports.createFlowTreeBuilder = undefined;
 
 var _FlowTreeBuilder = __webpack_require__(184);
 
+var _FlowTreeBuilder2 = _interopRequireDefault(_FlowTreeBuilder);
+
 var _SVGRender = __webpack_require__(169);
 
-var code = '\n    console.log(\'test 0\');\n    \n    function traverseDoc(doc, onEnter, onExit, shouldTraverseConditionalGroups) {\n      function traverseDocRec(doc) {\n        let shouldRecurse = true;\n        console.log(\'test 1\')\n        if (onEnter) {\n          if (onEnter(doc) === false) {\n            shouldRecurse = false;\n          }\n        }\n    \n        if (shouldRecurse) {\n          if (doc.type === "concat" || doc.type === "fill") {\n            for (let i = 0; i < doc.parts.length; i++) {\n              traverseDocRec(doc.parts[i]);\n            }\n          } else if (doc.type === "if-break") {\n            if (doc.breakContents) {\n              traverseDocRec(doc.breakContents);\n            }\n            if (doc.flatContents) {\n              traverseDocRec(doc.flatContents);\n              console.log(\'test 2\')\n            }\n          } else if (doc.type === "group" && doc.expandedStates) {\n            if (shouldTraverseConditionalGroups) {\n              doc.expandedStates.forEach(traverseDocRec);\n            } else {\n              traverseDocRec(doc.contents);\n            }\n          } else if (doc.contents) {\n            traverseDocRec(doc.contents);\n            \n            console.log(\'test 3\')\n          }\n        }\n    \n        if (onExit) {\n          onExit(doc);\n        }\n      }\n    \n      traverseDocRec(doc);\n}\n\nfunction doLogging() {\n    const test = \'ignore\';\n}\n\nfunction logout() {\n    const test = \'ignore\';\n}\n';
+var _SVGRender2 = _interopRequireDefault(_SVGRender);
 
-var simpleStrSwitch = '\n    function Test(a) {\n        var b;\n        \n        switch (a) {\n            case 1:\n                b = 0;\n                break;\n            case 2:\n                b = 2;\n                return;\n            default:\n                b = 3;\n                break;\n        }\n        \n        return a + 2;\n    }\n';
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var simpleStrTry = 'function Test() {\n    try {\n        abcdMethod();\n    } catch(e) {\n        console.log(\'error \' + e.message);\n    } finally {\n        b = 1234567;\n    }\n}';
+var createFlowTreeBuilder = exports.createFlowTreeBuilder = _FlowTreeBuilder2.default;
+var createSVGRender = exports.createSVGRender = _SVGRender2.default;
 
-var simpleStrContinue = '\nfunction Test() {\n    for (; i < obj.length; i++) {\n        c = 12;\n        if (c == 2) {\n            continue;\n        }\n        \n        b = 12;\n    } \n}\n';
+var convertCodeToSvg = exports.convertCodeToSvg = function convertCodeToSvg(code) {
+    var flowTreeBuilder = createFlowTreeBuilder(),
+        svgRender = createSVGRender();
 
-var simpleStrModules = '\nimport a, {b,c} from \'lib-bob\';\nimport d from \'./libbob/file\';\n\nfunction o(i, p) {};\n\nexport default o;\n\nfunction ll(b) {\n   let clickFn = 12;\n   b = 12;\n   c = 12;\n}\n\nexport const BOB = 12;\n';
+    svgRender.buildShapesTree(flowTreeBuilder.build(code));
 
-var simpleStrClass = '\nclass Animal extends Zero {\n    constructor(b) {\n        this.s = 12;\n    }\n    \n    getA(){\n        return this.a;\n    }\n    \n    setName(name) {\n        this.name = name;\n    }\n}\n\nclass Man {\n    constructor(n) {\n        this.name = n;\n    }\n    \n    sayName() {\n        return this.name\n    }\n}\n';
-
-var simpleStrReturn = '\n  function test(b) {\n    var a = 12;\n    \n    if (b > 11) {\n        return 11;\n    }\n    \n    return a -1;\n  }\n';
-
-var simpleStr = '\nfunction test(b) {\n    var a = 12;\n    \n  }\n';
-
-var t0 = performance.now();
-
-var flowTreeBuilder = (0, _FlowTreeBuilder.createFlowTreeBuilder)();
-
-var flowTree = flowTreeBuilder.build(code);
-
-var svgRender = (0, _SVGRender.createSVGRender)({ Circle: { strokeColor: 'red' } });
-
-svgRender.buildShapesTree(flowTree);
-
-document.getElementById('svgImage').innerHTML = svgRender.render();
-
-var t1 = performance.now();
-console.log('Call to doSomething took ' + (t1 - t0) + ' milliseconds.');
-
-exports.default = function (code) {
-    //return rendered tree
+    return svgRender.render();
 };
-
-module.exports = exports['default'];
 
 /***/ }),
 /* 169 */
@@ -16430,13 +16412,12 @@ module.exports = exports['default'];
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.createSVGRender = undefined;
 
 var _StyleThemeFactory = __webpack_require__(463);
 
 var _SVGObjectsBuilder = __webpack_require__(461);
 
-var createSVGRender = exports.createSVGRender = function createSVGRender() {
+exports.default = function () {
     var customStyleTheme = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
     var svgObjectsTree = null,
@@ -16497,6 +16478,8 @@ var createSVGRender = exports.createSVGRender = function createSVGRender() {
         }
     };
 };
+
+module.exports = exports['default'];
 
 /***/ }),
 /* 170 */
@@ -17411,7 +17394,7 @@ exports.default = function (config, theme) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.createFlowTreeBuilder = exports.ABSTRACTION_LEVELS = undefined;
+exports.ABSTRACTION_LEVELS = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -17463,7 +17446,7 @@ var rebuildConfigForAbstractionLevel = function rebuildConfigForAbstractionLevel
     });
 };
 
-var createFlowTreeBuilder = exports.createFlowTreeBuilder = function createFlowTreeBuilder() {
+exports.default = function () {
     var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
         _ref2$astParserConfig = _ref2.astParserConfig,
         astParserConfig = _ref2$astParserConfig === undefined ? {} : _ref2$astParserConfig,
