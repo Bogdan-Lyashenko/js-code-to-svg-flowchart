@@ -1,4 +1,4 @@
-import { TOKEN_TYPES } from 'shared/constants';
+import { TOKEN_TYPES, MODIFIED_TYPES } from 'shared/constants';
 
 import VerticalEdgedRectangle from './shapes/VerticalEdgedRectangle';
 import Rectangle from './shapes/Rectangle';
@@ -6,6 +6,7 @@ import ConditionRhombus from './shapes/ConditionRhombus';
 import LoopRhombus from './shapes/LoopRhombus';
 import Circle from './shapes/Circle';
 import ReturnStatement from './shapes/ReturnStatement';
+import DestructedNode from './shapes/DestructedNode';
 
 export const getShapeForNode = node => {
     switch (node.type) {
@@ -20,6 +21,9 @@ export const getShapeForNode = node => {
 
         case TOKEN_TYPES.RETURN:
             return ReturnStatement;
+
+        case MODIFIED_TYPES.DESTRUCTED:
+            return DestructedNode;
 
         default:
             return Rectangle;

@@ -131,7 +131,7 @@
 
     const flowTreeBuilder = JsCode2SvgFlowChart.createFlowTreeBuilder();
 
-    flowTreeBuilder.setModifier(JsCode2SvgFlowChart.map.DEFINED_MODIFIERS.forEach);
+    flowTreeBuilder.destructNodeTree((node) => node.name.indexOf('.forEach')!==-1, 'logging list...');
 
 
     const flowTree = flowTreeBuilder.build(simpleStr);

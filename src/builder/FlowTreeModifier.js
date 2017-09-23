@@ -1,15 +1,21 @@
 import { traversalSearch } from 'shared/utils/traversal';
 
-export const destructTree = () => {};
+const executeApplyFn = (apply, node) => (typeof apply === 'function' ? apply(node) : apply);
 
 const UpdatesMap = {
     name(node, apply) {
-        node.name = apply(node);
+        node.name = executeApplyFn(apply, node);
     },
 
     type(node, apply) {
-        node.type = apply(node);
+        node.type = executeApplyFn(apply, node);
+    },
+
+    body(node, apply) {
+        node.body = executeApplyFn(apply, node);
     }
+
+    //TODO: add parent, siblings
 };
 
 const applyModifierUpdates = (tree, modifier) => {

@@ -52,3 +52,7 @@ export const CLASS_FUNCTION_KINDS = {
     CONSTRUCTOR: 'constructor',
     METHOD: 'method'
 };
+
+export const MODIFIED_TYPES = {
+    DESTRUCTED: 'DESTRUCTED'
+};

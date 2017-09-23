@@ -1007,6 +1007,10 @@ var CLASS_FUNCTION_KINDS = exports.CLASS_FUNCTION_KINDS = {
     METHOD: 'method'
 };
 
+var MODIFIED_TYPES = exports.MODIFIED_TYPES = {
+    DESTRUCTED: 'DESTRUCTED'
+};
+
 /***/ }),
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -15620,6 +15624,7 @@ var DefinitionsMap = exports.DefinitionsMap = [{
     getName: _core.variableDeclaratorConverter
 }, {
     type: _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION,
+    body: true,
     getName: _core.assignmentExpressionConverter,
     ignore: function ignore(path) {
         return path.getStatementParent().isVariableDeclaration();
@@ -15631,7 +15636,8 @@ var DefinitionsMap = exports.DefinitionsMap = [{
     ignore: function ignore(path) {
         var statementParent = path.getStatementParent();
 
-        return statementParent.isVariableDeclaration() || statementParent.isConditional() || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION;
+        return statementParent.isVariableDeclaration() || statementParent.isConditional() || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION //TODO: BUG, fix line: list = list.filter(i => i % 2)
+        ;
     }
 }, {
     type: _constants.TOKEN_TYPES.UPDATE_EXPRESSION,
@@ -17283,6 +17289,9 @@ exports.default = function () {
         },
         registerNewModifier: function registerNewModifier(test, updates) {
             modifiers.create(test, updates);
+        },
+        destructNodeTree: function destructNodeTree(test, newNameFn) {
+            this.setModifier((0, _modifiersFactory.destructionModifier)(test, newNameFn));
         },
         build: function build(code) {
             var tree = buildFlowTree(code, options);
@@ -36639,19 +36648,26 @@ var rebuildConfigForAbstractionLevel = exports.rebuildConfigForAbstractionLevel 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.destructTree = undefined;
 
 var _traversal = __webpack_require__(172);
 
-var destructTree = exports.destructTree = function destructTree() {};
+var executeApplyFn = function executeApplyFn(apply, node) {
+    return typeof apply === 'function' ? apply(node) : apply;
+};
 
 var UpdatesMap = {
     name: function name(node, apply) {
-        node.name = apply(node);
+        node.name = executeApplyFn(apply, node);
     },
     type: function type(node, apply) {
-        node.type = apply(node);
+        node.type = executeApplyFn(apply, node);
+    },
+    body: function body(node, apply) {
+        node.body = executeApplyFn(apply, node);
     }
+
+    //TODO: add parent, siblings
+
 };
 
 var applyModifierUpdates = function applyModifierUpdates(tree, modifier) {
@@ -36689,6 +36705,8 @@ exports.default = function () {
     };
 };
 
+module.exports = exports['default'];
+
 /***/ }),
 /* 439 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -36699,7 +36717,7 @@ exports.default = function () {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.MODIFIER_PRESETS = exports.DEFINED_MODIFIERS = undefined;
+exports.MODIFIER_PRESETS = exports.destructionModifier = exports.DEFINED_MODIFIERS = undefined;
 
 var _constants = __webpack_require__(4);
 
@@ -36712,11 +36730,20 @@ var DEFINED_MODIFIERS = exports.DEFINED_MODIFIERS = {
             name: function name(node) {
                 return 'in ' + node.name.split('.forEach')[0];
             },
-            type: function type() {
-                return _constants.TOKEN_TYPES.LOOP;
-            }
+            type: _constants.TOKEN_TYPES.LOOP
         }
     }
+};
+
+var destructionModifier = exports.destructionModifier = function destructionModifier(test, newNameFn) {
+    return {
+        test: test,
+        updates: {
+            name: newNameFn,
+            body: [],
+            type: _constants.MODIFIED_TYPES.DESTRUCTED
+        }
+    };
 };
 
 var MODIFIER_PRESETS = exports.MODIFIER_PRESETS = {
@@ -36974,7 +37001,7 @@ Object.defineProperty(exports, "__esModule", {
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var BaseShape = exports.BaseShape = {
-    strokeColor: '#333',
+    strokeColor: '#444',
     strokeWidth: 1,
     fillColor: '#fff',
     textColor: '#111',
@@ -36996,10 +37023,10 @@ exports.default = {
                 x: 8,
                 y: 6
             },
-            fillColor: '#222'
+            fillColor: '#333'
         },
         line: {
-            strokeColor: '#333',
+            strokeColor: '#444',
             strokeWidth: 1,
             curveTurnRadius: 4
         },
@@ -37066,6 +37093,11 @@ exports.default = {
             sizeY: 22,
             fillColor: '#b39ddb'
         })
+    }),
+
+    DestructedNode: _extends({}, BaseShape, {
+        fillColor: '#ce93d8',
+        roundBorder: 5
     })
 };
 
@@ -37512,6 +37544,10 @@ var _ReturnStatement = __webpack_require__(459);
 
 var _ReturnStatement2 = _interopRequireDefault(_ReturnStatement);
 
+var _DestructedNode = __webpack_require__(461);
+
+var _DestructedNode2 = _interopRequireDefault(_DestructedNode);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
@@ -37527,6 +37563,9 @@ var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
 
         case _constants.TOKEN_TYPES.RETURN:
             return _ReturnStatement2.default;
+
+        case _constants.MODIFIED_TYPES.DESTRUCTED:
+            return _DestructedNode2.default;
 
         default:
             return _Rectangle2.default;
@@ -38222,6 +38261,26 @@ var ConnectionArrow = exports.ConnectionArrow = function ConnectionArrow(state) 
 exports.default = function (config, theme) {
     return ConnectionArrow({ config: config, theme: theme });
 };
+
+/***/ }),
+/* 461 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _BaseShape = __webpack_require__(29);
+
+var _Rectangle = __webpack_require__(456);
+
+var ENTITY_FIELD_NAME = 'DestructedNode';
+
+exports.default = (0, _BaseShape.delegateInit)(_Rectangle.Rectangle, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
 
 /***/ })
 /******/ ]);

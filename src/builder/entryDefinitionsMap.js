@@ -44,6 +44,7 @@ export const DefinitionsMap = [
     },
     {
         type: TOKEN_TYPES.ASSIGNMENT_EXPRESSION,
+        body: true,
         getName: assignmentExpressionConverter,
         ignore: path => path.getStatementParent().isVariableDeclaration()
     },
@@ -57,7 +58,7 @@ export const DefinitionsMap = [
             return (
                 statementParent.isVariableDeclaration() ||
                 statementParent.isConditional() ||
-                path.parent.type === TOKEN_TYPES.ASSIGNMENT_EXPRESSION
+                path.parent.type === TOKEN_TYPES.ASSIGNMENT_EXPRESSION //TODO: BUG, fix line: list = list.filter(i => i % 2)
             );
         }
     },

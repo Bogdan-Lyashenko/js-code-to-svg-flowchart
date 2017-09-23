@@ -1,5 +1,5 @@
 export const BaseShape = {
-    strokeColor: '#333',
+    strokeColor: '#444',
     strokeWidth: 1,
     fillColor: '#fff',
     textColor: '#111',
@@ -21,10 +21,10 @@ export default {
                 x: 8,
                 y: 6
             },
-            fillColor: '#222'
+            fillColor: '#333'
         },
         line: {
-            strokeColor: '#333',
+            strokeColor: '#444',
             strokeWidth: 1,
             curveTurnRadius: 4
         },
@@ -100,5 +100,11 @@ export default {
             sizeY: 22,
             fillColor: '#b39ddb'
         }
+    },
+
+    DestructedNode: {
+        ...BaseShape,
+        fillColor: '#ce93d8',
+        roundBorder: 5
     }
 };

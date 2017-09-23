@@ -6,8 +6,12 @@ import {
     ABSTRACTION_LEVELS,
     rebuildConfigForAbstractionLevel
 } from './abstractionLevelsConfigurator';
-import createFlowTreeModifier, { destructTree } from './FlowTreeModifier';
-import { DEFINED_MODIFIERS } from './modifiers/modifiersFactory';
+import createFlowTreeModifier from './FlowTreeModifier';
+import {
+    DEFINED_MODIFIERS,
+    MODIFIER_PRESETS,
+    destructionModifier
+} from './modifiers/modifiersFactory';
 
 const buildFlowTree = (code, { astParserConfig, astVisitorConfig }) => {
     const treeNodes = [];
@@ -47,6 +51,10 @@ export default ({ astParserConfig = {}, astVisitorConfig = {} } = {}) => {
 
         registerNewModifier(test, updates) {
             modifiers.create(test, updates);
+        },
+
+        destructNodeTree(test, newNameFn) {
+            this.setModifier(destructionModifier(test, newNameFn));
         },
 
         build(code) {
