@@ -104,7 +104,14 @@ export default {
 
     DestructedNode: {
         ...BaseShape,
-        fillColor: '#ce93d8',
-        roundBorder: 5
+        fillColor: '#ffcc80',
+        roundBorder: 2,
+        suffix: {
+            ...BaseShape,
+            roundBorder: 2,
+            fillColor: '#ffcc80',
+            width: 8,
+            space: 4
+        }
     }
 };

@@ -37096,8 +37096,14 @@ exports.default = {
     }),
 
     DestructedNode: _extends({}, BaseShape, {
-        fillColor: '#ce93d8',
-        roundBorder: 5
+        fillColor: '#ffcc80',
+        roundBorder: 2,
+        suffix: _extends({}, BaseShape, {
+            roundBorder: 2,
+            fillColor: '#ffcc80',
+            width: 8,
+            space: 4
+        })
     })
 };
 
@@ -38270,17 +38276,74 @@ exports.default = function (config, theme) {
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
+exports.DestructedNode = undefined;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _svgPrimitives = __webpack_require__(28);
+
+var _composition = __webpack_require__(14);
+
+var _geometry = __webpack_require__(106);
 
 var _BaseShape = __webpack_require__(29);
 
-var _Rectangle = __webpack_require__(456);
-
 var ENTITY_FIELD_NAME = 'DestructedNode';
 
-exports.default = (0, _BaseShape.delegateInit)(_Rectangle.Rectangle, ENTITY_FIELD_NAME);
-module.exports = exports['default'];
+var setupDestructedNodeBehaviour = function setupDestructedNodeBehaviour(state) {
+    return {
+        print: function print() {
+            var theme = state.theme,
+                suffixTheme = theme.suffix;
+
+            var _state$position = state.position,
+                x = _state$position.x,
+                y = _state$position.y,
+                h = state.dimensions.h,
+                w = state.dimensions.w - 2 * (suffixTheme.width + suffixTheme.space),
+                namePosition = { x: x, y: y };
+
+
+            var suffix1 = (0, _svgPrimitives.getRoundedRectangle)(x + w + suffixTheme.space, y, suffixTheme.width, h, suffixTheme);
+            var suffix2 = (0, _svgPrimitives.getRoundedRectangle)(x + w + 2 * suffixTheme.space + suffixTheme.width, y, suffixTheme.width, h, suffixTheme);
+
+            return '\n            <g>\n                ' + (0, _svgPrimitives.getRoundedRectangle)(x, y, w, h, theme) + '\n                \n                ' + suffix1 + '\n                ' + suffix2 + '\n                             \n                ' + this.printName(namePosition) + '\n            </g>';
+        }
+    };
+};
+
+var calculateWidth = function calculateWidth(state) {
+    var theme = state.theme,
+        suffix = theme.suffix;
+
+    return 2 * theme.horizontalPadding + 2 * (suffix.width + +suffix.space) + (0, _BaseShape.calculateNameBasedWidth)(state);
+};
+
+var calculateDimensions = function calculateDimensions(state) {
+    return {
+        w: calculateWidth(state),
+        h: (0, _BaseShape.calculateHeight)(state)
+    };
+};
+
+var extractBasicState = function extractBasicState(state) {
+    return _extends({}, state, {
+        position: (0, _BaseShape.calculatePosition)(state),
+        dimensions: calculateDimensions(state)
+    });
+};
+
+var DestructedNode = exports.DestructedNode = function DestructedNode(initialState) {
+    var state = extractBasicState(initialState);
+
+    state = _extends({}, state, (0, _BaseShape.setupInitialProperties)(state));
+
+    return (0, _composition.assignState)(state, [_BaseShape.setupInitialSelectors, _BaseShape.setupBasicBehaviour, setupDestructedNodeBehaviour]);
+};
+
+exports.default = (0, _BaseShape.delegateInit)(DestructedNode, ENTITY_FIELD_NAME);
 
 /***/ })
 /******/ ]);
