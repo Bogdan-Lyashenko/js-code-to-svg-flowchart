@@ -35,6 +35,7 @@ export const getInitialState = (node, { x, y }, theme, type) => {
         theme,
         node,
         name: node.name,
+        prefixName: node.prefixName,
         nameParts,
         totalNamePartsNumber,
         maxNamePartLength,

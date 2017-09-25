@@ -1,13 +1,14 @@
-import FlowTreeBuilder, { ABSTRACTION_LEVELS, DEFINED_MODIFIERS } from 'builder/FlowTreeBuilder';
+import FlowTreeBuilder, { ABSTRACTION_LEVELS, MODIFIER_PRESETS, DEFINED_MODIFIERS } from 'builder/FlowTreeBuilder';
 import SVGRender from 'render/svg/SVGRender';
 import { TOKEN_TYPES } from 'shared/constants';
 
 export const createFlowTreeBuilder = FlowTreeBuilder;
 export const createSVGRender = SVGRender;
 
-export const map = {
+export {
     ABSTRACTION_LEVELS,
     DEFINED_MODIFIERS,
+    MODIFIER_PRESETS,
     TOKEN_TYPES
 };
 

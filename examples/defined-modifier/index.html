@@ -20,7 +20,11 @@
                 throw new Error('List is null.');
             }
 
-            list.forEach((i)=> {
+            const newList = list.map(i => {
+                return i + 1;
+            });
+
+            newList.forEach(i => {
                 console.log(i);
             });
 
@@ -33,7 +37,7 @@
     const JsCode2SvgFlowChart = window['js-code-to-svg-flowchart'];
 
     const flowTreeBuilder = JsCode2SvgFlowChart.createFlowTreeBuilder();
-    flowTreeBuilder.setModifier(JsCode2SvgFlowChart.map.DEFINED_MODIFIERS.forEach);
+    flowTreeBuilder.setModifier(JsCode2SvgFlowChart.MODIFIER_PRESETS.es5ArrayIterators);
 
     const svgRender = JsCode2SvgFlowChart.createSVGRender();
     svgRender.buildShapesTree(flowTreeBuilder.build(code));

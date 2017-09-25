@@ -40,6 +40,7 @@ export const DefinitionsMap = [
     },
     {
         type: TOKEN_TYPES.VARIABLE_DECLARATOR,
+        body: true,
         getName: variableDeclaratorConverter
     },
     {

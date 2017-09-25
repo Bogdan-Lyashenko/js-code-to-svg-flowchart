@@ -67,4 +67,4 @@ export default ({ astParserConfig = {}, astVisitorConfig = {} } = {}) => {
     };
 };
 
-export { DEFINED_MODIFIERS, ABSTRACTION_LEVELS };
+export { DEFINED_MODIFIERS, MODIFIER_PRESETS, ABSTRACTION_LEVELS };

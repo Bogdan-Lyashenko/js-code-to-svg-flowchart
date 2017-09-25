@@ -7,6 +7,10 @@ const UpdatesMap = {
         node.name = executeApplyFn(apply, node);
     },
 
+    prefixName(node, apply) {
+        node.prefixName = executeApplyFn(apply, node);
+    },
+
     type(node, apply) {
         node.type = executeApplyFn(apply, node);
     },

@@ -48,7 +48,7 @@ const setupLoopRhombusBehavior = state => ({
         const theme = state.theme;
         const { x, y } = state.position,
             R = state.dimensions.h,
-            text = 'for';
+            text = state.prefixName || 'for';
 
         return getText(
             x + R / 2 - text.length * theme.symbolWidth / 2,

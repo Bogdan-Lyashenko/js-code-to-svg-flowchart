@@ -2185,6 +2185,7 @@ var getInitialState = exports.getInitialState = function getInitialState(node, _
         theme: theme,
         node: node,
         name: node.name,
+        prefixName: node.prefixName,
         nameParts: nameParts,
         totalNamePartsNumber: totalNamePartsNumber,
         maxNamePartLength: maxNamePartLength,
@@ -15621,6 +15622,7 @@ var DefinitionsMap = exports.DefinitionsMap = [{
     body: true
 }, {
     type: _constants.TOKEN_TYPES.VARIABLE_DECLARATOR,
+    body: true,
     getName: _core.variableDeclaratorConverter
 }, {
     type: _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION,
@@ -17182,7 +17184,7 @@ exports.default = (0, _BaseShape.delegateInit)(Circle, ENTITY_FIELD_NAME);
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.convertCodeToSvg = exports.map = exports.createSVGRender = exports.createFlowTreeBuilder = undefined;
+exports.convertCodeToSvg = exports.TOKEN_TYPES = exports.MODIFIER_PRESETS = exports.DEFINED_MODIFIERS = exports.ABSTRACTION_LEVELS = exports.createSVGRender = exports.createFlowTreeBuilder = undefined;
 
 var _FlowTreeBuilder = __webpack_require__(176);
 
@@ -17199,12 +17201,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var createFlowTreeBuilder = exports.createFlowTreeBuilder = _FlowTreeBuilder2.default;
 var createSVGRender = exports.createSVGRender = _SVGRender2.default;
 
-var map = exports.map = {
-    ABSTRACTION_LEVELS: _FlowTreeBuilder.ABSTRACTION_LEVELS,
-    DEFINED_MODIFIERS: _FlowTreeBuilder.DEFINED_MODIFIERS,
-    TOKEN_TYPES: _constants.TOKEN_TYPES
-};
-
+exports.ABSTRACTION_LEVELS = _FlowTreeBuilder.ABSTRACTION_LEVELS;
+exports.DEFINED_MODIFIERS = _FlowTreeBuilder.DEFINED_MODIFIERS;
+exports.MODIFIER_PRESETS = _FlowTreeBuilder.MODIFIER_PRESETS;
+exports.TOKEN_TYPES = _constants.TOKEN_TYPES;
 var convertCodeToSvg = exports.convertCodeToSvg = function convertCodeToSvg(code) {
     var flowTreeBuilder = createFlowTreeBuilder(),
         svgRender = createSVGRender();
@@ -17224,7 +17224,7 @@ var convertCodeToSvg = exports.convertCodeToSvg = function convertCodeToSvg(code
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.ABSTRACTION_LEVELS = exports.DEFINED_MODIFIERS = undefined;
+exports.ABSTRACTION_LEVELS = exports.MODIFIER_PRESETS = exports.DEFINED_MODIFIERS = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -17304,6 +17304,7 @@ exports.default = function () {
 };
 
 exports.DEFINED_MODIFIERS = _modifiersFactory.DEFINED_MODIFIERS;
+exports.MODIFIER_PRESETS = _modifiersFactory.MODIFIER_PRESETS;
 exports.ABSTRACTION_LEVELS = _abstractionLevelsConfigurator.ABSTRACTION_LEVELS;
 
 /***/ }),
@@ -29463,6 +29464,10 @@ var variableDeclaratorConverter = exports.variableDeclaratorConverter = function
         return node.id.name + ' = ';
     }
 
+    if (node.init && node.init.type === _constants.TOKEN_TYPES.CALL_EXPRESSION) {
+        return node.id.name + ' = ' + callExpressionConverter({ node: node.init });
+    }
+
     return (0, _babelGenerator2.default)(node).code;
 };
 
@@ -36659,6 +36664,9 @@ var UpdatesMap = {
     name: function name(node, apply) {
         node.name = executeApplyFn(apply, node);
     },
+    prefixName: function prefixName(node, apply) {
+        node.prefixName = executeApplyFn(apply, node);
+    },
     type: function type(node, apply) {
         node.type = executeApplyFn(apply, node);
     },
@@ -36721,15 +36729,55 @@ exports.MODIFIER_PRESETS = exports.destructionModifier = exports.DEFINED_MODIFIE
 
 var _constants = __webpack_require__(4);
 
+var extractNodeName = function extractNodeName(node, field) {
+    var name = node.name.split('.' + field + '(')[0];
+
+    if (name.includes('=')) {
+        return name.split('=');
+    }
+
+    return [name];
+};
+
+var testNode = function testNode(node, field) {
+    return node.name.includes('.' + field + '(');
+};
+
 var DEFINED_MODIFIERS = exports.DEFINED_MODIFIERS = {
     forEach: {
         test: function test(node) {
-            return node.name.indexOf('forEach') !== -1;
+            return testNode(node, 'forEach');
         },
         updates: {
             name: function name(node) {
-                return 'in ' + node.name.split('.forEach')[0];
+                return 'each in  ' + extractNodeName(node, 'forEach')[0];
             },
+            type: _constants.TOKEN_TYPES.LOOP
+        }
+    },
+
+    filter: {
+        test: function test(node) {
+            return testNode(node, 'filter');
+        },
+        updates: {
+            name: function name(node) {
+                return 'in ' + extractNodeName(node, 'filter')[1] + ' to ' + extractNodeName(node, 'filter')[0];
+            },
+            prefixName: 'filter',
+            type: _constants.TOKEN_TYPES.LOOP
+        }
+    },
+
+    map: {
+        test: function test(node) {
+            return testNode(node, 'map');
+        },
+        updates: {
+            name: function name(node) {
+                return 'from ' + extractNodeName(node, 'map')[1] + ' to ' + extractNodeName(node, 'map')[0];
+            },
+            prefixName: 'map',
             type: _constants.TOKEN_TYPES.LOOP
         }
     }
@@ -36747,7 +36795,7 @@ var destructionModifier = exports.destructionModifier = function destructionModi
 };
 
 var MODIFIER_PRESETS = exports.MODIFIER_PRESETS = {
-    es5ArrayIterators: [DEFINED_MODIFIERS.forEach]
+    es5ArrayIterators: [DEFINED_MODIFIERS.forEach, DEFINED_MODIFIERS.filter, DEFINED_MODIFIERS.map]
 };
 
 /***/ }),
@@ -38036,7 +38084,7 @@ var setupLoopRhombusBehavior = function setupLoopRhombusBehavior(state) {
                 x = _state$position.x,
                 y = _state$position.y,
                 R = state.dimensions.h,
-                text = 'for';
+                text = state.prefixName || 'for';
 
 
             return (0, _svgPrimitives.getText)(x + R / 2 - text.length * theme.symbolWidth / 2, y + R / 2 + theme.symbolHeight / 2, theme, text);

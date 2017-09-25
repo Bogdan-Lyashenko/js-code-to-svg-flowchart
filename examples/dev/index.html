@@ -114,10 +114,9 @@
 
     const simpleStr = `
         function print() {
-            var list = [1, 2, 4];
 
-            list.forEach((i)=> {
-                console.log(i);
+            const newList = list.filter(i => {
+                return i > 1;
             });
 
             return false;
@@ -128,17 +127,11 @@
 
     const t0 = performance.now();
     //===================================
-
     const flowTreeBuilder = JsCode2SvgFlowChart.createFlowTreeBuilder();
+    flowTreeBuilder.setModifier(JsCode2SvgFlowChart.MODIFIER_PRESETS.es5ArrayIterators);
 
-    flowTreeBuilder.destructNodeTree((node) => node.name.indexOf('.forEach')!==-1, 'logging list...');
-
-
-    const flowTree = flowTreeBuilder.build(simpleStr);
-
-    const svgRender = JsCode2SvgFlowChart.createSVGRender({ Circle: { strokeColor: 'red' } });
-
-    svgRender.buildShapesTree(flowTree);
+    const svgRender = JsCode2SvgFlowChart.createSVGRender();
+    svgRender.buildShapesTree(flowTreeBuilder.build(simpleStr));
 
     document.getElementById('svgImage').innerHTML = svgRender.render();
 
