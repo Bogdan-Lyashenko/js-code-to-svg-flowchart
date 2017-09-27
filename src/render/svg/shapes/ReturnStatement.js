@@ -15,7 +15,7 @@ import {
 const ENTITY_FIELD_NAME = 'ReturnStatement';
 
 const setupReturnStatementBehaviour = state => ({
-    print() {
+    print(config) {
         const theme = state.theme,
             arrowTheme = theme.arrow;
 
@@ -61,6 +61,7 @@ const setupReturnStatementBehaviour = state => ({
                 ${arrow}
                              
                 ${this.printName(namePosition)}
+                ${this.printDebugInfo(config)}
             </g>`;
     }
 });

@@ -104,7 +104,7 @@ export const setupConditionRhombusBehavior = state => ({
         `;
     },
 
-    print() {
+    print(config) {
         const theme = state.theme,
             { x, y } = state.position,
             { w, h } = state.dimensions;
@@ -121,6 +121,7 @@ export const setupConditionRhombusBehavior = state => ({
             ${getRoundedRectangle(x + h / 2, y + h / 4, w - R / 2, rH, theme)}                
             ${getRhombus(x, y, R, R, theme)}
             ${this.printName(namePosition)}
+            ${this.printDebugInfo(config)}
             ${this.printConditionMarks()}
         </g>`;
     }

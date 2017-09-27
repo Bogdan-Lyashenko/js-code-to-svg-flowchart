@@ -69,8 +69,8 @@ export default (customStyleTheme = {}) => {
             });
         },
 
-        render() {
-            return svgObjectsTree && svgObjectsTree.print();
+        render(config) {
+            return svgObjectsTree && svgObjectsTree.print(config);
         }
     };
 };

@@ -2145,7 +2145,7 @@ var getArcEndPointValue = function getArcEndPointValue(pointValue, previousPoint
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.calculateBoundaries = exports.calculateChildOffsetPoint = exports.calculateBackPoint = exports.calculateToPoint = exports.calculateFromPoint = exports.calculatePosition = exports.calculateDimensions = exports.calculateHeight = exports.calculateWidth = exports.calculateNameBasedHeight = exports.calculateNameBasedWidth = exports.setupCompleteState = exports.setupBasicBehaviour = exports.setupStateModifiers = exports.setupGetChildBoundaries = exports.setupPrintName = exports.setupInitialSelectors = exports.extractBasicState = exports.setupInitialProperties = exports.getInitialState = exports.delegateInit = undefined;
+exports.calculateBoundaries = exports.calculateChildOffsetPoint = exports.calculateBackPoint = exports.calculateToPoint = exports.calculateFromPoint = exports.calculatePosition = exports.calculateDimensions = exports.calculateHeight = exports.calculateWidth = exports.calculateNameBasedHeight = exports.calculateNameBasedWidth = exports.setupCompleteState = exports.setupBasicBehaviour = exports.setupStateModifiers = exports.setupGetChildBoundaries = exports.setupSharedPrint = exports.setupInitialSelectors = exports.extractBasicState = exports.setupInitialProperties = exports.getInitialState = exports.delegateInit = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -2181,6 +2181,7 @@ var getInitialState = exports.getInitialState = function getInitialState(node, _
 
     return {
         id: (0, _string.generateId)(),
+        nodePathId: (0, _string.getPathId)(node),
         type: type,
         body: [],
         theme: theme,
@@ -2249,6 +2250,9 @@ var setupInitialSelectors = exports.setupInitialSelectors = function setupInitia
         getNodeType: function getNodeType() {
             return state.node.type;
         },
+        getNodePathId: function getNodePathId() {
+            return state.nodePathId;
+        },
         getNodeKey: function getNodeKey() {
             return state.node.key;
         },
@@ -2267,7 +2271,7 @@ var setupInitialSelectors = exports.setupInitialSelectors = function setupInitia
     };
 };
 
-var setupPrintName = exports.setupPrintName = function setupPrintName(state) {
+var setupSharedPrint = exports.setupSharedPrint = function setupSharedPrint(state) {
     return {
         //TODO: fix spacing for multi line name
         printName: function printName(newPosition) {
@@ -2285,6 +2289,19 @@ var setupPrintName = exports.setupPrintName = function setupPrintName(state) {
 
             //TODO: move to svg primitives
             return '<text x="' + (x + theme.horizontalPadding) + '" y="' + (y + 2 * theme.verticalPadding) + '"\n                font-family="' + theme.fontFamily + '" font-size="' + theme.fontSize + '" fill="' + theme.textColor + '">\n                ' + name + '\n            </text>';
+        },
+        printDebugInfo: function printDebugInfo(_ref3) {
+            var debug = _ref3.debug;
+
+            if (!debug) return '';
+
+            var position = state.position,
+                dimensions = state.dimensions,
+                theme = state.theme,
+                nodePathId = state.nodePathId;
+
+
+            return '<text x="' + (position.x + 3 * theme.horizontalPadding) + '" y="' + (position.y + dimensions.h + theme.verticalPadding) + '"\n                font-family="' + theme.fontFamily + '" font-size="' + theme.debugFontSize + '" fill="' + theme.debugTextColor + '">\n                ' + nodePathId + '\n            </text>';
         }
     };
 };
@@ -2342,7 +2359,7 @@ var setupStateModifiers = exports.setupStateModifiers = function setupStateModif
 };
 
 var setupBasicBehaviour = exports.setupBasicBehaviour = function setupBasicBehaviour(state) {
-    return Object.assign({}, setupPrintName(state), setupGetChildBoundaries(state), setupStateModifiers(state));
+    return Object.assign({}, setupSharedPrint(state), setupGetChildBoundaries(state), setupStateModifiers(state));
 };
 
 var setupCompleteState = exports.setupCompleteState = function setupCompleteState(initialState) {
@@ -2350,15 +2367,15 @@ var setupCompleteState = exports.setupCompleteState = function setupCompleteStat
     return _extends({}, state, setupInitialProperties(state));
 };
 
-var calculateNameBasedWidth = exports.calculateNameBasedWidth = function calculateNameBasedWidth(_ref3) {
-    var maxNamePartLength = _ref3.maxNamePartLength,
-        theme = _ref3.theme;
+var calculateNameBasedWidth = exports.calculateNameBasedWidth = function calculateNameBasedWidth(_ref4) {
+    var maxNamePartLength = _ref4.maxNamePartLength,
+        theme = _ref4.theme;
     return maxNamePartLength * theme.symbolWidth;
 };
 
-var calculateNameBasedHeight = exports.calculateNameBasedHeight = function calculateNameBasedHeight(_ref4) {
-    var totalNamePartsNumber = _ref4.totalNamePartsNumber,
-        theme = _ref4.theme;
+var calculateNameBasedHeight = exports.calculateNameBasedHeight = function calculateNameBasedHeight(_ref5) {
+    var totalNamePartsNumber = _ref5.totalNamePartsNumber,
+        theme = _ref5.theme;
     return totalNamePartsNumber * theme.symbolHeight + (totalNamePartsNumber - 1) * theme.lineHeight;
 };
 
@@ -2381,46 +2398,46 @@ var calculatePosition = exports.calculatePosition = function calculatePosition(s
     return _extends({}, state.initialPosition);
 };
 
-var calculateFromPoint = exports.calculateFromPoint = function calculateFromPoint(_ref5) {
-    var position = _ref5.position,
-        dimensions = _ref5.dimensions,
-        theme = _ref5.theme;
+var calculateFromPoint = exports.calculateFromPoint = function calculateFromPoint(_ref6) {
+    var position = _ref6.position,
+        dimensions = _ref6.dimensions,
+        theme = _ref6.theme;
     return {
         x: position.x + theme.childOffset / 2,
         y: position.y + dimensions.h
     };
 };
 
-var calculateToPoint = exports.calculateToPoint = function calculateToPoint(_ref6) {
-    var position = _ref6.position,
-        dimensions = _ref6.dimensions;
+var calculateToPoint = exports.calculateToPoint = function calculateToPoint(_ref7) {
+    var position = _ref7.position,
+        dimensions = _ref7.dimensions;
     return {
         x: position.x,
         y: position.y + dimensions.h / 2
     };
 };
 
-var calculateBackPoint = exports.calculateBackPoint = function calculateBackPoint(_ref7) {
-    var position = _ref7.position,
-        dimensions = _ref7.dimensions;
+var calculateBackPoint = exports.calculateBackPoint = function calculateBackPoint(_ref8) {
+    var position = _ref8.position,
+        dimensions = _ref8.dimensions;
     return {
         x: position.x + dimensions.w,
         y: position.y + dimensions.h / 2
     };
 };
 
-var calculateChildOffsetPoint = exports.calculateChildOffsetPoint = function calculateChildOffsetPoint(_ref8) {
-    var theme = _ref8.theme,
-        dimensions = _ref8.dimensions;
+var calculateChildOffsetPoint = exports.calculateChildOffsetPoint = function calculateChildOffsetPoint(_ref9) {
+    var theme = _ref9.theme,
+        dimensions = _ref9.dimensions;
     return {
         x: theme.childOffset,
         y: dimensions.h + theme.childOffset / 2
     };
 };
 
-var calculateBoundaries = exports.calculateBoundaries = function calculateBoundaries(_ref9) {
-    var position = _ref9.position,
-        dimensions = _ref9.dimensions;
+var calculateBoundaries = exports.calculateBoundaries = function calculateBoundaries(_ref10) {
+    var position = _ref10.position,
+        dimensions = _ref10.dimensions;
     return {
         min: { x: position.x, y: position.y },
         max: { x: position.x + dimensions.w, y: position.y + dimensions.h }
@@ -17003,6 +17020,7 @@ Object.defineProperty(exports, "__esModule", {
 var setupPointer = exports.setupPointer = function setupPointer(cache) {
     return {
         list: cache ? [cache] : [],
+        ref: null,
 
         getCurrent: function getCurrent() {
             if (!this.list.length) return;
@@ -17013,6 +17031,12 @@ var setupPointer = exports.setupPointer = function setupPointer(cache) {
         },
         stepOut: function stepOut() {
             this.list.pop();
+        },
+        keepRef: function keepRef(ref) {
+            this.ref = ref;
+        },
+        getRef: function getRef() {
+            return this.ref;
         }
     };
 };
@@ -36556,7 +36580,7 @@ var visitSimpleEntry = function visitSimpleEntry(item, pointer) {
 
         if (globalIgnore && globalIgnore(entryConfig)) return;
 
-        pointer.getCurrent().push(entryConfig);
+        pushEntry(pointer, entryConfig);
     };
 };
 
@@ -36570,11 +36594,17 @@ var enterComplexEntry = function enterComplexEntry(item, pointer) {
         });
 
         if (!(globalIgnore && globalIgnore(entryConfig))) {
-            pointer.getCurrent().push(entryConfig);
+            pushEntry(pointer, entryConfig);
         }
 
+        pointer.keepRef(entryConfig);
         pointer.stepIn(entryConfig.body);
     };
+};
+
+var pushEntry = function pushEntry(pointer, entry) {
+    entry.parent = pointer.getRef();
+    pointer.getCurrent().push(entry);
 };
 
 var getStatementParentKey = function getStatementParentKey(path) {
@@ -36874,8 +36904,8 @@ exports.default = function () {
                 updateShapeTheme(shape, blurredTheme[shape.getShapeType()], connectionArrow ? blurredTheme[connectionArrow.getFieldName()] : null);
             });
         },
-        render: function render() {
-            return svgObjectsTree && svgObjectsTree.print();
+        render: function render(config) {
+            return svgObjectsTree && svgObjectsTree.print(config);
         }
     };
 };
@@ -37057,7 +37087,7 @@ var BaseShape = exports.BaseShape = {
     strokeColor: '#444',
     strokeWidth: 1,
     fillColor: '#fff',
-    textColor: '#111',
+    textColor: '#222',
     fontFamily: 'monospace',
     fontSize: 13,
     lineHeight: 5,
@@ -37066,7 +37096,10 @@ var BaseShape = exports.BaseShape = {
     horizontalPadding: 10,
     verticalPadding: 10,
     childOffset: 40,
-    margin: 10
+    margin: 10,
+
+    debugFontSize: 8,
+    debugTextColor: '#666'
 };
 
 exports.default = {
@@ -37452,22 +37485,22 @@ var SVGBase = exports.SVGBase = function SVGBase() {
             state.arrowConnections = state.arrowConnections.concat(arrowConnections);
             return this;
         },
-        printChildren: function printChildren() {
+        printChildren: function printChildren(config) {
             var svgString = "";
 
             [].concat(state.shapes, state.arrowConnections).forEach(function (node) {
-                svgString += node.print();
+                svgString += node.print(config);
             });
 
             return svgString;
         },
-        print: function print() {
+        print: function print(config) {
             var _state$dimensions = state.dimensions,
                 w = _state$dimensions.w,
                 h = _state$dimensions.h;
 
 
-            return "<svg width=\"" + w + "\" height=\"" + h + "\">\n                " + this.printChildren() + "\n            </svg>";
+            return "<svg width=\"" + w + "\" height=\"" + h + "\">\n                " + this.printChildren(config) + "\n            </svg>";
         }
     };
 };
@@ -37655,7 +37688,7 @@ var ENTITY_FIELD_NAME = 'VerticalEdgedRectangle';
 
 var setupVerticalEdgedRectangleBehavior = function setupVerticalEdgedRectangleBehavior(state) {
     return {
-        print: function print() {
+        print: function print(config) {
             var theme = state.theme;
             var _state$position = state.position,
                 x = _state$position.x,
@@ -37666,7 +37699,7 @@ var setupVerticalEdgedRectangleBehavior = function setupVerticalEdgedRectangleBe
                 namePosition = { x: x + theme.edgeOffset, y: y };
 
 
-            return '\n            <g>\n                ' + (0, _svgPrimitives.getRectangle)(x, y, w, h, theme) + '\n                    \n                ' + (0, _svgPrimitives.getLine)(x + theme.edgeOffset, y, x + theme.edgeOffset, y + h, theme) + '\n                ' + (0, _svgPrimitives.getLine)(x + w - theme.edgeOffset, y, x + w - theme.edgeOffset, y + h, theme) + '\n             \n                ' + this.printName(namePosition) + '\n            </g>';
+            return '\n            <g>\n                ' + (0, _svgPrimitives.getRectangle)(x, y, w, h, theme) + '\n                    \n                ' + (0, _svgPrimitives.getLine)(x + theme.edgeOffset, y, x + theme.edgeOffset, y + h, theme) + '\n                ' + (0, _svgPrimitives.getLine)(x + w - theme.edgeOffset, y, x + w - theme.edgeOffset, y + h, theme) + '\n             \n                ' + this.printName(namePosition) + '\n                ' + this.printDebugInfo(config) + '\n            </g>';
         }
     };
 };
@@ -37715,6 +37748,25 @@ var generateId = exports.generateId = function generateId() {
             v = c === 'x' ? r : r & 0x3 | 0x8;
         return v.toString(16);
     });
+};
+
+var getPathId = exports.getPathId = function getPathId(node) {
+    var queue = [node];
+    var id = 'node-id:|' + node.name + '|';
+
+    while (queue.length) {
+        var item = queue.shift();
+
+        if (item) {
+            id += item.name ? item.name[0] : '-';
+
+            if (item.parent) {
+                queue.push(item.parent);
+            }
+        }
+    }
+
+    return id.replace(/\s/g, '').toUpperCase();
 };
 
 var splitNameString = exports.splitNameString = function splitNameString(str) {
@@ -37852,6 +37904,8 @@ var ENTITY_FIELD_NAME = 'Rectangle';
 var setupRectangleBehavior = function setupRectangleBehavior(state) {
     return {
         print: function print() {
+            var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
             var theme = state.theme;
             var _state$position = state.position,
                 x = _state$position.x,
@@ -37861,7 +37915,7 @@ var setupRectangleBehavior = function setupRectangleBehavior(state) {
                 h = _state$dimensions.h;
 
 
-            return '\n                <g>\n                   ' + (0, _svgPrimitives.getRoundedRectangle)(x, y, w, h, theme) + '\n                   ' + this.printName() + '\n                </g>';
+            return '\n                <g>\n                   ' + (0, _svgPrimitives.getRoundedRectangle)(x, y, w, h, theme) + '\n                   ' + this.printName() + '\n                   ' + this.printDebugInfo(config) + '\n                </g>';
         }
     };
 };
@@ -37982,7 +38036,7 @@ var setupConditionRhombusBehavior = exports.setupConditionRhombusBehavior = func
 
             return '\n            ' + (0, _svgPrimitives.getText)(x + R / 2 - text.length * theme.symbolWidth / 2, y + R / 2 + theme.symbolHeight / 2, theme, text) + '\n            \n            ' + (0, _svgPrimitives.getText)(x + R / 2 + theme.symbolWidth, y + R + theme.symbolWidth / 4, theme, positive) + '\n            \n            ' + (this.checkIfChildExist(_constants.TOKEN_KEYS.ALTERNATE) ? (0, _svgPrimitives.getText)(x + w + theme.symbolWidth / 2, y + R / 2 - theme.symbolWidth / 4, theme, alternative) : '') + '\n        ';
         },
-        print: function print() {
+        print: function print(config) {
             var theme = state.theme,
                 _state$position2 = state.position,
                 x = _state$position2.x,
@@ -38000,7 +38054,7 @@ var setupConditionRhombusBehavior = exports.setupConditionRhombusBehavior = func
                 y: y + rH / 2
             };
 
-            return '<g>\n            ' + (0, _svgPrimitives.getRoundedRectangle)(x + h / 2, y + h / 4, w - R / 2, rH, theme) + '                \n            ' + (0, _svgPrimitives.getRhombus)(x, y, R, R, theme) + '\n            ' + this.printName(namePosition) + '\n            ' + this.printConditionMarks() + '\n        </g>';
+            return '<g>\n            ' + (0, _svgPrimitives.getRoundedRectangle)(x + h / 2, y + h / 4, w - R / 2, rH, theme) + '                \n            ' + (0, _svgPrimitives.getRhombus)(x, y, R, R, theme) + '\n            ' + this.printName(namePosition) + '\n            ' + this.printDebugInfo(config) + '\n            ' + this.printConditionMarks() + '\n        </g>';
         }
     };
 };
@@ -38094,7 +38148,7 @@ var setupLoopRhombusBehavior = function setupLoopRhombusBehavior(state) {
 
             return (0, _svgPrimitives.getText)(x + R / 2 - text.length * theme.symbolWidth / 2, y + R / 2 + theme.symbolHeight / 2, theme, text);
         },
-        print: function print() {
+        print: function print(config) {
             var theme = state.theme;
             var _state$position2 = state.position,
                 x = _state$position2.x,
@@ -38112,7 +38166,7 @@ var setupLoopRhombusBehavior = function setupLoopRhombusBehavior(state) {
                 y: y + rH / 2
             };
 
-            return '<g>\n\n            ' + (0, _svgPrimitives.getRoundedRectangle)(x + h / 2, y + h / 4, w - R / 2, rH, theme) + '\n            ' + (0, _svgPrimitives.getRhombus)(x, y, R, R, theme) + '\n                \n            ' + this.printName(namePosition) + '\n            ' + this.printConditionMarks() + '\n        </g>';
+            return '<g>\n\n            ' + (0, _svgPrimitives.getRoundedRectangle)(x + h / 2, y + h / 4, w - R / 2, rH, theme) + '\n            ' + (0, _svgPrimitives.getRhombus)(x, y, R, R, theme) + '\n                \n            ' + this.printName(namePosition) + '\n            ' + this.printDebugInfo(config) + '\n            ' + this.printConditionMarks() + '\n        </g>';
         }
     };
 };
@@ -38169,7 +38223,7 @@ var ENTITY_FIELD_NAME = 'ReturnStatement';
 
 var setupReturnStatementBehaviour = function setupReturnStatementBehaviour(state) {
     return {
-        print: function print() {
+        print: function print(config) {
             var theme = state.theme,
                 arrowTheme = theme.arrow;
 
@@ -38189,7 +38243,7 @@ var setupReturnStatementBehaviour = function setupReturnStatementBehaviour(state
                 y: y + h / 2 - arrowSize.y / 2
             }), arrowTheme);
 
-            return '\n            <g>\n                ' + (0, _svgPrimitives.getRoundedRectangle)(x, y, w, h, theme) + '\n                \n                ' + (0, _svgPrimitives.getLine)(x + w, y + h / 2 - arrowTheme.handlerLength, x + w + arrowTheme.handlerLength, y + h / 2 - arrowTheme.handlerLength, arrowTheme) + '\n                \n                ' + (0, _svgPrimitives.getLine)(x + w, y + h / 2 + arrowTheme.handlerLength, x + w + arrowTheme.handlerLength, y + h / 2 + arrowTheme.handlerLength, arrowTheme) + '\n\n                ' + arrow + '\n                             \n                ' + this.printName(namePosition) + '\n            </g>';
+            return '\n            <g>\n                ' + (0, _svgPrimitives.getRoundedRectangle)(x, y, w, h, theme) + '\n                \n                ' + (0, _svgPrimitives.getLine)(x + w, y + h / 2 - arrowTheme.handlerLength, x + w + arrowTheme.handlerLength, y + h / 2 - arrowTheme.handlerLength, arrowTheme) + '\n                \n                ' + (0, _svgPrimitives.getLine)(x + w, y + h / 2 + arrowTheme.handlerLength, x + w + arrowTheme.handlerLength, y + h / 2 + arrowTheme.handlerLength, arrowTheme) + '\n\n                ' + arrow + '\n                             \n                ' + this.printName(namePosition) + '\n                ' + this.printDebugInfo(config) + '\n            </g>';
         }
     };
 };
@@ -38347,7 +38401,7 @@ var ENTITY_FIELD_NAME = 'DestructedNode';
 
 var setupDestructedNodeBehaviour = function setupDestructedNodeBehaviour(state) {
     return {
-        print: function print() {
+        print: function print(config) {
             var theme = state.theme,
                 suffixTheme = theme.suffix;
 
@@ -38362,7 +38416,7 @@ var setupDestructedNodeBehaviour = function setupDestructedNodeBehaviour(state) 
             var suffix1 = (0, _svgPrimitives.getRoundedRectangle)(x + w + suffixTheme.space, y, suffixTheme.width, h, suffixTheme);
             var suffix2 = (0, _svgPrimitives.getRoundedRectangle)(x + w + 2 * suffixTheme.space + suffixTheme.width, y, suffixTheme.width, h, suffixTheme);
 
-            return '\n            <g>\n                ' + (0, _svgPrimitives.getRoundedRectangle)(x, y, w, h, theme) + '\n                \n                ' + suffix1 + '\n                ' + suffix2 + '\n                             \n                ' + this.printName(namePosition) + '\n            </g>';
+            return '\n            <g>\n                ' + (0, _svgPrimitives.getRoundedRectangle)(x, y, w, h, theme) + '\n                \n                ' + suffix1 + '\n                ' + suffix2 + '\n                             \n                ' + this.printName(namePosition) + '\n                ' + this.printDebugInfo(config) + '\n            </g>';
         }
     };
 };

@@ -11,7 +11,7 @@ import {
 const ENTITY_FIELD_NAME = 'Rectangle';
 
 const setupRectangleBehavior = state => ({
-    print() {
+    print(config = {}) {
         const theme = state.theme;
         const { x, y } = state.position,
             { w, h } = state.dimensions;
@@ -20,6 +20,7 @@ const setupRectangleBehavior = state => ({
                 <g>
                    ${getRoundedRectangle(x, y, w, h, theme)}
                    ${this.printName()}
+                   ${this.printDebugInfo(config)}
                 </g>`;
     }
 });

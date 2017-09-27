@@ -1,5 +1,10 @@
 import { mergeObjectStructures } from 'shared/utils/composition';
-import { generateId, splitNameString, getMaxStringLengthFromList } from 'shared/utils/string';
+import {
+    generateId,
+    splitNameString,
+    getMaxStringLengthFromList,
+    getPathId
+} from 'shared/utils/string';
 import { flatTree } from 'shared/utils/flatten';
 import { calculateShapesBoundaries } from 'shared/utils/geometry';
 import {
@@ -30,6 +35,7 @@ export const getInitialState = (node, { x, y }, theme, type) => {
 
     return {
         id: generateId(),
+        nodePathId: getPathId(node),
         type,
         body: [],
         theme,
@@ -106,6 +112,10 @@ export const setupInitialSelectors = state => ({
         return state.node.type;
     },
 
+    getNodePathId() {
+        return state.nodePathId;
+    },
+
     getNodeKey() {
         return state.node.key;
     },
@@ -127,7 +137,7 @@ export const setupInitialSelectors = state => ({
     }
 });
 
-export const setupPrintName = state => ({
+export const setupSharedPrint = state => ({
     //TODO: fix spacing for multi line name
     printName(newPosition) {
         const { position, theme, nameParts } = state;
@@ -144,6 +154,19 @@ export const setupPrintName = state => ({
         return `<text x="${x + theme.horizontalPadding}" y="${y + 2 * theme.verticalPadding}"
                 font-family="${theme.fontFamily}" font-size="${theme.fontSize}" fill="${theme.textColor}">
                 ${name}
+            </text>`;
+    },
+
+    printDebugInfo({ debug }) {
+        if (!debug) return '';
+
+        const { position, dimensions, theme, nodePathId } = state;
+
+        return `<text x="${position.x + 3 * theme.horizontalPadding}" y="${position.y +
+            dimensions.h +
+            theme.verticalPadding}"
+                font-family="${theme.fontFamily}" font-size="${theme.debugFontSize}" fill="${theme.debugTextColor}">
+                ${nodePathId}
             </text>`;
     }
 });
@@ -195,7 +218,7 @@ export const setupStateModifiers = state => ({
 export const setupBasicBehaviour = state =>
     Object.assign(
         {},
-        setupPrintName(state),
+        setupSharedPrint(state),
         setupGetChildBoundaries(state),
         setupStateModifiers(state)
     );

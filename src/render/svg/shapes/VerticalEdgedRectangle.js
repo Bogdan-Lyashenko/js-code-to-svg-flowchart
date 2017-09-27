@@ -14,7 +14,7 @@ import {
 const ENTITY_FIELD_NAME = 'VerticalEdgedRectangle';
 
 const setupVerticalEdgedRectangleBehavior = state => ({
-    print() {
+    print(config) {
         const theme = state.theme;
         const { x, y } = state.position,
             { w, h } = state.dimensions,
@@ -28,6 +28,7 @@ const setupVerticalEdgedRectangleBehavior = state => ({
                 ${getLine(x + w - theme.edgeOffset, y, x + w - theme.edgeOffset, y + h, theme)}
              
                 ${this.printName(namePosition)}
+                ${this.printDebugInfo(config)}
             </g>`;
     }
 });

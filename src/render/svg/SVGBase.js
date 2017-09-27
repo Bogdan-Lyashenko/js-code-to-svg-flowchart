@@ -21,20 +21,20 @@ export const SVGBase = () => {
             state.arrowConnections = state.arrowConnections.concat(arrowConnections);
             return this;
         },
-        printChildren() {
+        printChildren(config) {
             let svgString = ``;
 
             [].concat(state.shapes, state.arrowConnections).forEach(node => {
-                svgString += node.print();
+                svgString += node.print(config);
             });
 
             return svgString;
         },
-        print() {
+        print(config) {
             const { w, h } = state.dimensions;
 
             return `<svg width="${w}" height="${h}">
-                ${this.printChildren()}
+                ${this.printChildren(config)}
             </svg>`;
         }
     };

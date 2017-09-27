@@ -6,6 +6,25 @@ export const generateId = () => {
     });
 };
 
+export const getPathId = node => {
+    const queue = [node];
+    let id = `node-id:|${node.name}|`;
+
+    while (queue.length) {
+        let item = queue.shift();
+
+        if (item) {
+            id += item.name ? item.name[0] : '-';
+
+            if (item.parent) {
+                queue.push(item.parent);
+            }
+        }
+    }
+
+    return id.replace(/\s/g, '').toUpperCase();
+};
+
 export const splitNameString = (str, maxLineLength = 20, nameSplitterTokensIterator) => {
     const strLength = str.length;
 

@@ -60,7 +60,7 @@ const visitSimpleEntry = (item, pointer) => (path, globalIgnore) => {
 
     if (globalIgnore && globalIgnore(entryConfig)) return;
 
-    pointer.getCurrent().push(entryConfig);
+    pushEntry(pointer, entryConfig);
 };
 
 const enterComplexEntry = (item, pointer) => (path, globalIgnore) => {
@@ -73,10 +73,16 @@ const enterComplexEntry = (item, pointer) => (path, globalIgnore) => {
     };
 
     if (!(globalIgnore && globalIgnore(entryConfig))) {
-        pointer.getCurrent().push(entryConfig);
+        pushEntry(pointer, entryConfig);
     }
 
+    pointer.keepRef(entryConfig);
     pointer.stepIn(entryConfig.body);
+};
+
+const pushEntry = (pointer, entry) => {
+    entry.parent = pointer.getRef();
+    pointer.getCurrent().push(entry);
 };
 
 const getStatementParentKey = path => {

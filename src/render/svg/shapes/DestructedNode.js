@@ -15,7 +15,7 @@ import {
 const ENTITY_FIELD_NAME = 'DestructedNode';
 
 const setupDestructedNodeBehaviour = state => ({
-    print() {
+    print(config) {
         const theme = state.theme,
             suffixTheme = theme.suffix;
 
@@ -47,6 +47,7 @@ const setupDestructedNodeBehaviour = state => ({
                 ${suffix2}
                              
                 ${this.printName(namePosition)}
+                ${this.printDebugInfo(config)}
             </g>`;
     }
 });

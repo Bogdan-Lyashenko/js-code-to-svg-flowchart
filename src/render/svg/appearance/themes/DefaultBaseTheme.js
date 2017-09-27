@@ -2,7 +2,7 @@ export const BaseShape = {
     strokeColor: '#444',
     strokeWidth: 1,
     fillColor: '#fff',
-    textColor: '#111',
+    textColor: '#222',
     fontFamily: 'monospace',
     fontSize: 13,
     lineHeight: 5,
@@ -11,7 +11,10 @@ export const BaseShape = {
     horizontalPadding: 10,
     verticalPadding: 10,
     childOffset: 40,
-    margin: 10
+    margin: 10,
+
+    debugFontSize: 8,
+    debugTextColor: '#666'
 };
 
 export default {

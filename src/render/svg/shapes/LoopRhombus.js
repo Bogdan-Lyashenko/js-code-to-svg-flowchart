@@ -58,7 +58,7 @@ const setupLoopRhombusBehavior = state => ({
         );
     },
 
-    print() {
+    print(config) {
         const theme = state.theme;
         const { x, y } = state.position,
             { w, h } = state.dimensions;
@@ -77,6 +77,7 @@ const setupLoopRhombusBehavior = state => ({
             ${getRhombus(x, y, R, R, theme)}
                 
             ${this.printName(namePosition)}
+            ${this.printDebugInfo(config)}
             ${this.printConditionMarks()}
         </g>`;
     }
