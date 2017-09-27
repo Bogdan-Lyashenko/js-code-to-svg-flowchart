@@ -2290,8 +2290,9 @@ var setupSharedPrint = exports.setupSharedPrint = function setupSharedPrint(stat
             //TODO: move to svg primitives
             return '<text x="' + (x + theme.horizontalPadding) + '" y="' + (y + 2 * theme.verticalPadding) + '"\n                font-family="' + theme.fontFamily + '" font-size="' + theme.fontSize + '" fill="' + theme.textColor + '">\n                ' + name + '\n            </text>';
         },
-        printDebugInfo: function printDebugInfo(_ref3) {
-            var debug = _ref3.debug;
+        printDebugInfo: function printDebugInfo() {
+            var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+                debug = _ref3.debug;
 
             if (!debug) return '';
 
