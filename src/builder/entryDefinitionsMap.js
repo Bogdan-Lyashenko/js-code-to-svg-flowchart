@@ -35,7 +35,8 @@ export const DefinitionsMap = [
     },
     {
         type: TOKEN_TYPES.RETURN, //TODO: visual
-        getName: returnConverter,
+        getName: returnConverter, //TODO: fix return function, duplicates 'return log(list);'
+
         body: true
     },
     {

@@ -54,5 +54,6 @@ export const CLASS_FUNCTION_KINDS = {
 };
 
 export const MODIFIED_TYPES = {
-    DESTRUCTED: 'DESTRUCTED'
+    DESTRUCTED: 'DESTRUCTED',
+    CUSTOM: 'CUSTOM'
 };

@@ -18,8 +18,6 @@ const UpdatesMap = {
     body(node, apply) {
         node.body = executeApplyFn(apply, node);
     }
-
-    //TODO: add parent, siblings
 };
 
 const applyModifierUpdates = (tree, modifier) => {

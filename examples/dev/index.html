@@ -113,13 +113,24 @@
     `;
 
     const simpleStr = `
+
+        function log() {
+            var a  = 12 + 12;
+        }
+
+        function printInjected(list) {
+            return log(list);
+        }
+
         function print() {
 
-            const newList = list.filter(i => {
-                return i > 1;
-            });
+            printInjected();
 
-            return false;
+            if (a > 2) {
+                printAlso(a);
+            }
+
+            var b = callMethod();
         }
     `;
 
@@ -128,7 +139,6 @@
     const t0 = performance.now();
     //===================================
     const flowTreeBuilder = JsCode2SvgFlowChart.createFlowTreeBuilder();
-    flowTreeBuilder.setModifier(JsCode2SvgFlowChart.MODIFIER_PRESETS.es5ArrayIterators);
 
     const svgRender = JsCode2SvgFlowChart.createSVGRender();
     svgRender.buildShapesTree(flowTreeBuilder.build(simpleStr));

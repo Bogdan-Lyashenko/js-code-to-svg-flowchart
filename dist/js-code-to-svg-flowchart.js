@@ -1008,7 +1008,8 @@ var CLASS_FUNCTION_KINDS = exports.CLASS_FUNCTION_KINDS = {
 };
 
 var MODIFIED_TYPES = exports.MODIFIED_TYPES = {
-    DESTRUCTED: 'DESTRUCTED'
+    DESTRUCTED: 'DESTRUCTED',
+    CUSTOM: 'CUSTOM'
 };
 
 /***/ }),
@@ -15618,7 +15619,8 @@ var DefinitionsMap = exports.DefinitionsMap = [{
     body: true
 }, {
     type: _constants.TOKEN_TYPES.RETURN, //TODO: visual
-    getName: _core.returnConverter,
+    getName: _core.returnConverter, //TODO: fix return function, duplicates 'return log(list);'
+
     body: true
 }, {
     type: _constants.TOKEN_TYPES.VARIABLE_DECLARATOR,
@@ -17184,7 +17186,7 @@ exports.default = (0, _BaseShape.delegateInit)(Circle, ENTITY_FIELD_NAME);
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.convertCodeToSvg = exports.TOKEN_TYPES = exports.MODIFIER_PRESETS = exports.DEFINED_MODIFIERS = exports.ABSTRACTION_LEVELS = exports.createSVGRender = exports.createFlowTreeBuilder = undefined;
+exports.convertCodeToSvg = exports.MODIFIED_TYPES = exports.TOKEN_TYPES = exports.MODIFIER_PRESETS = exports.DEFINED_MODIFIERS = exports.ABSTRACTION_LEVELS = exports.createSVGRender = exports.createFlowTreeBuilder = undefined;
 
 var _FlowTreeBuilder = __webpack_require__(176);
 
@@ -17205,6 +17207,7 @@ exports.ABSTRACTION_LEVELS = _FlowTreeBuilder.ABSTRACTION_LEVELS;
 exports.DEFINED_MODIFIERS = _FlowTreeBuilder.DEFINED_MODIFIERS;
 exports.MODIFIER_PRESETS = _FlowTreeBuilder.MODIFIER_PRESETS;
 exports.TOKEN_TYPES = _constants.TOKEN_TYPES;
+exports.MODIFIED_TYPES = _constants.MODIFIED_TYPES;
 var convertCodeToSvg = exports.convertCodeToSvg = function convertCodeToSvg(code) {
     var flowTreeBuilder = createFlowTreeBuilder(),
         svgRender = createSVGRender();
@@ -36673,9 +36676,6 @@ var UpdatesMap = {
     body: function body(node, apply) {
         node.body = executeApplyFn(apply, node);
     }
-
-    //TODO: add parent, siblings
-
 };
 
 var applyModifierUpdates = function applyModifierUpdates(tree, modifier) {
