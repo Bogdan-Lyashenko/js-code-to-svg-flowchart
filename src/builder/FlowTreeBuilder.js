@@ -1,7 +1,7 @@
 import traverse from 'babel-traverse';
 
 import { DefinitionsMap } from './entryDefinitionsMap';
-import { buildAST, buildVisitor } from './astBuilder';
+import { parseCodeToAST, buildVisitor } from './astBuilder';
 import {
     ABSTRACTION_LEVELS,
     rebuildConfigForAbstractionLevel
@@ -13,36 +13,34 @@ import {
     destructionModifier
 } from './modifiers/modifiersFactory';
 
-const buildFlowTree = (code, { astParserConfig, astVisitorConfig }) => {
+const buildFlowTree = (astTree, astVisitorConfig) => {
     const treeNodes = [];
 
-    traverse(buildAST(code, astParserConfig), buildVisitor(astVisitorConfig, treeNodes));
+    traverse(astTree, buildVisitor(astVisitorConfig, treeNodes));
 
     return { name: '', body: treeNodes };
 };
 
-export default ({ astParserConfig = {}, astVisitorConfig = {} } = {}) => {
-    const options = {
-        astParserConfig: {
-            ...astParserConfig
-        },
+export default ({ astParser = {}, astVisitor = {} } = {}) => {
+    const astParserConfig = {
+        ...astParser
+    };
 
-        astVisitorConfig: {
-            definitionsMap: [...DefinitionsMap],
-            globalIgnore: null,
-            ...astVisitorConfig
-        }
+    const astVisitorConfig = {
+        definitionsMap: [...DefinitionsMap],
+        globalIgnore: null,
+        ...astVisitor
     };
 
     const modifiers = createFlowTreeModifier();
 
     return {
         setAbstractionLevel(level) {
-            options.astVisitorConfig.definitionsMap = rebuildConfigForAbstractionLevel(level);
+            astVisitorConfig.definitionsMap = rebuildConfigForAbstractionLevel(level);
         },
 
         setIgnoreFilter(fn) {
-            options.astVisitorConfig.globalIgnore = fn;
+            astVisitorConfig.globalIgnore = fn;
         },
 
         setModifier(modifier) {
@@ -58,11 +56,21 @@ export default ({ astParserConfig = {}, astVisitorConfig = {} } = {}) => {
         },
 
         build(code) {
-            const tree = buildFlowTree(code, options);
+            const ast = this.buildAst(code);
+            return this.buildFlowTreeFromAst(ast);
+        },
 
-            modifiers.applyTo(tree);
+        //advanced
+        buildAst(code) {
+            return parseCodeToAST(code, astParserConfig);
+        },
 
-            return tree;
+        buildFlowTreeFromAst(ast) {
+            const flowTree = buildFlowTree(ast, astVisitorConfig);
+
+            modifiers.applyTo(flowTree);
+
+            return flowTree;
         }
     };
 };

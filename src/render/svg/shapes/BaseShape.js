@@ -157,7 +157,7 @@ export const setupSharedPrint = state => ({
             </text>`;
     },
 
-    printDebugInfo({ debug }={}) {
+    printDebugInfo({ debug } = {}) {
         if (!debug) return '';
 
         const { position, dimensions, theme, nodePathId } = state;

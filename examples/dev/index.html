@@ -128,6 +128,8 @@
 
             if (a > 2) {
                 printAlso(a);
+
+
             }
 
             var b = callMethod();
@@ -141,9 +143,9 @@
     const flowTreeBuilder = JsCode2SvgFlowChart.createFlowTreeBuilder();
 
     const svgRender = JsCode2SvgFlowChart.createSVGRender();
-    svgRender.buildShapesTree(flowTreeBuilder.build(simpleStr));
+    const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(simpleStrModules));
 
-    document.getElementById('svgImage').innerHTML = svgRender.render();
+    document.getElementById('svgImage').innerHTML = shapesTree.print();
 
     //==================================
     const t1 = performance.now();

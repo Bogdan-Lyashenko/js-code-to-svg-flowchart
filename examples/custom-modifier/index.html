@@ -30,15 +30,15 @@
     const flowTreeBuilder = JsCode2SvgFlowChart.createFlowTreeBuilder();
     flowTreeBuilder.registerNewModifier((node)=> node.name.includes('(i) =>'), {
         body: [{
-            name: 'log i > 2',
+            name: '...only log i when it is bigger than 2..',
             type: JsCode2SvgFlowChart.MODIFIED_TYPES.CUSTOM
         }]
     });
 
     const svgRender = JsCode2SvgFlowChart.createSVGRender();
-    svgRender.buildShapesTree(flowTreeBuilder.build(code));
+    const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(code));
 
-    document.getElementById('svgImage').innerHTML = svgRender.render();
+    document.getElementById('svgImage').innerHTML = shapesTree.print();
 
 </script>
 </body>

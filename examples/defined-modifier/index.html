@@ -42,9 +42,9 @@
     flowTreeBuilder.setModifier(JsCode2SvgFlowChart.MODIFIER_PRESETS.es5ArrayIterators);
 
     const svgRender = JsCode2SvgFlowChart.createSVGRender();
-    svgRender.buildShapesTree(flowTreeBuilder.build(code));
+    const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(code));
 
-    document.getElementById('svgImage').innerHTML = svgRender.render();
+    document.getElementById('svgImage').innerHTML = shapesTree.print();
 
 </script>
 </body>

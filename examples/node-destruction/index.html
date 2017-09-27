@@ -32,9 +32,9 @@
     flowTreeBuilder.destructNodeTree((node) => node.name.indexOf('.forEach') !== -1, 'and print list...');
 
     const svgRender = JsCode2SvgFlowChart.createSVGRender();
-    svgRender.buildShapesTree(flowTreeBuilder.build(code));
+    const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(code));
 
-    document.getElementById('svgImage').innerHTML = svgRender.render();
+    document.getElementById('svgImage').innerHTML = shapesTree.print();
 
 </script>
 </body>

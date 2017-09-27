@@ -42,13 +42,14 @@
         flowTreeBuilder = JsCode2SvgFlowChart.createFlowTreeBuilder(),
         svgRender = JsCode2SvgFlowChart.createSVGRender();
 
-    svgRender.buildShapesTree(flowTreeBuilder.build(code));
+    const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(code));
+    const shapesTreeEditor = JsCode2SvgFlowChart.createShapesTreeEditor(shapesTree);//copy shapes tree if don't want to mutate them
 
-    svgRender.applyShapeStyles(shape => shape.getNodePathId() === 'NODE-ID:|THIS.NAME=NAME|TSRGTCCP', {
+    shapesTreeEditor.applyShapeStyles(shape => shape.getNodePathId() === 'NODE-ID:|THIS.NAME=NAME|TSRGTCCP', {
         fillColor: '#ffab91'
     });
 
-    document.getElementById('svgImage').innerHTML = svgRender.render({debug: true});
+    document.getElementById('svgImage').innerHTML = shapesTreeEditor.print({debug: true});
 </script>
 </body>
 </html>

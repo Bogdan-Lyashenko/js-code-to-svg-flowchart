@@ -4,7 +4,7 @@ import traverse from 'babel-traverse'; //TODO: remove, needed only for debug now
 import { TOKEN_KEYS } from 'shared/constants';
 import { setupPointer } from 'shared/utils/treeLevelsPointer';
 
-export const buildAST = (code, config) => {
+export const parseCodeToAST = (code, config) => {
     //TODO: remove when finish with defining types
     /*const c = babylon.parse(code, {
         sourceType: 'module',

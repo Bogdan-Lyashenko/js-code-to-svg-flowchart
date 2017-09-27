@@ -6,10 +6,7 @@ import {
 } from './appearance/StyleThemeFactory';
 import { buildSVGObjectsTree } from './svgObjectsBuilder';
 
-export default (customStyleTheme = {}) => {
-    let svgObjectsTree = null,
-        theme = applyStyleToTheme(getDefaultTheme(), customStyleTheme);
-
+export const ShapesTreeEditor = svgObjectsTree => {
     const updateShapeTheme = (shape, shapeStyles, connectionArrowStyles) => {
         if (shapeStyles) {
             shape.updateTheme(shapeStyles);
@@ -21,28 +18,11 @@ export default (customStyleTheme = {}) => {
     };
 
     return {
-        buildShapesTree(flowTree) {
-            svgObjectsTree = buildSVGObjectsTree(flowTree, theme);
-        },
-
-        applyTheme(newThemeStyles) {
-            theme = applyStyleToTheme(theme, newThemeStyles);
-        },
-
-        applyDefaultTheme() {
-            this.applyTheme(getDefaultTheme());
-        },
-        applyBlackAndWhiteTheme() {
-            this.applyTheme(getBlackAndWhiteTheme());
-        },
-        applyBlurredTheme() {
-            this.applyTheme(getBlurredTheme());
-        },
-
-        findShape(fnTest, fnOnFind, fnOnMismatch) {
-            svgObjectsTree.getShapes().forEach(shape => {
-                return fnTest(shape) ? fnOnFind(shape) : fnOnMismatch && fnOnMismatch(shape);
-            });
+        findShape(fnTest, fnOnFind) {
+            svgObjectsTree
+                .getShapes()
+                .filter(fnTest)
+                .forEach(fnOnFind);
         },
 
         applyShapeStyles(fn, shapeStyles, connectionArrowStyles) {
@@ -69,8 +49,32 @@ export default (customStyleTheme = {}) => {
             });
         },
 
-        render(config) {
+        print(config) {
             return svgObjectsTree && svgObjectsTree.print(config);
+        }
+    };
+};
+
+export default (customStyleTheme = {}) => {
+    let theme = applyStyleToTheme(getDefaultTheme(), customStyleTheme);
+
+    return {
+        buildShapesTree(flowTree) {
+            return buildSVGObjectsTree(flowTree, theme);
+        },
+
+        applyTheme(newThemeStyles) {
+            theme = applyStyleToTheme(theme, newThemeStyles);
+        },
+
+        applyDefaultTheme() {
+            this.applyTheme(getDefaultTheme());
+        },
+        applyBlackAndWhiteTheme() {
+            this.applyTheme(getBlackAndWhiteTheme());
+        },
+        applyBlurredTheme() {
+            this.applyTheme(getBlurredTheme());
         }
     };
 };
