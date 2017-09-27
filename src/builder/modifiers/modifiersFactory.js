@@ -17,14 +17,16 @@ export const DEFINED_MODIFIERS = {
         test: node => testNode(node, 'forEach'),
         updates: {
             name: node => `each in  ${extractNodeName(node, 'forEach')[0]}`,
-            type: TOKEN_TYPES.LOOP
+            type: TOKEN_TYPES.LOOP,
+            body: node => [...node.body[0].body]
         }
     },
 
     filter: {
         test: node => testNode(node, 'filter'),
         updates: {
-            name: node => `in ${extractNodeName(node, 'filter')[1]} to ${extractNodeName(node, 'filter')[0]}`,
+            name: node =>
+                `in ${extractNodeName(node, 'filter')[1]} to ${extractNodeName(node, 'filter')[0]}`,
             prefixName: 'filter',
             type: TOKEN_TYPES.LOOP
         }
@@ -33,7 +35,8 @@ export const DEFINED_MODIFIERS = {
     map: {
         test: node => testNode(node, 'map'),
         updates: {
-            name: (node) => `from ${extractNodeName(node, 'map')[1]} to ${extractNodeName(node, 'map')[0]}`,
+            name: node =>
+                `from ${extractNodeName(node, 'map')[1]} to ${extractNodeName(node, 'map')[0]}`,
             prefixName: 'map',
             type: TOKEN_TYPES.LOOP
         }

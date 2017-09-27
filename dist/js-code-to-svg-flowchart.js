@@ -36729,6 +36729,8 @@ exports.MODIFIER_PRESETS = exports.destructionModifier = exports.DEFINED_MODIFIE
 
 var _constants = __webpack_require__(4);
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 var extractNodeName = function extractNodeName(node, field) {
     var name = node.name.split('.' + field + '(')[0];
 
@@ -36752,7 +36754,10 @@ var DEFINED_MODIFIERS = exports.DEFINED_MODIFIERS = {
             name: function name(node) {
                 return 'each in  ' + extractNodeName(node, 'forEach')[0];
             },
-            type: _constants.TOKEN_TYPES.LOOP
+            type: _constants.TOKEN_TYPES.LOOP,
+            body: function body(node) {
+                return [].concat(_toConsumableArray(node.body[0].body));
+            }
         }
     },
 
@@ -37139,7 +37144,7 @@ exports.default = {
             handlerLength: 5,
             sizeX: 16,
             sizeY: 22,
-            fillColor: '#b39ddb'
+            fillColor: '#a5d6a7'
         })
     }),
 

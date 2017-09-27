@@ -21,12 +21,23 @@ const setupDestructedNodeBehaviour = state => ({
 
         const { x, y } = state.position,
             h = state.dimensions.h,
-            w = state.dimensions.w - 2*(suffixTheme.width + suffixTheme.space),
+            w = state.dimensions.w - 2 * (suffixTheme.width + suffixTheme.space),
             namePosition = { x, y };
 
-
-        const suffix1 = getRoundedRectangle(x + w + suffixTheme.space, y, suffixTheme.width, h, suffixTheme);
-        const suffix2 = getRoundedRectangle(x + w + 2*suffixTheme.space + suffixTheme.width, y, suffixTheme.width, h, suffixTheme);
+        const suffix1 = getRoundedRectangle(
+            x + w + suffixTheme.space,
+            y,
+            suffixTheme.width,
+            h,
+            suffixTheme
+        );
+        const suffix2 = getRoundedRectangle(
+            x + w + 2 * suffixTheme.space + suffixTheme.width,
+            y,
+            suffixTheme.width,
+            h,
+            suffixTheme
+        );
 
         return `
             <g>
@@ -46,7 +57,7 @@ const calculateWidth = state => {
 
     return (
         2 * theme.horizontalPadding +
-        2 * (suffix.width + + suffix.space) +
+        2 * (suffix.width + +suffix.space) +
         calculateNameBasedWidth(state)
     );
 };
@@ -75,4 +86,3 @@ export const DestructedNode = initialState => {
 };
 
 export default delegateInit(DestructedNode, ENTITY_FIELD_NAME);
-

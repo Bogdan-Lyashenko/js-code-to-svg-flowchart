@@ -98,7 +98,7 @@ export default {
             handlerLength: 5,
             sizeX: 16,
             sizeY: 22,
-            fillColor: '#b39ddb'
+            fillColor: '#a5d6a7'
         }
     },
 

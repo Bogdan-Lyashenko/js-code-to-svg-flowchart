@@ -118,7 +118,7 @@ export const variableDeclaratorConverter = ({ node }) => {
     }
 
     if (node.init && node.init.type === TOKEN_TYPES.CALL_EXPRESSION) {
-        return `${node.id.name} = ` + callExpressionConverter({node: node.init});
+        return `${node.id.name} = ` + callExpressionConverter({ node: node.init });
     }
 
     return generate(node).code;
