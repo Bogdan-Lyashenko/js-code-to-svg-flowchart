@@ -6,7 +6,8 @@ export const idleConverter = path => {
 };
 
 /* function */
-export const functionConverter = ({ node }) => {
+export const functionConverter = path => {
+    const node = path.node;
     const paramsCode = getFunctionParametersCode(node.params);
 
     if (node.id) {
@@ -14,7 +15,7 @@ export const functionConverter = ({ node }) => {
     }
 
     if (node.type === TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION) {
-        return paramsCode + ' =>';
+        return getAnonymousFunctionName(path) + ' = ' + paramsCode + ' =>';
     }
 
     if (node.type === TOKEN_TYPES.CLASS_METHOD) {
@@ -23,7 +24,22 @@ export const functionConverter = ({ node }) => {
             : node.key.name + paramsCode;
     }
 
-    return 'function' + paramsCode;
+    return getAnonymousFunctionName(path) + ' = function' + paramsCode;
+};
+
+export const getAnonymousFunctionName = path => {
+    const parent = path.parent;
+
+    if (
+        !parent ||
+        (parent.type !== TOKEN_TYPES.VARIABLE_DECLARATOR &&
+            parent.type !== TOKEN_TYPES.ASSIGNMENT_EXPRESSION)
+    ) {
+        return '';
+    }
+
+    const parentId = parent.id || parent.left;
+    return parentId ? parentId.name : '';
 };
 
 export const getFunctionParametersCode = params => {

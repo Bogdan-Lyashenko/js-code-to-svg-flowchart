@@ -15745,14 +15745,17 @@ var DefinitionsMap = exports.DefinitionsMap = [{
     body: true
 }, {
     type: _constants.TOKEN_TYPES.VARIABLE_DECLARATOR,
-    body: true,
-    getName: _core.variableDeclaratorConverter
+    body: false,
+    getName: _core.variableDeclaratorConverter,
+    ignore: function ignore(path) {
+        return (0, _core.isNodeContainsFunc)(path.node.init);
+    }
 }, {
     type: _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION,
     body: true,
     getName: _core.assignmentExpressionConverter,
     ignore: function ignore(path) {
-        return path.getStatementParent().isVariableDeclaration();
+        return path.getStatementParent().isVariableDeclaration() || (0, _core.isNodeContainsFunc)(path.node.right);
     }
 }, {
     type: _constants.TOKEN_TYPES.CALL_EXPRESSION,
@@ -29460,7 +29463,7 @@ function mergePair(dest, src) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.isNodeContainsFunc = exports.callExpressionConverter = exports.assignmentExpressionConverter = exports.variableDeclaratorConverter = exports.getVariableDeclarations = exports.debuggerConverter = exports.throwStatementConverter = exports.programConverter = exports.withStatementConverter = exports.breakConverter = exports.caseConverter = exports.switchStatementConverter = exports.finallyConverter = exports.catchConverter = exports.tryConverter = exports.conditionalConverter = exports.continueConverter = exports.loopConverter = exports.returnConverter = exports.getFunctionParametersCode = exports.functionConverter = exports.idleConverter = undefined;
+exports.isNodeContainsFunc = exports.callExpressionConverter = exports.assignmentExpressionConverter = exports.variableDeclaratorConverter = exports.getVariableDeclarations = exports.debuggerConverter = exports.throwStatementConverter = exports.programConverter = exports.withStatementConverter = exports.breakConverter = exports.caseConverter = exports.switchStatementConverter = exports.finallyConverter = exports.catchConverter = exports.tryConverter = exports.conditionalConverter = exports.continueConverter = exports.loopConverter = exports.returnConverter = exports.getFunctionParametersCode = exports.getAnonymousFunctionName = exports.functionConverter = exports.idleConverter = undefined;
 
 var _babelGenerator = __webpack_require__(160);
 
@@ -29475,9 +29478,8 @@ var idleConverter = exports.idleConverter = function idleConverter(path) {
 };
 
 /* function */
-var functionConverter = exports.functionConverter = function functionConverter(_ref) {
-    var node = _ref.node;
-
+var functionConverter = exports.functionConverter = function functionConverter(path) {
+    var node = path.node;
     var paramsCode = getFunctionParametersCode(node.params);
 
     if (node.id) {
@@ -29485,14 +29487,25 @@ var functionConverter = exports.functionConverter = function functionConverter(_
     }
 
     if (node.type === _constants.TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION) {
-        return paramsCode + ' =>';
+        return getAnonymousFunctionName(path) + ' = ' + paramsCode + ' =>';
     }
 
     if (node.type === _constants.TOKEN_TYPES.CLASS_METHOD) {
         return node.kind === _constants.CLASS_FUNCTION_KINDS.CONSTRUCTOR ? 'constructor' + paramsCode : node.key.name + paramsCode;
     }
 
-    return 'function' + paramsCode;
+    return getAnonymousFunctionName(path) + ' = function' + paramsCode;
+};
+
+var getAnonymousFunctionName = exports.getAnonymousFunctionName = function getAnonymousFunctionName(path) {
+    var parent = path.parent;
+
+    if (!parent || parent.type !== _constants.TOKEN_TYPES.VARIABLE_DECLARATOR && parent.type !== _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION) {
+        return '';
+    }
+
+    var parentId = parent.id || parent.left;
+    return parentId ? parentId.name : '';
 };
 
 var getFunctionParametersCode = exports.getFunctionParametersCode = function getFunctionParametersCode(params) {
@@ -29507,8 +29520,8 @@ var returnConverter = exports.returnConverter = function returnConverter(path) {
 /* end function */
 
 /* loop */
-var loopConverter = exports.loopConverter = function loopConverter(_ref2) {
-    var node = _ref2.node;
+var loopConverter = exports.loopConverter = function loopConverter(_ref) {
+    var node = _ref.node;
 
     if (node.test) {
         return (0, _babelGenerator2.default)(node.test).code;
@@ -29585,8 +29598,8 @@ var getVariableDeclarations = exports.getVariableDeclarations = function getVari
     }).join(', ');
 };
 
-var variableDeclaratorConverter = exports.variableDeclaratorConverter = function variableDeclaratorConverter(_ref3) {
-    var node = _ref3.node;
+var variableDeclaratorConverter = exports.variableDeclaratorConverter = function variableDeclaratorConverter(_ref2) {
+    var node = _ref2.node;
 
     if (isNodeContainsFunc(node.init)) {
         return node.id.name + ' = ';
@@ -29599,8 +29612,8 @@ var variableDeclaratorConverter = exports.variableDeclaratorConverter = function
     return (0, _babelGenerator2.default)(node).code;
 };
 
-var assignmentExpressionConverter = exports.assignmentExpressionConverter = function assignmentExpressionConverter(_ref4) {
-    var node = _ref4.node;
+var assignmentExpressionConverter = exports.assignmentExpressionConverter = function assignmentExpressionConverter(_ref3) {
+    var node = _ref3.node;
 
     if (isNodeContainsFunc(node.right)) {
         return node.left.name + ' ' + node.operator + ' ';
@@ -29609,8 +29622,8 @@ var assignmentExpressionConverter = exports.assignmentExpressionConverter = func
     return (0, _babelGenerator2.default)(node).code;
 };
 
-var callExpressionConverter = exports.callExpressionConverter = function callExpressionConverter(_ref5) {
-    var node = _ref5.node;
+var callExpressionConverter = exports.callExpressionConverter = function callExpressionConverter(_ref4) {
+    var node = _ref4.node;
 
     var isFunctionPassed = !!node.arguments.find(isNodeContainsFunc);
     if (!isFunctionPassed) {
@@ -36622,27 +36635,23 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 var parseCodeToAST = exports.parseCodeToAST = function parseCodeToAST(code, config) {
-    //TODO: remove when finish with defining types
-    /*const c = babylon.parse(code, {
-        sourceType: 'module',
-        plugins: [
-            'objectRestSpread' //TODO: plugins should be configurable
-        ]
-     });
-     traverse(c, {
-        enter(path) {
-            if (path.node.type === 'CallExpression') {
-                //debugger;
-            }
-            //console.log(path.node.type, path.node.name);
-        }
-    });*/
-
-    return babylon.parse(code, {
+    var ast = babylon.parse(code, {
         sourceType: 'module', //TODO: move to multiple files support, make it configurable
         plugins: ['objectRestSpread' //TODO: plugins should be configurable
         ]
     });
+
+    //TODO: remove when finish with defining types
+    /*traverse(ast, {
+        enter(path) {
+            if (path.node.type === 'ExpressionStatement') {
+                //debugger;
+            }
+            console.log(path.node.type, path.node.name);
+        }
+    });*/
+
+    return ast;
 };
 
 var buildVisitor = exports.buildVisitor = function buildVisitor(_ref, treeNodesDestination) {

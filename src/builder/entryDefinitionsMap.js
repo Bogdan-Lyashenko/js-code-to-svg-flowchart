@@ -2,6 +2,7 @@ import { TOKEN_TYPES } from 'shared/constants';
 import {
     idleConverter,
     functionConverter,
+    isNodeContainsFunc,
     returnConverter,
     variableDeclaratorConverter,
     assignmentExpressionConverter,
@@ -41,14 +42,16 @@ export const DefinitionsMap = [
     },
     {
         type: TOKEN_TYPES.VARIABLE_DECLARATOR,
-        body: true,
-        getName: variableDeclaratorConverter
+        body: false,
+        getName: variableDeclaratorConverter,
+        ignore: path => isNodeContainsFunc(path.node.init)
     },
     {
         type: TOKEN_TYPES.ASSIGNMENT_EXPRESSION,
         body: true,
         getName: assignmentExpressionConverter,
-        ignore: path => path.getStatementParent().isVariableDeclaration()
+        ignore: path =>
+            path.getStatementParent().isVariableDeclaration() || isNodeContainsFunc(path.node.right)
     },
     {
         type: TOKEN_TYPES.CALL_EXPRESSION,

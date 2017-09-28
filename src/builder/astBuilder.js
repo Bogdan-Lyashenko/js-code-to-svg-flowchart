@@ -5,30 +5,24 @@ import { TOKEN_KEYS } from 'shared/constants';
 import { setupPointer } from 'shared/utils/treeLevelsPointer';
 
 export const parseCodeToAST = (code, config) => {
-    //TODO: remove when finish with defining types
-    /*const c = babylon.parse(code, {
-        sourceType: 'module',
-        plugins: [
-            'objectRestSpread' //TODO: plugins should be configurable
-        ]
-
-    });
-
-    traverse(c, {
-        enter(path) {
-            if (path.node.type === 'CallExpression') {
-                //debugger;
-            }
-            //console.log(path.node.type, path.node.name);
-        }
-    });*/
-
-    return babylon.parse(code, {
+    const ast = babylon.parse(code, {
         sourceType: 'module', //TODO: move to multiple files support, make it configurable
         plugins: [
             'objectRestSpread' //TODO: plugins should be configurable
         ]
     });
+
+    //TODO: remove when finish with defining types
+    /*traverse(ast, {
+        enter(path) {
+            if (path.node.type === 'ExpressionStatement') {
+                //debugger;
+            }
+            console.log(path.node.type, path.node.name);
+        }
+    });*/
+
+    return ast;
 };
 
 export const buildVisitor = ({ definitionsMap, globalIgnore }, treeNodesDestination) => {

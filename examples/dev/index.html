@@ -100,39 +100,19 @@
         }
     `;
 
-    const simpleStrReturn = `
-        function test(b) {
-            var a = 12;
-
-            if (b > 11) {
-                return 11;
-            }
-
-            return a -1;
-        }
-    `;
-
     const simpleStr = `
+        const d = 12;
 
-        function log() {
-            var a  = 12 + 12;
+        a = function() {
+            method(A);
         }
 
-        function printInjected(list) {
-            return log(list);
+        const b = () => {
+            method(B);
         }
 
-        function print() {
-
-            printInjected();
-
-            if (a > 2) {
-                printAlso(a);
-
-
-            }
-
-            var b = callMethod();
+        function c() {
+            method(C);
         }
     `;
 
@@ -143,7 +123,7 @@
     const flowTreeBuilder = JS2FlowChart.createFlowTreeBuilder();
 
     const svgRender = JS2FlowChart.createSVGRender();
-    const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(simpleStrModules));
+    const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(simpleStr));
 
     document.getElementById('svgImage').innerHTML = shapesTree.print();
 
