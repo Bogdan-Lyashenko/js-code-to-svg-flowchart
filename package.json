@@ -1,5 +1,5 @@
 {
-  "name": "js-code-to-svg-flowchart",
+  "name": "js2flowchart",
   "version": "0",
   "scripts": {
     "build": "webpack --env build",

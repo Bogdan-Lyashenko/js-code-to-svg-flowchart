@@ -13,7 +13,7 @@
             <p id="svgImage"></p>
         </div>
 
-        <script src="../../dist/js-code-to-svg-flowchart.js"></script>
+        <script src="../../dist/js2flowchart.js"></script>
         <script>
             var code = `
                 console.log('test 0');
@@ -71,8 +71,8 @@
                 }
             `;
 
-            const JsCode2SvgFlowChart = window['js-code-to-svg-flowchart'];
-            document.getElementById('svgImage').innerHTML = JsCode2SvgFlowChart.convertCodeToSvg(code);
+            const JS2FlowChart = window['js2flowchart'];
+            document.getElementById('svgImage').innerHTML = JS2FlowChart.convertCodeToSvg(code);
         </script>
 
     </body>

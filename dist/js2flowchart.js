@@ -2,11 +2,11 @@
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
 	else if(typeof define === 'function' && define.amd)
-		define("js-code-to-svg-flowchart", [], factory);
+		define("js2flowchart", [], factory);
 	else if(typeof exports === 'object')
-		exports["js-code-to-svg-flowchart"] = factory();
+		exports["js2flowchart"] = factory();
 	else
-		root["js-code-to-svg-flowchart"] = factory();
+		root["js2flowchart"] = factory();
 })(this, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -38503,4 +38503,4 @@ exports.default = function (code) {};
 /***/ })
 /******/ ]);
 });
-//# sourceMappingURL=js-code-to-svg-flowchart.js.map
+//# sourceMappingURL=js2flowchart.js.map

@@ -10,7 +10,7 @@
     <p id="svgImage"></p>
 </div>
 
-<script src="../../dist/js-code-to-svg-flowchart.js"></script>
+<script src="../../dist/js2flowchart.js"></script>
 <script>
     const code = `
         class Animal extends Zero {
@@ -38,12 +38,12 @@
         }
     `;
 
-    const JsCode2SvgFlowChart = window['js-code-to-svg-flowchart'],
-        flowTreeBuilder = JsCode2SvgFlowChart.createFlowTreeBuilder(),
-        svgRender = JsCode2SvgFlowChart.createSVGRender();
+    const JS2FlowChart = window['js2flowchart'],
+        flowTreeBuilder = JS2FlowChart.createFlowTreeBuilder(),
+        svgRender = JS2FlowChart.createSVGRender();
 
     const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(code));
-    const shapesTreeEditor = JsCode2SvgFlowChart.createShapesTreeEditor(shapesTree);//copy shapes tree if don't want to mutate them
+    const shapesTreeEditor = JS2FlowChart.createShapesTreeEditor(shapesTree);//copy shapes tree if don't want to mutate them
 
     shapesTreeEditor.applyShapeStyles(shape => shape.getNodePathId() === 'NODE-ID:|THIS.NAME=NAME|TSRGTCCP', {
         fillColor: '#ffab91'

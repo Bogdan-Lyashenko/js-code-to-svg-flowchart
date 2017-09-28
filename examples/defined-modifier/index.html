@@ -10,7 +10,7 @@
     <p id="svgImage"></p>
 </div>
 
-<script src="../../dist/js-code-to-svg-flowchart.js"></script>
+<script src="../../dist/js2flowchart.js"></script>
 <script>
     const code = `
         const list = [1, 2, 3, 4];
@@ -36,12 +36,12 @@
         print(list);
     `;
 
-    const JsCode2SvgFlowChart = window['js-code-to-svg-flowchart'];
+    const JS2FlowChart = window['js2flowchart'];
 
-    const flowTreeBuilder = JsCode2SvgFlowChart.createFlowTreeBuilder();
-    flowTreeBuilder.setModifier(JsCode2SvgFlowChart.MODIFIER_PRESETS.es5ArrayIterators);
+    const flowTreeBuilder = JS2FlowChart.createFlowTreeBuilder();
+    flowTreeBuilder.setModifier(JS2FlowChart.MODIFIER_PRESETS.es5ArrayIterators);
 
-    const svgRender = JsCode2SvgFlowChart.createSVGRender();
+    const svgRender = JS2FlowChart.createSVGRender();
     const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(code));
 
     document.getElementById('svgImage').innerHTML = shapesTree.print();

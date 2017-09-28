@@ -3,7 +3,7 @@
 const webpack = require('webpack');
 const path = require('path');
 
-let libraryName = 'js-code-to-svg-flowchart';
+let libraryName = 'js2flowchart';
 
 let plugins = [], outputFile;
 
