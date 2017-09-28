@@ -12,9 +12,6 @@ export const generate = code => {
 
     const astTree = flowTreeBuilder.buildAst(code);
     const flowTree = flowTreeBuilder.buildFlowTreeFromAst(astTree);
-
 };
 
-export default code => {
-
-};
+export default code => {};

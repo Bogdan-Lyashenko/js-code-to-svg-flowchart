@@ -1,6 +1,9 @@
 {
   "name": "js2flowchart",
   "version": "0.0.1-alpha",
+  "author": "Bohdan Liashenko",
+  "license": "MIT",
+  "main": "./index.js",
   "scripts": {
     "build": "webpack --env build",
     "dev": "webpack --progress --colors --watch --env dev",
