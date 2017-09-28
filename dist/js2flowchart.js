@@ -36648,14 +36648,14 @@ var parseCodeToAST = exports.parseCodeToAST = function parseCodeToAST(code, conf
     });
 
     //TODO: remove when finish with defining types
-    (0, _babelTraverse2.default)(ast, {
-        enter: function enter(path) {
+    /*traverse(ast, {
+        enter(path) {
             if (path.node.type === 'ExpressionStatement') {
                 //debugger;
             }
             console.log(path.node.type, path.node.name);
         }
-    });
+    });*/
 
     return ast;
 };
@@ -37499,13 +37499,12 @@ var complexTraversal = exports.complexTraversal = function complexTraversal(tree
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.SVGBase = undefined;
+
+var _geometry = __webpack_require__(67);
+
 var SVGBase = exports.SVGBase = function SVGBase() {
     var state = {
-        //TODO: add calculation based on children boundaries
-        dimensions: {
-            h: 3000,
-            w: 3000
-        },
         shapes: [],
         arrowConnections: []
     };
@@ -37523,7 +37522,7 @@ var SVGBase = exports.SVGBase = function SVGBase() {
             return this;
         },
         printChildren: function printChildren(config) {
-            var svgString = "";
+            var svgString = '';
 
             [].concat(state.shapes, state.arrowConnections).forEach(function (node) {
                 svgString += node.print(config);
@@ -37531,13 +37530,23 @@ var SVGBase = exports.SVGBase = function SVGBase() {
 
             return svgString;
         },
+        calculateDimensions: function calculateDimensions() {
+            var boundaries = (0, _geometry.calculateShapesBoundaries)(state.shapes.map(function (item) {
+                return item.getBoundaries();
+            })),
+                padding = 5;
+
+            return {
+                w: Math.ceil(boundaries.max.x) + padding,
+                h: Math.ceil(boundaries.max.y) + padding
+            };
+        },
         print: function print(config) {
-            var _state$dimensions = state.dimensions,
-                w = _state$dimensions.w,
-                h = _state$dimensions.h;
+            var _calculateDimensions = this.calculateDimensions(),
+                w = _calculateDimensions.w,
+                h = _calculateDimensions.h;
 
-
-            return "<svg width=\"" + w + "\" height=\"" + h + "\">\n                " + this.printChildren(config) + "\n            </svg>";
+            return '<svg width="' + w + '" height="' + h + '">\n                ' + this.printChildren(config) + '\n            </svg>';
         }
     };
 };

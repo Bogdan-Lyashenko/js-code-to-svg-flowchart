@@ -1,10 +1,7 @@
+import { calculateShapesBoundaries } from 'shared/utils/geometry';
+
 export const SVGBase = () => {
     const state = {
-        //TODO: add calculation based on children boundaries
-        dimensions: {
-            h: 3000,
-            w: 3000
-        },
         shapes: [],
         arrowConnections: []
     };
@@ -30,8 +27,20 @@ export const SVGBase = () => {
 
             return svgString;
         },
+        calculateDimensions() {
+            const boundaries = calculateShapesBoundaries(
+                    state.shapes.map(item => item.getBoundaries())
+                ),
+                padding = 5;
+
+            return {
+                w: Math.ceil(boundaries.max.x) + padding,
+                h: Math.ceil(boundaries.max.y) + padding
+            };
+        },
+
         print(config) {
-            const { w, h } = state.dimensions;
+            const { w, h } = this.calculateDimensions();
 
             return `<svg width="${w}" height="${h}">
                 ${this.printChildren(config)}
