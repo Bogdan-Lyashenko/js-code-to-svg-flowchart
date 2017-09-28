@@ -14,4 +14,4 @@ export const generate = code => {
     const flowTree = flowTreeBuilder.buildFlowTreeFromAst(astTree);
 };
 
-export default () => {};
+export default code => {};

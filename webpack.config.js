@@ -32,7 +32,7 @@ const config = {
     modules: [
         path.resolve('./node_modules'), path.resolve('./src'),
         path.resolve('./src/shared'), path.resolve('./src/render'),
-        path.resolve('./src/builder'), path.resolve('./src/learning-path')
+        path.resolve('./src/builder'), path.resolve('./src/presentation-generator')
     ],
     extensions: ['.json', '.js']
   },

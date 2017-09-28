@@ -17389,7 +17389,7 @@ exports.default = (0, _BaseShape.delegateInit)(Circle, ENTITY_FIELD_NAME);
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.convertCodeToSvg = exports.MODIFIED_TYPES = exports.TOKEN_TYPES = exports.MODIFIER_PRESETS = exports.DEFINED_MODIFIERS = exports.ABSTRACTION_LEVELS = exports.generateLearningPath = exports.createShapesTreeEditor = exports.createSVGRender = exports.createFlowTreeBuilder = undefined;
+exports.convertCodeToSvg = exports.MODIFIED_TYPES = exports.TOKEN_TYPES = exports.MODIFIER_PRESETS = exports.DEFINED_MODIFIERS = exports.ABSTRACTION_LEVELS = exports.generatePresentation = exports.createShapesTreeEditor = exports.createSVGRender = exports.createFlowTreeBuilder = undefined;
 
 var _FlowTreeBuilder = __webpack_require__(107);
 
@@ -17399,9 +17399,9 @@ var _SVGRender = __webpack_require__(174);
 
 var _SVGRender2 = _interopRequireDefault(_SVGRender);
 
-var _LearningPathGenerator = __webpack_require__(463);
+var _PresentationGenerator = __webpack_require__(462);
 
-var _LearningPathGenerator2 = _interopRequireDefault(_LearningPathGenerator);
+var _PresentationGenerator2 = _interopRequireDefault(_PresentationGenerator);
 
 var _constants = __webpack_require__(3);
 
@@ -17410,7 +17410,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var createFlowTreeBuilder = exports.createFlowTreeBuilder = _FlowTreeBuilder2.default;
 var createSVGRender = exports.createSVGRender = _SVGRender2.default;
 var createShapesTreeEditor = exports.createShapesTreeEditor = _SVGRender.ShapesTreeEditor;
-var generateLearningPath = exports.generateLearningPath = _LearningPathGenerator2.default;
+var generatePresentation = exports.generatePresentation = _PresentationGenerator2.default;
 
 exports.ABSTRACTION_LEVELS = _FlowTreeBuilder.ABSTRACTION_LEVELS;
 exports.DEFINED_MODIFIERS = _FlowTreeBuilder.DEFINED_MODIFIERS;
@@ -38467,8 +38467,7 @@ exports.default = function (config, theme) {
 };
 
 /***/ }),
-/* 462 */,
-/* 463 */
+/* 462 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38499,7 +38498,7 @@ var generate = exports.generate = function generate(code) {
     var flowTree = flowTreeBuilder.buildFlowTreeFromAst(astTree);
 };
 
-exports.default = function () {};
+exports.default = function (code) {};
 
 /***/ })
 /******/ ]);
