@@ -11,11 +11,11 @@ export const functionConverter = path => {
     const paramsCode = getFunctionParametersCode(node.params);
 
     if (node.id) {
-        return 'function ' + node.id.name + paramsCode;
+        return getAnonymousFunctionName(path) + 'function ' + node.id.name + paramsCode;
     }
 
     if (node.type === TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION) {
-        return getAnonymousFunctionName(path) + ' = ' + paramsCode + ' =>';
+        return getAnonymousFunctionName(path) + paramsCode + ' =>';
     }
 
     if (node.type === TOKEN_TYPES.CLASS_METHOD) {
@@ -24,7 +24,7 @@ export const functionConverter = path => {
             : node.key.name + paramsCode;
     }
 
-    return getAnonymousFunctionName(path) + ' = function' + paramsCode;
+    return getAnonymousFunctionName(path) + 'function' + paramsCode;
 };
 
 export const getAnonymousFunctionName = path => {
@@ -33,13 +33,14 @@ export const getAnonymousFunctionName = path => {
     if (
         !parent ||
         (parent.type !== TOKEN_TYPES.VARIABLE_DECLARATOR &&
-            parent.type !== TOKEN_TYPES.ASSIGNMENT_EXPRESSION)
+            parent.type !== TOKEN_TYPES.ASSIGNMENT_EXPRESSION &&
+            parent.type !== TOKEN_TYPES.OBJECT_PROPERTY)
     ) {
         return '';
     }
 
-    const parentId = parent.id || parent.left;
-    return parentId ? parentId.name : '';
+    const parentId = parent.id || parent.left || parent.key;
+    return parentId ? parentId.name + ' = ' : '';
 };
 
 export const getFunctionParametersCode = params => {
@@ -135,6 +136,10 @@ export const variableDeclaratorConverter = ({ node }) => {
 
     if (node.init && node.init.type === TOKEN_TYPES.CALL_EXPRESSION) {
         return `${node.id.name} = ` + callExpressionConverter({ node: node.init });
+    }
+
+    if (node.init && node.init.type === TOKEN_TYPES.OBJECT_EXPRESSION) {
+        return `${node.id.name} = { * }`;
     }
 
     return generate(node).code;

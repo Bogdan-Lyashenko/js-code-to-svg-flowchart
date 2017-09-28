@@ -22,6 +22,8 @@ export const TOKEN_TYPES = {
     THROW_STATEMENT: 'ThrowStatement',
     DEBUGGER_STATEMENT: 'DebuggerStatement',
     IDENTIFIER: 'Identifier',
+    OBJECT_EXPRESSION: 'ObjectExpression',
+    OBJECT_PROPERTY: 'ObjectProperty',
 
     //ES Harmony features
     ARROW_FUNCTION_EXPRESSION: 'ArrowFunctionExpression',

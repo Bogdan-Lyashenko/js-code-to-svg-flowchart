@@ -42,7 +42,7 @@ export const DefinitionsMap = [
     },
     {
         type: TOKEN_TYPES.VARIABLE_DECLARATOR,
-        body: false,
+        body: true,
         getName: variableDeclaratorConverter,
         ignore: path => isNodeContainsFunc(path.node.init)
     },

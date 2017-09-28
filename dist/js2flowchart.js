@@ -961,6 +961,8 @@ var TOKEN_TYPES = exports.TOKEN_TYPES = {
     THROW_STATEMENT: 'ThrowStatement',
     DEBUGGER_STATEMENT: 'DebuggerStatement',
     IDENTIFIER: 'Identifier',
+    OBJECT_EXPRESSION: 'ObjectExpression',
+    OBJECT_PROPERTY: 'ObjectProperty',
 
     //ES Harmony features
     ARROW_FUNCTION_EXPRESSION: 'ArrowFunctionExpression',
@@ -15745,7 +15747,7 @@ var DefinitionsMap = exports.DefinitionsMap = [{
     body: true
 }, {
     type: _constants.TOKEN_TYPES.VARIABLE_DECLARATOR,
-    body: false,
+    body: true,
     getName: _core.variableDeclaratorConverter,
     ignore: function ignore(path) {
         return (0, _core.isNodeContainsFunc)(path.node.init);
@@ -29483,29 +29485,29 @@ var functionConverter = exports.functionConverter = function functionConverter(p
     var paramsCode = getFunctionParametersCode(node.params);
 
     if (node.id) {
-        return 'function ' + node.id.name + paramsCode;
+        return getAnonymousFunctionName(path) + 'function ' + node.id.name + paramsCode;
     }
 
     if (node.type === _constants.TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION) {
-        return getAnonymousFunctionName(path) + ' = ' + paramsCode + ' =>';
+        return getAnonymousFunctionName(path) + paramsCode + ' =>';
     }
 
     if (node.type === _constants.TOKEN_TYPES.CLASS_METHOD) {
         return node.kind === _constants.CLASS_FUNCTION_KINDS.CONSTRUCTOR ? 'constructor' + paramsCode : node.key.name + paramsCode;
     }
 
-    return getAnonymousFunctionName(path) + ' = function' + paramsCode;
+    return getAnonymousFunctionName(path) + 'function' + paramsCode;
 };
 
 var getAnonymousFunctionName = exports.getAnonymousFunctionName = function getAnonymousFunctionName(path) {
     var parent = path.parent;
 
-    if (!parent || parent.type !== _constants.TOKEN_TYPES.VARIABLE_DECLARATOR && parent.type !== _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION) {
+    if (!parent || parent.type !== _constants.TOKEN_TYPES.VARIABLE_DECLARATOR && parent.type !== _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION && parent.type !== _constants.TOKEN_TYPES.OBJECT_PROPERTY) {
         return '';
     }
 
-    var parentId = parent.id || parent.left;
-    return parentId ? parentId.name : '';
+    var parentId = parent.id || parent.left || parent.key;
+    return parentId ? parentId.name + ' = ' : '';
 };
 
 var getFunctionParametersCode = exports.getFunctionParametersCode = function getFunctionParametersCode(params) {
@@ -29607,6 +29609,10 @@ var variableDeclaratorConverter = exports.variableDeclaratorConverter = function
 
     if (node.init && node.init.type === _constants.TOKEN_TYPES.CALL_EXPRESSION) {
         return node.id.name + ' = ' + callExpressionConverter({ node: node.init });
+    }
+
+    if (node.init && node.init.type === _constants.TOKEN_TYPES.OBJECT_EXPRESSION) {
+        return node.id.name + ' = { * }';
     }
 
     return (0, _babelGenerator2.default)(node).code;
@@ -36642,14 +36648,14 @@ var parseCodeToAST = exports.parseCodeToAST = function parseCodeToAST(code, conf
     });
 
     //TODO: remove when finish with defining types
-    /*traverse(ast, {
-        enter(path) {
+    (0, _babelTraverse2.default)(ast, {
+        enter: function enter(path) {
             if (path.node.type === 'ExpressionStatement') {
                 //debugger;
             }
             console.log(path.node.type, path.node.name);
         }
-    });*/
+    });
 
     return ast;
 };
