@@ -7,10 +7,10 @@
 <body>
 
 <div>
+    <p id="svgImage0"></p>
     <p id="svgImage1"></p>
     <p id="svgImage2"></p>
     <p id="svgImage3"></p>
-    <p id="svgImage4"></p>
 </div>
 
 <script src="../../dist/js2flowchart.js"></script>
@@ -19,7 +19,7 @@
         import doSomething, {special} from 'lib-for-something';
         import fileReader from './src/file';
 
-        const helperFunction = (stuff) => {
+        function helperFunction(stuff){
             doHelp(stuff);
         }
 
@@ -58,18 +58,12 @@
 
     const JS2FlowChart = window['js2flowchart'];
 
-    const t0 = performance.now();
-    //===================================
-    const flowTreeBuilder = JS2FlowChart.createFlowTreeBuilder();
+    const presentationGenerator = JS2FlowChart.createPresentationGenerator(code);
+    const slides = presentationGenerator.getSlides();
 
-    const svgRender = JS2FlowChart.createSVGRender();
-    const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(code));
-
-    document.getElementById('svgImage').innerHTML = shapesTree.print();
-
-    //==================================
-    const t1 = performance.now();
-    console.log('Call took ' + (t1 - t0) + ' milliseconds.');
+    slides.forEach((svg, i)=> {
+        document.getElementById('svgImage' + i).innerHTML = svg;
+    });
 
 </script>
 </body>

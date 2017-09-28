@@ -1,4 +1,6 @@
 import FlowTreeBuilder, {
+    createFlowTreeModifier as createFlowTreeModifierFromBuilder,
+
     ABSTRACTION_LEVELS,
     MODIFIER_PRESETS,
     DEFINED_MODIFIERS
@@ -8,9 +10,12 @@ import PresentationGenerator from 'presentation-generator/PresentationGenerator'
 import { TOKEN_TYPES, MODIFIED_TYPES } from 'shared/constants';
 
 export const createFlowTreeBuilder = FlowTreeBuilder;
+export const createFlowTreeModifier = createFlowTreeModifierFromBuilder;
+
 export const createSVGRender = SVGRender;
 export const createShapesTreeEditor = ShapesTreeEditor;
-export const generatePresentation = PresentationGenerator;
+
+export const createPresentationGenerator = PresentationGenerator;
 
 export { ABSTRACTION_LEVELS, DEFINED_MODIFIERS, MODIFIER_PRESETS, TOKEN_TYPES, MODIFIED_TYPES };
 

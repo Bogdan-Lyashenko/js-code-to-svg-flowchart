@@ -6578,7 +6578,7 @@ function StringLiteral(node, parent) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.ABSTRACTION_LEVELS = exports.MODIFIER_PRESETS = exports.DEFINED_MODIFIERS = undefined;
+exports.ABSTRACTION_LEVELS = exports.MODIFIER_PRESETS = exports.DEFINED_MODIFIERS = exports.createFlowTreeModifier = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -6610,6 +6610,26 @@ var buildFlowTree = function buildFlowTree(astTree, astVisitorConfig) {
     return { name: '', body: treeNodes };
 };
 
+var createFlowTreeModifier = exports.createFlowTreeModifier = function createFlowTreeModifier() {
+    var modifiers = (0, _FlowTreeModifier2.default)();
+
+    return {
+        setModifier: function setModifier(modifier) {
+            modifiers.addModifier(modifier);
+        },
+        registerNewModifier: function registerNewModifier(test, updates) {
+            modifiers.create(test, updates);
+        },
+        destructNodeTree: function destructNodeTree(test, newNameFn) {
+            this.setModifier((0, _modifiersFactory.destructionModifier)(test, newNameFn));
+        },
+        applyToFlowTree: function applyToFlowTree(flowTree) {
+            modifiers.applyTo(flowTree);
+            return flowTree;
+        }
+    };
+};
+
 exports.default = function () {
     var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
         _ref$astParser = _ref.astParser,
@@ -6624,40 +6644,25 @@ exports.default = function () {
         globalIgnore: null
     }, astVisitor);
 
-    var modifiers = (0, _FlowTreeModifier2.default)();
-
     return {
         setAbstractionLevel: function setAbstractionLevel(level) {
             astVisitorConfig.definitionsMap = (0, _abstractionLevelsConfigurator.rebuildConfigForAbstractionLevel)(level);
         },
+        resetAbstractionLevelToNormal: function resetAbstractionLevelToNormal() {
+            astVisitorConfig.definitionsMap = [].concat(_toConsumableArray(_entryDefinitionsMap.DefinitionsMap));
+        },
         setIgnoreFilter: function setIgnoreFilter(fn) {
             astVisitorConfig.globalIgnore = fn;
-        },
-        setModifier: function setModifier(modifier) {
-            modifiers.addModifier(modifier);
-        },
-        registerNewModifier: function registerNewModifier(test, updates) {
-            modifiers.create(test, updates);
-        },
-        destructNodeTree: function destructNodeTree(test, newNameFn) {
-            this.setModifier((0, _modifiersFactory.destructionModifier)(test, newNameFn));
         },
         build: function build(code) {
             var ast = this.buildAst(code);
             return this.buildFlowTreeFromAst(ast);
         },
-
-
-        //advanced
         buildAst: function buildAst(code) {
             return (0, _astBuilder.parseCodeToAST)(code, astParserConfig);
         },
         buildFlowTreeFromAst: function buildFlowTreeFromAst(ast) {
-            var flowTree = buildFlowTree(ast, astVisitorConfig);
-
-            modifiers.applyTo(flowTree);
-
-            return flowTree;
+            return buildFlowTree(ast, astVisitorConfig);
         }
     };
 };
@@ -17389,7 +17394,7 @@ exports.default = (0, _BaseShape.delegateInit)(Circle, ENTITY_FIELD_NAME);
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.convertCodeToSvg = exports.MODIFIED_TYPES = exports.TOKEN_TYPES = exports.MODIFIER_PRESETS = exports.DEFINED_MODIFIERS = exports.ABSTRACTION_LEVELS = exports.generatePresentation = exports.createShapesTreeEditor = exports.createSVGRender = exports.createFlowTreeBuilder = undefined;
+exports.convertCodeToSvg = exports.MODIFIED_TYPES = exports.TOKEN_TYPES = exports.MODIFIER_PRESETS = exports.DEFINED_MODIFIERS = exports.ABSTRACTION_LEVELS = exports.createPresentationGenerator = exports.createShapesTreeEditor = exports.createSVGRender = exports.createFlowTreeModifier = exports.createFlowTreeBuilder = undefined;
 
 var _FlowTreeBuilder = __webpack_require__(107);
 
@@ -17408,9 +17413,12 @@ var _constants = __webpack_require__(3);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var createFlowTreeBuilder = exports.createFlowTreeBuilder = _FlowTreeBuilder2.default;
+var createFlowTreeModifier = exports.createFlowTreeModifier = _FlowTreeBuilder.createFlowTreeModifier;
+
 var createSVGRender = exports.createSVGRender = _SVGRender2.default;
 var createShapesTreeEditor = exports.createShapesTreeEditor = _SVGRender.ShapesTreeEditor;
-var generatePresentation = exports.generatePresentation = _PresentationGenerator2.default;
+
+var createPresentationGenerator = exports.createPresentationGenerator = _PresentationGenerator2.default;
 
 exports.ABSTRACTION_LEVELS = _FlowTreeBuilder.ABSTRACTION_LEVELS;
 exports.DEFINED_MODIFIERS = _FlowTreeBuilder.DEFINED_MODIFIERS;
@@ -38476,7 +38484,9 @@ exports.default = function (config, theme) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.generate = undefined;
+exports.generateRegularSlideTree = exports.generateClassFunctionSlideTree = exports.generateImportExportSlideTree = exports.generateExportSlideTree = undefined;
+
+var _astBuilder = __webpack_require__(437);
 
 var _FlowTreeBuilder = __webpack_require__(107);
 
@@ -38490,15 +38500,46 @@ var _constants = __webpack_require__(3);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var generate = exports.generate = function generate(code) {
-    var flowTreeBuilder = (0, _FlowTreeBuilder2.default)(),
-        svgRender = (0, _SVGRender2.default)();
+var generateExportSlideTree = exports.generateExportSlideTree = function generateExportSlideTree(astTree) {
+    var flowTreeBuilder = (0, _FlowTreeBuilder2.default)();
+    flowTreeBuilder.setAbstractionLevel(_FlowTreeBuilder.ABSTRACTION_LEVELS.EXPORT);
 
-    var astTree = flowTreeBuilder.buildAst(code);
-    var flowTree = flowTreeBuilder.buildFlowTreeFromAst(astTree);
+    return flowTreeBuilder.buildFlowTreeFromAst(astTree);
 };
 
-exports.default = function (code) {};
+var generateImportExportSlideTree = exports.generateImportExportSlideTree = function generateImportExportSlideTree(astTree) {
+    var flowTreeBuilder = (0, _FlowTreeBuilder2.default)();
+    flowTreeBuilder.setAbstractionLevel([_FlowTreeBuilder.ABSTRACTION_LEVELS.EXPORT, _FlowTreeBuilder.ABSTRACTION_LEVELS.IMPORT]);
+
+    return flowTreeBuilder.buildFlowTreeFromAst(astTree);
+};
+
+var generateClassFunctionSlideTree = exports.generateClassFunctionSlideTree = function generateClassFunctionSlideTree(astTree) {
+    var flowTreeBuilder = (0, _FlowTreeBuilder2.default)();
+    flowTreeBuilder.setAbstractionLevel([_FlowTreeBuilder.ABSTRACTION_LEVELS.CLASS, _FlowTreeBuilder.ABSTRACTION_LEVELS.FUNCTION]);
+
+    return flowTreeBuilder.buildFlowTreeFromAst(astTree);
+};
+
+var generateRegularSlideTree = exports.generateRegularSlideTree = function generateRegularSlideTree(astTree) {
+    var flowTreeBuilder = (0, _FlowTreeBuilder2.default)();
+    return flowTreeBuilder.buildFlowTreeFromAst(astTree);
+};
+
+exports.default = function (code) {
+    return {
+        getSlides: function getSlides() {
+            var svgRender = (0, _SVGRender2.default)(),
+                astTree = (0, _astBuilder.parseCodeToAST)(code);
+
+            var slides = [generateExportSlideTree(astTree), generateImportExportSlideTree(astTree), generateClassFunctionSlideTree(astTree), generateRegularSlideTree(astTree)];
+
+            return slides.map(svgRender.buildShapesTree).map(function (shapesTree) {
+                return shapesTree.print();
+            });
+        }
+    };
+};
 
 /***/ })
 /******/ ]);

@@ -29,10 +29,14 @@
     const JS2FlowChart = window['js2flowchart'];
 
     const flowTreeBuilder = JS2FlowChart.createFlowTreeBuilder();
-    flowTreeBuilder.destructNodeTree((node) => node.name.indexOf('.forEach') !== -1, 'and print list...');
+    const flowTree = flowTreeBuilder.build(code);
+    const flowTreeModifier = JS2FlowChart.createFlowTreeModifier();
+
+    flowTreeModifier.destructNodeTree((node) => node.name.indexOf('.forEach') !== -1, 'and print list...');
+    flowTreeModifier.applyToFlowTree(flowTree);
 
     const svgRender = JS2FlowChart.createSVGRender();
-    const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(code));
+    const shapesTree = svgRender.buildShapesTree(flowTree);
 
     document.getElementById('svgImage').innerHTML = shapesTree.print();
 
