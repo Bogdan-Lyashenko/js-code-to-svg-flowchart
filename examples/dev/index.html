@@ -122,13 +122,21 @@
     `;
 
     const JS2FlowChart = window['js2flowchart'];
-    const ABSTRACTION_LEVELS = JS2FlowChart.ABSTRACTION_LEVELS;
 
     const t0 = performance.now();
     //===================================
     const flowTreeBuilder = JS2FlowChart.createFlowTreeBuilder();
-    //flowTreeBuilder.setAbstractionLevel(ABSTRACTION_LEVELS.FUNCTION_DEPENDENCIES);
-    const flowTree = flowTreeBuilder.build(simpleStr);
+    const flowTree = flowTreeBuilder.build(`
+    const c = 0;
+    function a (){
+
+    if (call(a)) {a = 3}
+
+              if(!this.$usersWrapper.length) this.loadEvents();
+          }
+
+
+    `);
 /*
     const flowTreeModifier = JS2FlowChart.createFlowTreeModifier();
     flowTreeModifier.filterNodes((node)=> node.name.includes('=>'));

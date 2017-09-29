@@ -58,11 +58,14 @@ export const DefinitionsMap = [
         body: true,
         getName: callExpressionConverter,
         ignore: path => {
-            const statementParent = path.getStatementParent();
+            const statementParent = path.getStatementParent(),
+                parent = path.parent || {};
 
             return (
                 statementParent.isVariableDeclaration() ||
-                statementParent.isConditional() ||
+                (statementParent.isConditional() &&
+                    parent.test &&
+                    parent.test.type === TOKEN_TYPES.CALL_EXPRESSION) ||
                 path.parent.type === TOKEN_TYPES.ASSIGNMENT_EXPRESSION //TODO: BUG, fix line: list = list.filter(i => i % 2)
             );
         }

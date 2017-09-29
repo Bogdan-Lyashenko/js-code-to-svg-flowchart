@@ -15764,9 +15764,10 @@ var DefinitionsMap = exports.DefinitionsMap = [{
     body: true,
     getName: _core.callExpressionConverter,
     ignore: function ignore(path) {
-        var statementParent = path.getStatementParent();
+        var statementParent = path.getStatementParent(),
+            parent = path.parent || {};
 
-        return statementParent.isVariableDeclaration() || statementParent.isConditional() || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION //TODO: BUG, fix line: list = list.filter(i => i % 2)
+        return statementParent.isVariableDeclaration() || statementParent.isConditional() && parent.test && parent.test.type === _constants.TOKEN_TYPES.CALL_EXPRESSION || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION //TODO: BUG, fix line: list = list.filter(i => i % 2)
         ;
     }
 }, {
