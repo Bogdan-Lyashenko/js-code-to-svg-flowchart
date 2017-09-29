@@ -17,16 +17,22 @@ const UpdatesMap = {
 
     body(node, apply) {
         node.body = executeApplyFn(apply, node);
+    },
+
+    parent(node, apply) {
+        node.parent = executeApplyFn(apply, node);
     }
 };
 
 const applyModifierUpdates = (tree, modifier) => {
-    const node = traversalSearch(tree, modifier.test);
+    const nodes = traversalSearch(tree, modifier.test);
 
-    if (!node) return;
+    if (!nodes.length) return;
 
     Object.keys(modifier.updates).forEach(updateName => {
-        UpdatesMap[updateName](node, modifier.updates[updateName]);
+        nodes.forEach(node => {
+            UpdatesMap[updateName](node, modifier.updates[updateName]);
+        });
     });
 };
 

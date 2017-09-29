@@ -70,13 +70,14 @@ const enterComplexEntry = (item, pointer) => (path, globalIgnore) => {
         pushEntry(pointer, entryConfig);
     }
 
-    pointer.keepRef(entryConfig);
-    pointer.stepIn(entryConfig.body);
+    pointer.stepIn(entryConfig);
 };
 
 const pushEntry = (pointer, entry) => {
-    entry.parent = pointer.getRef();
-    pointer.getCurrent().push(entry);
+    const parent = pointer.getCurrent();
+    entry.parent = parent;
+
+    (parent.body || parent).push(entry);
 };
 
 const getStatementParentKey = path => {

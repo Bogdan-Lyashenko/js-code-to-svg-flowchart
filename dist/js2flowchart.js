@@ -17129,7 +17129,6 @@ Object.defineProperty(exports, "__esModule", {
 var setupPointer = exports.setupPointer = function setupPointer(cache) {
     return {
         list: cache ? [cache] : [],
-        ref: null,
 
         getCurrent: function getCurrent() {
             if (!this.list.length) return;
@@ -17140,12 +17139,6 @@ var setupPointer = exports.setupPointer = function setupPointer(cache) {
         },
         stepOut: function stepOut() {
             this.list.pop();
-        },
-        keepRef: function keepRef(ref) {
-            this.ref = ref;
-        },
-        getRef: function getRef() {
-            return this.ref;
         }
     };
 };
@@ -17185,17 +17178,21 @@ var levelsTraversal = exports.levelsTraversal = function levelsTraversal(tree, s
 var traversalSearch = exports.traversalSearch = function traversalSearch(tree, fn) {
     var queue = [].concat(tree);
 
+    var result = [];
+
     while (queue.length) {
         var node = queue.shift();
 
         if (fn(node)) {
-            return node;
+            result.push(node);
         }
 
         if (node.body) {
             queue = [].concat(_toConsumableArray(queue), _toConsumableArray(node.body));
         }
     }
+
+    return result;
 };
 
 /***/ }),
@@ -36713,14 +36710,15 @@ var enterComplexEntry = function enterComplexEntry(item, pointer) {
             pushEntry(pointer, entryConfig);
         }
 
-        pointer.keepRef(entryConfig);
-        pointer.stepIn(entryConfig.body);
+        pointer.stepIn(entryConfig);
     };
 };
 
 var pushEntry = function pushEntry(pointer, entry) {
-    entry.parent = pointer.getRef();
-    pointer.getCurrent().push(entry);
+    var parent = pointer.getCurrent();
+    entry.parent = parent;
+
+    (parent.body || parent).push(entry);
 };
 
 var getStatementParentKey = function getStatementParentKey(path) {
@@ -36771,6 +36769,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 var ABSTRACTION_LEVELS = exports.ABSTRACTION_LEVELS = {
     FUNCTION: [_constants.TOKEN_TYPES.FUNCTION],
+    FUNCTION_DEPENDENCIES: [_constants.TOKEN_TYPES.FUNCTION, _constants.TOKEN_TYPES.CALL_EXPRESSION],
     CLASS: [_constants.TOKEN_TYPES.CLASS_DECLARATION],
     IMPORT: [_constants.TOKEN_TYPES.IMPORT_DECLARATION, _constants.TOKEN_TYPES.IMPORT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER],
     EXPORT: [_constants.TOKEN_TYPES.EXPORT_NAMED_DECLARATION, _constants.TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION]
@@ -36821,16 +36820,21 @@ var UpdatesMap = {
     },
     body: function body(node, apply) {
         node.body = executeApplyFn(apply, node);
+    },
+    parent: function parent(node, apply) {
+        node.parent = executeApplyFn(apply, node);
     }
 };
 
 var applyModifierUpdates = function applyModifierUpdates(tree, modifier) {
-    var node = (0, _traversal.traversalSearch)(tree, modifier.test);
+    var nodes = (0, _traversal.traversalSearch)(tree, modifier.test);
 
-    if (!node) return;
+    if (!nodes.length) return;
 
     Object.keys(modifier.updates).forEach(function (updateName) {
-        UpdatesMap[updateName](node, modifier.updates[updateName]);
+        nodes.forEach(function (node) {
+            UpdatesMap[updateName](node, modifier.updates[updateName]);
+        });
     });
 };
 

@@ -101,25 +101,42 @@
     `;
 
     const simpleStr = `
-        const obj = {
-            a: function() {
-                method(A);
-            }
-        }
+        var users = {
+          initialize: function(){
+              if(!this.$usersWrapper.length) this.loadEvents();
+          },
 
-        const b = () => {
-            method(B);
+          loadEvents: function(){
+            var _this = this;
+            // launch our modal events
+            $.subscribe("modal.complete", function(){ _this.loadPopupEvents(); });
+
+              // Delegate give a context to our events
+              this.$usersWrapper
+                .delegate("#btnDelete","click", function() { _this.deleteItem(); return false; })
+          },
+          deleteItem: function(){
+            $(this).closest('.item').remove();
+          }
         }
     `;
 
     const JS2FlowChart = window['js2flowchart'];
+    const ABSTRACTION_LEVELS = JS2FlowChart.ABSTRACTION_LEVELS;
 
     const t0 = performance.now();
     //===================================
     const flowTreeBuilder = JS2FlowChart.createFlowTreeBuilder();
+    //flowTreeBuilder.setAbstractionLevel(ABSTRACTION_LEVELS.FUNCTION_DEPENDENCIES);
+    const flowTree = flowTreeBuilder.build(simpleStr);
+/*
+    const flowTreeModifier = JS2FlowChart.createFlowTreeModifier();
+    flowTreeModifier.filterNodes((node)=> node.name.includes('=>'));
+
+    flowTreeModifier.applyToFlowTree(flowTree);*/
 
     const svgRender = JS2FlowChart.createSVGRender();
-    const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(simpleStr));
+    const shapesTree = svgRender.buildShapesTree(flowTree);
 
     document.getElementById('svgImage').innerHTML = shapesTree.print();
 

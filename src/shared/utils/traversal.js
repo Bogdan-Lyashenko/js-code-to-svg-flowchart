@@ -16,15 +16,19 @@ export const levelsTraversal = (tree, stepIn, onNode, stepOut, options = {}) => 
 export const traversalSearch = (tree, fn) => {
     let queue = [].concat(tree);
 
+    const result = [];
+
     while (queue.length) {
         let node = queue.shift();
 
         if (fn(node)) {
-            return node;
+            result.push(node);
         }
 
         if (node.body) {
             queue = [...queue, ...node.body];
         }
     }
+
+    return result;
 };
