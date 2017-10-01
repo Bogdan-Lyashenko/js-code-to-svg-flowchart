@@ -38602,22 +38602,34 @@ var _core = __webpack_require__(365);
 
 var _entryDefinitionsMap = __webpack_require__(159);
 
-var isNodeContainsFunctionCall = function isNodeContainsFunctionCall(_ref) {
-    var node = _ref.node;
-
-    return node.right && node.right.type === _constants.TOKEN_TYPES.CALL_EXPRESSION;
+var isNodeContainsFunctionCall = function isNodeContainsFunctionCall(node) {
+    return node && node.type === _constants.TOKEN_TYPES.CALL_EXPRESSION;
 };
 
 var getCustomAssignmentExpression = function getCustomAssignmentExpression() {
     var assignmentExpression = _entryDefinitionsMap.DefinitionsMap[_constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION];
 
     return _extends({}, assignmentExpression, {
-        getName: function getName(_ref2) {
-            var node = _ref2.node;
+        getName: function getName(_ref) {
+            var node = _ref.node;
             return (0, _core.callExpressionConverter)({ node: node.right });
         },
         ignore: function ignore(path) {
-            return assignmentExpression.ignore(path) || !isNodeContainsFunctionCall(path);
+            return assignmentExpression.ignore(path) || !isNodeContainsFunctionCall(path.node.right);
+        }
+    });
+};
+
+var getCustomVariableDeclarator = function getCustomVariableDeclarator() {
+    var variableDeclarator = _entryDefinitionsMap.DefinitionsMap[_constants.TOKEN_TYPES.VARIABLE_DECLARATOR];
+
+    return _extends({}, variableDeclarator, {
+        getName: function getName(_ref2) {
+            var node = _ref2.node;
+            return (0, _core.callExpressionConverter)({ node: node.init });
+        },
+        ignore: function ignore(path) {
+            return variableDeclarator.ignore(path) || !isNodeContainsFunctionCall(path.node.init);
         }
     });
 };
@@ -38625,7 +38637,7 @@ var getCustomAssignmentExpression = function getCustomAssignmentExpression() {
 var getFunctionDependenciesLevel = exports.getFunctionDependenciesLevel = function getFunctionDependenciesLevel() {
     return {
         defined: [_constants.TOKEN_TYPES.FUNCTION, _constants.TOKEN_TYPES.CALL_EXPRESSION],
-        custom: [getCustomAssignmentExpression()]
+        custom: [getCustomAssignmentExpression(), getCustomVariableDeclarator()]
     };
 };
 

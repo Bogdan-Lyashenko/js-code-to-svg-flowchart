@@ -2,8 +2,8 @@ import { TOKEN_TYPES } from 'shared/constants';
 import { callExpressionConverter } from 'builder/converters/core';
 import { DefinitionsMap } from 'builder/entryDefinitionsMap';
 
-const isNodeContainsFunctionCall = ({ node }) => {
-    return node.right && node.right.type === TOKEN_TYPES.CALL_EXPRESSION;
+const isNodeContainsFunctionCall = node => {
+    return node && node.type === TOKEN_TYPES.CALL_EXPRESSION;
 };
 
 const getCustomAssignmentExpression = () => {
@@ -12,13 +12,25 @@ const getCustomAssignmentExpression = () => {
     return {
         ...assignmentExpression,
         getName: ({ node }) => callExpressionConverter({ node: node.right }),
-        ignore: path => assignmentExpression.ignore(path) || !isNodeContainsFunctionCall(path)
+        ignore: path =>
+            assignmentExpression.ignore(path) || !isNodeContainsFunctionCall(path.node.right)
+    };
+};
+
+const getCustomVariableDeclarator = () => {
+    const variableDeclarator = DefinitionsMap[TOKEN_TYPES.VARIABLE_DECLARATOR];
+
+    return {
+        ...variableDeclarator,
+        getName: ({ node }) => callExpressionConverter({ node: node.init }),
+        ignore: path =>
+            variableDeclarator.ignore(path) || !isNodeContainsFunctionCall(path.node.init)
     };
 };
 
 export const getFunctionDependenciesLevel = () => {
     return {
         defined: [TOKEN_TYPES.FUNCTION, TOKEN_TYPES.CALL_EXPRESSION],
-        custom: [getCustomAssignmentExpression()]
+        custom: [getCustomAssignmentExpression(), getCustomVariableDeclarator()]
     };
 };
