@@ -37203,7 +37203,7 @@ exports.default = {
 
     VerticalEdgedRectangle: _extends({}, BaseShape, {
         fillColor: '#a5d6a7',
-        edgeOffset: 5
+        edgeOffset: 10
     }),
 
     Circle: _extends({}, BaseShape, {
@@ -37286,6 +37286,16 @@ exports.default = {
             sizeY: 28,
             fillColor: '#81d4fa'
         })
+    }),
+
+    ImportDeclaration: _extends({}, BaseShape, {
+        fillColor: '#b0bec5',
+        edgeOffset: 5
+    }),
+
+    ImportSpecifier: _extends({}, BaseShape, {
+        fillColor: '#fff',
+        roundBorder: 2
     })
 };
 
@@ -37757,6 +37767,14 @@ var _ExportDeclaration = __webpack_require__(467);
 
 var _ExportDeclaration2 = _interopRequireDefault(_ExportDeclaration);
 
+var _ImportDeclaration = __webpack_require__(468);
+
+var _ImportDeclaration2 = _interopRequireDefault(_ImportDeclaration);
+
+var _ImportSpecifier = __webpack_require__(469);
+
+var _ImportSpecifier2 = _interopRequireDefault(_ImportSpecifier);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
@@ -37785,6 +37803,13 @@ var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
         case _constants.TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION:
         case _constants.TOKEN_TYPES.EXPORT_NAMED_DECLARATION:
             return _ExportDeclaration2.default;
+
+        case _constants.TOKEN_TYPES.IMPORT_DECLARATION:
+            return _ImportDeclaration2.default;
+
+        case _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER:
+        case _constants.TOKEN_TYPES.IMPORT_SPECIFIER:
+            return _ImportSpecifier2.default;
 
         default:
             return _Rectangle2.default;
@@ -38760,6 +38785,46 @@ var _ReturnStatement = __webpack_require__(459);
 var ENTITY_FIELD_NAME = 'ExportDeclaration';
 
 exports.default = (0, _BaseShape.delegateInit)(_ReturnStatement.ReturnStatement, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
+
+/***/ }),
+/* 468 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _BaseShape = __webpack_require__(25);
+
+var _VerticalEdgedRectangle = __webpack_require__(451);
+
+var ENTITY_FIELD_NAME = 'ImportDeclaration';
+
+exports.default = (0, _BaseShape.delegateInit)(_VerticalEdgedRectangle.VerticalEdgedRectangle, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
+
+/***/ }),
+/* 469 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _BaseShape = __webpack_require__(25);
+
+var _Rectangle = __webpack_require__(456);
+
+var ENTITY_FIELD_NAME = 'ImportSpecifier';
+
+exports.default = (0, _BaseShape.delegateInit)(_Rectangle.Rectangle, ENTITY_FIELD_NAME);
 module.exports = exports['default'];
 
 /***/ })

@@ -10,6 +10,8 @@ import DestructedNode from './shapes/DestructedNode';
 import ClassDeclaration from './shapes/ClassDeclaration';
 import DebuggerStatement from './shapes/DebuggerStatement';
 import ExportDeclaration from './shapes/ExportDeclaration';
+import ImportDeclaration from './shapes/ImportDeclaration';
+import ImportSpecifier from './shapes/ImportSpecifier';
 
 export const getShapeForNode = node => {
     switch (node.type) {
@@ -37,6 +39,13 @@ export const getShapeForNode = node => {
         case TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION:
         case TOKEN_TYPES.EXPORT_NAMED_DECLARATION:
             return ExportDeclaration;
+
+        case TOKEN_TYPES.IMPORT_DECLARATION:
+            return ImportDeclaration;
+
+        case TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER:
+        case TOKEN_TYPES.IMPORT_SPECIFIER:
+            return ImportSpecifier;
 
         default:
             return Rectangle;

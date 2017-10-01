@@ -47,7 +47,7 @@ export default {
     VerticalEdgedRectangle: {
         ...BaseShape,
         fillColor: '#a5d6a7',
-        edgeOffset: 5
+        edgeOffset: 10
     },
 
     Circle: {
@@ -141,5 +141,17 @@ export default {
             sizeY: 28,
             fillColor: '#81d4fa'
         }
+    },
+
+    ImportDeclaration: {
+        ...BaseShape,
+        fillColor: '#b0bec5',
+        edgeOffset: 5
+    },
+
+    ImportSpecifier: {
+        ...BaseShape,
+        fillColor: '#fff',
+        roundBorder: 2
     }
 };
