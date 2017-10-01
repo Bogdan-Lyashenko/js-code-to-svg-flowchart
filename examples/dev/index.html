@@ -103,24 +103,8 @@
     `;
 
     const simpleStr = `
-        var users = {
-          initialize: function(){
-              if(!this.$usersWrapper.length) this.loadEvents();
-          },
 
-          loadEvents: function(){
-            var _this = this;
-            // launch our modal events
-            $.subscribe("modal.complete", function(){ _this.loadPopupEvents(); });
-
-              // Delegate give a context to our events
-              this.$usersWrapper
-                .delegate("#btnDelete","click", function() { _this.deleteItem(); return false; })
-          },
-          deleteItem: function(){
-            $(this).closest('.item').remove();
-          }
-        }
+            throw new Error('error');
     `;
 
     const JS2FlowChart = window['js2flowchart'];
@@ -129,7 +113,7 @@
     //===================================
     const flowTreeBuilder = JS2FlowChart.createFlowTreeBuilder();
 
-    const flowTree = flowTreeBuilder.build(simpleStrModules);
+    const flowTree = flowTreeBuilder.build(simpleStr);
 /*
     const flowTreeModifier = JS2FlowChart.createFlowTreeModifier();
     flowTreeModifier.filterNodes((node)=> node.name.includes('=>'));

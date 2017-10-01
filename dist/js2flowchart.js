@@ -15785,7 +15785,7 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
     type: _constants.TOKEN_TYPES.NEW_EXPRESSION,
     getName: _core.idleConverter,
     ignore: function ignore(path) {
-        return path.getStatementParent().isVariableDeclaration() || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION;
+        return path.getStatementParent().isVariableDeclaration() || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION || path.parent.type === _constants.TOKEN_TYPES.THROW_STATEMENT;
     }
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.LOOP, {
     type: _constants.TOKEN_TYPES.LOOP,
@@ -36667,14 +36667,14 @@ var parseCodeToAST = exports.parseCodeToAST = function parseCodeToAST(code, conf
     });
 
     //TODO: remove when finish with defining types
-    /*traverse(ast, {
-        enter(path) {
+    (0, _babelTraverse2.default)(ast, {
+        enter: function enter(path) {
             if (path.node.type === 'ExpressionStatement') {
                 //debugger;
             }
             console.log(path.node.type, path.node.name);
         }
-    });*/
+    });
 
     return ast;
 };
@@ -37296,6 +37296,11 @@ exports.default = {
     ImportSpecifier: _extends({}, BaseShape, {
         fillColor: '#fff',
         roundBorder: 2
+    }),
+
+    ThrowStatement: _extends({}, BaseShape, {
+        fillColor: '#ef9a9a',
+        roundBorder: 2
     })
 };
 
@@ -37775,6 +37780,10 @@ var _ImportSpecifier = __webpack_require__(469);
 
 var _ImportSpecifier2 = _interopRequireDefault(_ImportSpecifier);
 
+var _ThrowStatement = __webpack_require__(472);
+
+var _ThrowStatement2 = _interopRequireDefault(_ThrowStatement);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
@@ -37810,6 +37819,9 @@ var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
         case _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER:
         case _constants.TOKEN_TYPES.IMPORT_SPECIFIER:
             return _ImportSpecifier2.default;
+
+        case _constants.TOKEN_TYPES.THROW_STATEMENT:
+            return _ThrowStatement2.default;
 
         default:
             return _Rectangle2.default;
@@ -38832,6 +38844,27 @@ var ConnectionArrow = exports.ConnectionArrow = function ConnectionArrow(state) 
 exports.default = function (config, theme) {
     return ConnectionArrow({ config: config, theme: theme });
 };
+
+/***/ }),
+/* 471 */,
+/* 472 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _BaseShape = __webpack_require__(25);
+
+var _Rectangle = __webpack_require__(456);
+
+var ENTITY_FIELD_NAME = 'ThrowStatement';
+
+exports.default = (0, _BaseShape.delegateInit)(_Rectangle.Rectangle, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
 
 /***/ })
 /******/ ]);

@@ -12,6 +12,7 @@ import DebuggerStatement from './shapes/DebuggerStatement';
 import ExportDeclaration from './shapes/ExportDeclaration';
 import ImportDeclaration from './shapes/ImportDeclaration';
 import ImportSpecifier from './shapes/ImportSpecifier';
+import ThrowStatement from './shapes/ThrowStatement';
 
 export const getShapeForNode = node => {
     switch (node.type) {
@@ -46,6 +47,9 @@ export const getShapeForNode = node => {
         case TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER:
         case TOKEN_TYPES.IMPORT_SPECIFIER:
             return ImportSpecifier;
+
+        case TOKEN_TYPES.THROW_STATEMENT:
+            return ThrowStatement;
 
         default:
             return Rectangle;

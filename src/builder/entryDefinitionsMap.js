@@ -80,7 +80,8 @@ export const DefinitionsMap = {
         getName: idleConverter,
         ignore: path =>
             path.getStatementParent().isVariableDeclaration() ||
-            path.parent.type === TOKEN_TYPES.ASSIGNMENT_EXPRESSION
+            path.parent.type === TOKEN_TYPES.ASSIGNMENT_EXPRESSION ||
+            path.parent.type === TOKEN_TYPES.THROW_STATEMENT
     },
     [TOKEN_TYPES.LOOP]: {
         type: TOKEN_TYPES.LOOP,

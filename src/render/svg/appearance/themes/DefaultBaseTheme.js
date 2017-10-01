@@ -153,5 +153,11 @@ export default {
         ...BaseShape,
         fillColor: '#fff',
         roundBorder: 2
+    },
+
+    ThrowStatement: {
+        ...BaseShape,
+        fillColor: '#ef9a9a',
+        roundBorder: 2
     }
 };
