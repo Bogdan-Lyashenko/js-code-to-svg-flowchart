@@ -154,7 +154,7 @@ export const assignmentExpressionConverter = ({ node }) => {
 };
 
 export const callExpressionConverter = ({ node }) => {
-    const isFunctionPassed = !!node.arguments.find(isNodeContainsFunc);
+    const isFunctionPassed = !!(node.arguments || []).find(isNodeContainsFunc);
     if (!isFunctionPassed) {
         return generate(node).code;
     }

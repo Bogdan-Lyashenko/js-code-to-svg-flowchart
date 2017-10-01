@@ -11,12 +11,7 @@
 </style>
 <body>
 
-<div>
-    <p id="svgImage0"></p>
-    <p id="svgImage1"></p>
-    <p id="svgImage2"></p>
-    <p id="svgImage3"></p>
-</div>
+<div id="container"> </div>
 
 <script src="../../dist/js2flowchart.js"></script>
 <script>
@@ -34,10 +29,14 @@
             }
 
             getA(){
+                helperFunction('help');
                 return this.a;
             }
 
             setName(name) {
+                if (!callCheck()) {
+                    name = this.getAa();
+                }
                 this.name = name;
             }
         }
@@ -47,7 +46,8 @@
                 this.name = n;
             }
 
-            sayName() {
+            sayName(log) {
+                log('call..')
                 return this.name
             }
         }
@@ -64,11 +64,19 @@
     const JS2FlowChart = window['js2flowchart'];
 
     const presentationGenerator = JS2FlowChart.createPresentationGenerator(code);
-    const slides = presentationGenerator.getSlides();
+    const slides = presentationGenerator.buildSlides();
 
-    slides.forEach((svg, i)=> {
-        document.getElementById('svgImage' + i).innerHTML = svg;
-    });
+    document.getElementById('container').appendChild(
+
+        slides.reduce((fragment, svg) => {
+            const p = document.createElement('p');
+            p.innerHTML = svg;
+
+            fragment.appendChild(p);
+            return fragment;
+        }, document.createDocumentFragment())
+
+    );
 
 </script>
 </body>

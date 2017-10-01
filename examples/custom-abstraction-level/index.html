@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div>
+    <p id="svgImage"></p>
+</div>
+
+<script src="../../dist/js2flowchart.js"></script>
+<script>
+    const code = `
+        const list = [1, 2, 3, 4];
+
+        function print1(list) { }
+        function print2(list) { }
+        function print3(list) { }
+
+        print(list);
+    `;
+
+    const JS2FlowChart = window['js2flowchart'],
+        ABSTRACTION_LEVELS = JS2FlowChart.ABSTRACTION_LEVELS;
+
+    const flowTreeBuilder = JS2FlowChart.createFlowTreeBuilder();
+    flowTreeBuilder.setAbstractionLevel({
+        custom: [{
+            type: ABSTRACTION_LEVELS.FUNCTION,
+            ignore: () => false,
+            getName: (path) => 'all functions will be like this'
+        }]
+    });
+
+    const svgRender = JS2FlowChart.createSVGRender();
+    const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(code));
+
+    document.getElementById('svgImage').innerHTML = shapesTree.print();
+
+</script>
+</body>
+</html>

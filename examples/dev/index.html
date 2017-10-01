@@ -126,13 +126,11 @@
     const t0 = performance.now();
     //===================================
     const flowTreeBuilder = JS2FlowChart.createFlowTreeBuilder();
+    flowTreeBuilder.setAbstractionLevel(JS2FlowChart.ABSTRACTION_LEVELS.FUNCTION_DEPENDENCIES)
     const flowTree = flowTreeBuilder.build(`
-    const c = 0;
     function a (){
 
-    if (call(a)) {a = 3}
-
-              if(!this.$usersWrapper.length) this.loadEvents();
+              a = this.loadEvents();
           }
 
 

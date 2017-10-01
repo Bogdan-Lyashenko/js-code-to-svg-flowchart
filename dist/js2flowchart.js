@@ -6642,7 +6642,7 @@ exports.default = function () {
     var astParserConfig = _extends({}, astParser);
 
     var astVisitorConfig = _extends({
-        definitionsMap: [].concat(_toConsumableArray(_entryDefinitionsMap.DefinitionsMap)),
+        definitionsMap: [].concat(_toConsumableArray(_entryDefinitionsMap.DefinitionsList)),
         globalIgnore: null
     }, astVisitor);
 
@@ -6651,7 +6651,7 @@ exports.default = function () {
             astVisitorConfig.definitionsMap = (0, _abstractionLevelsConfigurator.rebuildConfigForAbstractionLevel)(level);
         },
         resetAbstractionLevelToNormal: function resetAbstractionLevelToNormal() {
-            astVisitorConfig.definitionsMap = [].concat(_toConsumableArray(_entryDefinitionsMap.DefinitionsMap));
+            astVisitorConfig.definitionsMap = [].concat(_toConsumableArray(_entryDefinitionsMap.DefinitionsList));
         },
         setIgnoreFilter: function setIgnoreFilter(fn) {
             astVisitorConfig.globalIgnore = fn;
@@ -15728,7 +15728,9 @@ module.exports = exports["default"];
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.DefinitionsMap = undefined;
+exports.DefinitionsList = exports.DefinitionsMap = undefined;
+
+var _DefinitionsMap;
 
 var _constants = __webpack_require__(3);
 
@@ -15736,30 +15738,32 @@ var _core = __webpack_require__(365);
 
 var _Harmony = __webpack_require__(436);
 
-var DefinitionsMap = exports.DefinitionsMap = [{
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.FUNCTION, {
     type: _constants.TOKEN_TYPES.FUNCTION,
     getName: _core.functionConverter,
     body: true
-}, {
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.RETURN, {
     type: _constants.TOKEN_TYPES.RETURN, //TODO: visual
     getName: _core.returnConverter, //TODO: fix return function, duplicates 'return log(list);'
 
     body: true
-}, {
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.VARIABLE_DECLARATOR, {
     type: _constants.TOKEN_TYPES.VARIABLE_DECLARATOR,
     body: true,
     getName: _core.variableDeclaratorConverter,
     ignore: function ignore(path) {
         return (0, _core.isNodeContainsFunc)(path.node.init);
     }
-}, {
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION, {
     type: _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION,
     body: true,
     getName: _core.assignmentExpressionConverter,
     ignore: function ignore(path) {
         return path.getStatementParent().isVariableDeclaration() || (0, _core.isNodeContainsFunc)(path.node.right);
     }
-}, {
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.CALL_EXPRESSION, {
     type: _constants.TOKEN_TYPES.CALL_EXPRESSION,
     body: true,
     getName: _core.callExpressionConverter,
@@ -15770,92 +15774,91 @@ var DefinitionsMap = exports.DefinitionsMap = [{
         return statementParent.isVariableDeclaration() || statementParent.isConditional() && parent.test && parent.test.type === _constants.TOKEN_TYPES.CALL_EXPRESSION || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION //TODO: BUG, fix line: list = list.filter(i => i % 2)
         ;
     }
-}, {
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.UPDATE_EXPRESSION, {
     type: _constants.TOKEN_TYPES.UPDATE_EXPRESSION,
     getName: _core.idleConverter,
     ignore: function ignore(path) {
         return path.getStatementParent().isVariableDeclaration();
     }
-}, {
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.NEW_EXPRESSION, {
     type: _constants.TOKEN_TYPES.NEW_EXPRESSION,
     getName: _core.idleConverter,
     ignore: function ignore(path) {
         return path.getStatementParent().isVariableDeclaration() || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION;
     }
-}, {
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.LOOP, {
     type: _constants.TOKEN_TYPES.LOOP,
     getName: _core.loopConverter,
     body: true
-}, {
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.CONTINUE, {
     type: _constants.TOKEN_TYPES.CONTINUE, //TODO: visual (breaks flow because of iteration skip)
     getName: _core.continueConverter,
     body: true
-}, {
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.CONDITIONAL, {
     type: _constants.TOKEN_TYPES.CONDITIONAL,
     getName: _core.conditionalConverter,
     body: true
-}, {
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.SWITCH_STATEMENT, {
     type: _constants.TOKEN_TYPES.SWITCH_STATEMENT, //TODO: visual
     getName: _core.switchStatementConverter,
     body: true
-}, {
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.SWITCH_CASE, {
     type: _constants.TOKEN_TYPES.SWITCH_CASE, //TODO: visual
     getName: _core.caseConverter,
     body: true
-}, {
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.BREAK, {
     type: _constants.TOKEN_TYPES.BREAK, //TODO: visual
     getName: _core.breakConverter,
     body: true
-}, {
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.TRY_STATEMENT, {
     type: _constants.TOKEN_TYPES.TRY_STATEMENT, //TODO: visual
     getName: _core.tryConverter,
     body: true
-}, {
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.CATCH_CLAUSE, {
     type: _constants.TOKEN_TYPES.CATCH_CLAUSE, //TODO: visual
     getName: _core.catchConverter,
     body: true
-}, {
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.WITH_STATEMENT, {
     type: _constants.TOKEN_TYPES.WITH_STATEMENT, //TODO: visual
     getName: _core.withStatementConverter,
     body: true
-}, {
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.PROGRAM, {
     type: _constants.TOKEN_TYPES.PROGRAM, //TODO: visual
     getName: _core.programConverter,
     body: true
-}, {
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.THROW_STATEMENT, {
     type: _constants.TOKEN_TYPES.THROW_STATEMENT, //TODO: visual (breaks flow because of error)
     getName: _core.throwStatementConverter,
     body: true
-}, {
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.DEBUGGER_STATEMENT, {
     type: _constants.TOKEN_TYPES.DEBUGGER_STATEMENT, //TODO: visual (makes it RED!)
     getName: _core.debuggerConverter,
     body: true
-},
-
-//ES Harmony features
-{
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.IMPORT_DECLARATION, {
     type: _constants.TOKEN_TYPES.IMPORT_DECLARATION, //TODO: visual display in separate way libs (npm modules) and local dependencies
     getName: _Harmony.importDeclarationConverter,
     body: true
-}, {
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER, {
     type: _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER, //TODO: visual display it as dependencies to another module?
     getName: _core.idleConverter
-}, {
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.IMPORT_SPECIFIER, {
     type: _constants.TOKEN_TYPES.IMPORT_SPECIFIER,
     getName: _core.idleConverter
-}, {
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION, {
     type: _constants.TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION, //TODO: visual display as main result of module, => |a = 12| can be as big arrow shape at left side of main body
     getName: _Harmony.exportDefaultDeclarationConverter,
     body: true
-}, {
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.EXPORT_NAMED_DECLARATION, {
     type: _constants.TOKEN_TYPES.EXPORT_NAMED_DECLARATION, //TODO: visual ' => |a = 12| ' can be as big arrow shape at left side of main body
     getName: _Harmony.exportNamedDeclarationConverter,
     body: true
-}, {
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.CLASS_DECLARATION, {
     type: _constants.TOKEN_TYPES.CLASS_DECLARATION, //TODO: visual something like function declaration but more visible (class is bigger than function)
     getName: _Harmony.classDeclarationConverter, //if it has superClass -> render it with highlighting
     body: true
-}];
+}), _DefinitionsMap);
+
+var DefinitionsList = exports.DefinitionsList = Object.values(DefinitionsMap);
 
 /*
 *
@@ -29629,7 +29632,7 @@ var assignmentExpressionConverter = exports.assignmentExpressionConverter = func
 var callExpressionConverter = exports.callExpressionConverter = function callExpressionConverter(_ref4) {
     var node = _ref4.node;
 
-    var isFunctionPassed = !!node.arguments.find(isNodeContainsFunc);
+    var isFunctionPassed = !!(node.arguments || []).find(isNodeContainsFunc);
     if (!isFunctionPassed) {
         return (0, _babelGenerator2.default)(node).code;
     }
@@ -36762,34 +36765,46 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.rebuildConfigForAbstractionLevel = exports.ABSTRACTION_LEVELS = undefined;
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _constants = __webpack_require__(3);
 
 var _entryDefinitionsMap = __webpack_require__(159);
+
+var _functionDependencies = __webpack_require__(464);
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var ABSTRACTION_LEVELS = exports.ABSTRACTION_LEVELS = {
     FUNCTION: [_constants.TOKEN_TYPES.FUNCTION],
-    FUNCTION_DEPENDENCIES: [_constants.TOKEN_TYPES.FUNCTION, _constants.TOKEN_TYPES.CALL_EXPRESSION],
+    FUNCTION_DEPENDENCIES: (0, _functionDependencies.getFunctionDependenciesLevel)(),
     CLASS: [_constants.TOKEN_TYPES.CLASS_DECLARATION],
     IMPORT: [_constants.TOKEN_TYPES.IMPORT_DECLARATION, _constants.TOKEN_TYPES.IMPORT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER],
     EXPORT: [_constants.TOKEN_TYPES.EXPORT_NAMED_DECLARATION, _constants.TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION]
 };
 
 var rebuildConfigForAbstractionLevel = exports.rebuildConfigForAbstractionLevel = function rebuildConfigForAbstractionLevel(level) {
-    var levelList = [].concat(level).reduce(function (list, item) {
+    var definedLevels = [],
+        customLevels = [];
+
+    [].concat(level).forEach(function (item) {
         if (typeof item === 'string') {
-            list.push(item);
-        } else {
-            list = list.concat([].concat(_toConsumableArray(item)));
+            return definedLevels.push(item);
         }
 
-        return list;
-    }, []);
+        if (Array.isArray(item)) {
+            return definedLevels = definedLevels.concat([].concat(_toConsumableArray(item)));
+        }
 
-    return _entryDefinitionsMap.DefinitionsMap.filter(function (item) {
-        return levelList.indexOf(item.type) !== -1;
+        if ((typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object') {
+            definedLevels = definedLevels.concat([].concat(_toConsumableArray(item.defined || [])));
+            customLevels = customLevels.concat([].concat(_toConsumableArray(item.custom || [])));
+        }
     });
+
+    return _entryDefinitionsMap.DefinitionsList.filter(function (item) {
+        return definedLevels.indexOf(item.type) !== -1;
+    }).concat(customLevels);
 };
 
 /***/ }),
@@ -37539,7 +37554,7 @@ var SVGBase = exports.SVGBase = function SVGBase() {
             var boundaries = (0, _geometry.calculateShapesBoundaries)(state.shapes.map(function (item) {
                 return item.getBoundaries();
             })),
-                padding = 5;
+                padding = 20;
 
             return {
                 w: Math.ceil(boundaries.max.x) + padding,
@@ -38513,7 +38528,7 @@ exports.default = function (config, theme) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.generateRegularSlideTree = exports.generateClassFunctionSlideTree = exports.generateImportExportSlideTree = exports.generateExportSlideTree = undefined;
+exports.generateRegularSlideTree = exports.generateClassFunctionDependenciesSlideTree = exports.generateClassFunctionSlideTree = exports.generateImportExportSlideTree = exports.generateExportSlideTree = undefined;
 
 var _astBuilder = __webpack_require__(437);
 
@@ -38529,26 +38544,22 @@ var _constants = __webpack_require__(3);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var generateExportSlideTree = exports.generateExportSlideTree = function generateExportSlideTree(astTree) {
+var buildTreeByAbstractionLevels = function buildTreeByAbstractionLevels(levels) {
     var flowTreeBuilder = (0, _FlowTreeBuilder2.default)();
-    flowTreeBuilder.setAbstractionLevel(_FlowTreeBuilder.ABSTRACTION_LEVELS.EXPORT);
+    flowTreeBuilder.setAbstractionLevel(levels);
 
-    return flowTreeBuilder.buildFlowTreeFromAst(astTree);
+    return function (astTree) {
+        return flowTreeBuilder.buildFlowTreeFromAst(astTree);
+    };
 };
 
-var generateImportExportSlideTree = exports.generateImportExportSlideTree = function generateImportExportSlideTree(astTree) {
-    var flowTreeBuilder = (0, _FlowTreeBuilder2.default)();
-    flowTreeBuilder.setAbstractionLevel([_FlowTreeBuilder.ABSTRACTION_LEVELS.EXPORT, _FlowTreeBuilder.ABSTRACTION_LEVELS.IMPORT]);
+var generateExportSlideTree = exports.generateExportSlideTree = buildTreeByAbstractionLevels(_FlowTreeBuilder.ABSTRACTION_LEVELS.EXPORT);
 
-    return flowTreeBuilder.buildFlowTreeFromAst(astTree);
-};
+var generateImportExportSlideTree = exports.generateImportExportSlideTree = buildTreeByAbstractionLevels([_FlowTreeBuilder.ABSTRACTION_LEVELS.EXPORT, _FlowTreeBuilder.ABSTRACTION_LEVELS.IMPORT]);
 
-var generateClassFunctionSlideTree = exports.generateClassFunctionSlideTree = function generateClassFunctionSlideTree(astTree) {
-    var flowTreeBuilder = (0, _FlowTreeBuilder2.default)();
-    flowTreeBuilder.setAbstractionLevel([_FlowTreeBuilder.ABSTRACTION_LEVELS.CLASS, _FlowTreeBuilder.ABSTRACTION_LEVELS.FUNCTION]);
+var generateClassFunctionSlideTree = exports.generateClassFunctionSlideTree = buildTreeByAbstractionLevels([_FlowTreeBuilder.ABSTRACTION_LEVELS.EXPORT, _FlowTreeBuilder.ABSTRACTION_LEVELS.IMPORT, _FlowTreeBuilder.ABSTRACTION_LEVELS.CLASS, _FlowTreeBuilder.ABSTRACTION_LEVELS.FUNCTION]);
 
-    return flowTreeBuilder.buildFlowTreeFromAst(astTree);
-};
+var generateClassFunctionDependenciesSlideTree = exports.generateClassFunctionDependenciesSlideTree = buildTreeByAbstractionLevels([_FlowTreeBuilder.ABSTRACTION_LEVELS.EXPORT, _FlowTreeBuilder.ABSTRACTION_LEVELS.IMPORT, _FlowTreeBuilder.ABSTRACTION_LEVELS.CLASS, _FlowTreeBuilder.ABSTRACTION_LEVELS.FUNCTION, _FlowTreeBuilder.ABSTRACTION_LEVELS.FUNCTION_DEPENDENCIES]);
 
 var generateRegularSlideTree = exports.generateRegularSlideTree = function generateRegularSlideTree(astTree) {
     var flowTreeBuilder = (0, _FlowTreeBuilder2.default)();
@@ -38557,16 +38568,64 @@ var generateRegularSlideTree = exports.generateRegularSlideTree = function gener
 
 exports.default = function (code) {
     return {
-        getSlides: function getSlides() {
+        buildSlides: function buildSlides() {
             var svgRender = (0, _SVGRender2.default)(),
                 astTree = (0, _astBuilder.parseCodeToAST)(code);
 
-            var slides = [generateExportSlideTree(astTree), generateImportExportSlideTree(astTree), generateClassFunctionSlideTree(astTree), generateRegularSlideTree(astTree)];
+            var slides = [generateExportSlideTree(astTree), generateImportExportSlideTree(astTree), generateClassFunctionSlideTree(astTree), generateClassFunctionDependenciesSlideTree(astTree), generateRegularSlideTree(astTree)];
 
             return slides.map(svgRender.buildShapesTree).map(function (shapesTree) {
                 return shapesTree.print();
             });
         }
+    };
+};
+
+/***/ }),
+/* 463 */,
+/* 464 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.getFunctionDependenciesLevel = undefined;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _constants = __webpack_require__(3);
+
+var _core = __webpack_require__(365);
+
+var _entryDefinitionsMap = __webpack_require__(159);
+
+var isNodeContainsFunctionCall = function isNodeContainsFunctionCall(_ref) {
+    var node = _ref.node;
+
+    return node.right && node.right.type === _constants.TOKEN_TYPES.CALL_EXPRESSION;
+};
+
+var getCustomAssignmentExpression = function getCustomAssignmentExpression() {
+    var assignmentExpression = _entryDefinitionsMap.DefinitionsMap[_constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION];
+
+    return _extends({}, assignmentExpression, {
+        getName: function getName(_ref2) {
+            var node = _ref2.node;
+            return (0, _core.callExpressionConverter)({ node: node.right });
+        },
+        ignore: function ignore(path) {
+            return assignmentExpression.ignore(path) || !isNodeContainsFunctionCall(path);
+        }
+    });
+};
+
+var getFunctionDependenciesLevel = exports.getFunctionDependenciesLevel = function getFunctionDependenciesLevel() {
+    return {
+        defined: [_constants.TOKEN_TYPES.FUNCTION, _constants.TOKEN_TYPES.CALL_EXPRESSION],
+        custom: [getCustomAssignmentExpression()]
     };
 };
 

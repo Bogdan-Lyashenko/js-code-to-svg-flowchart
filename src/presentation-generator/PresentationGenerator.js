@@ -8,26 +8,34 @@ import FlowTreeBuilder, {
 import SVGRender from 'render/svg/SVGRender';
 import { TOKEN_TYPES, MODIFIED_TYPES } from 'shared/constants';
 
-export const generateExportSlideTree = astTree => {
+const buildTreeByAbstractionLevels = levels => {
     const flowTreeBuilder = FlowTreeBuilder();
-    flowTreeBuilder.setAbstractionLevel(ABSTRACTION_LEVELS.EXPORT);
+    flowTreeBuilder.setAbstractionLevel(levels);
 
-    return flowTreeBuilder.buildFlowTreeFromAst(astTree);
+    return astTree => flowTreeBuilder.buildFlowTreeFromAst(astTree);
 };
 
-export const generateImportExportSlideTree = astTree => {
-    const flowTreeBuilder = FlowTreeBuilder();
-    flowTreeBuilder.setAbstractionLevel([ABSTRACTION_LEVELS.EXPORT, ABSTRACTION_LEVELS.IMPORT]);
+export const generateExportSlideTree = buildTreeByAbstractionLevels(ABSTRACTION_LEVELS.EXPORT);
 
-    return flowTreeBuilder.buildFlowTreeFromAst(astTree);
-};
+export const generateImportExportSlideTree = buildTreeByAbstractionLevels([
+    ABSTRACTION_LEVELS.EXPORT,
+    ABSTRACTION_LEVELS.IMPORT
+]);
 
-export const generateClassFunctionSlideTree = astTree => {
-    const flowTreeBuilder = FlowTreeBuilder();
-    flowTreeBuilder.setAbstractionLevel([ABSTRACTION_LEVELS.CLASS, ABSTRACTION_LEVELS.FUNCTION]);
+export const generateClassFunctionSlideTree = buildTreeByAbstractionLevels([
+    ABSTRACTION_LEVELS.EXPORT,
+    ABSTRACTION_LEVELS.IMPORT,
+    ABSTRACTION_LEVELS.CLASS,
+    ABSTRACTION_LEVELS.FUNCTION
+]);
 
-    return flowTreeBuilder.buildFlowTreeFromAst(astTree);
-};
+export const generateClassFunctionDependenciesSlideTree = buildTreeByAbstractionLevels([
+    ABSTRACTION_LEVELS.EXPORT,
+    ABSTRACTION_LEVELS.IMPORT,
+    ABSTRACTION_LEVELS.CLASS,
+    ABSTRACTION_LEVELS.FUNCTION,
+    ABSTRACTION_LEVELS.FUNCTION_DEPENDENCIES
+]);
 
 export const generateRegularSlideTree = astTree => {
     const flowTreeBuilder = FlowTreeBuilder();
@@ -35,7 +43,7 @@ export const generateRegularSlideTree = astTree => {
 };
 
 export default code => ({
-    getSlides: () => {
+    buildSlides: () => {
         const svgRender = SVGRender(),
             astTree = parseCodeToAST(code);
 
@@ -43,6 +51,7 @@ export default code => ({
             generateExportSlideTree(astTree),
             generateImportExportSlideTree(astTree),
             generateClassFunctionSlideTree(astTree),
+            generateClassFunctionDependenciesSlideTree(astTree),
             generateRegularSlideTree(astTree)
         ];
 

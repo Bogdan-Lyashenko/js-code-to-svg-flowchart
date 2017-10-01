@@ -1,6 +1,6 @@
 import traverse from 'babel-traverse';
 
-import { DefinitionsMap } from './entryDefinitionsMap';
+import { DefinitionsList } from './entryDefinitionsMap';
 import { parseCodeToAST, buildVisitor } from './astBuilder';
 import {
     ABSTRACTION_LEVELS,
@@ -50,7 +50,7 @@ export default ({ astParser = {}, astVisitor = {} } = {}) => {
     };
 
     const astVisitorConfig = {
-        definitionsMap: [...DefinitionsMap],
+        definitionsMap: [...DefinitionsList],
         globalIgnore: null,
         ...astVisitor
     };
@@ -61,7 +61,7 @@ export default ({ astParser = {}, astVisitor = {} } = {}) => {
         },
 
         resetAbstractionLevelToNormal() {
-            astVisitorConfig.definitionsMap = [...DefinitionsMap];
+            astVisitorConfig.definitionsMap = [...DefinitionsList];
         },
 
         setIgnoreFilter(fn) {

@@ -1,9 +1,10 @@
 import { TOKEN_TYPES } from 'shared/constants';
-import { DefinitionsMap } from './entryDefinitionsMap';
+import { DefinitionsList } from './entryDefinitionsMap';
+import { getFunctionDependenciesLevel } from './abstraction-levels/functionDependencies';
 
 export const ABSTRACTION_LEVELS = {
     FUNCTION: [TOKEN_TYPES.FUNCTION],
-    FUNCTION_DEPENDENCIES: [TOKEN_TYPES.FUNCTION, TOKEN_TYPES.CALL_EXPRESSION],
+    FUNCTION_DEPENDENCIES: getFunctionDependenciesLevel(),
     CLASS: [TOKEN_TYPES.CLASS_DECLARATION],
     IMPORT: [
         TOKEN_TYPES.IMPORT_DECLARATION,
@@ -14,15 +15,25 @@ export const ABSTRACTION_LEVELS = {
 };
 
 export const rebuildConfigForAbstractionLevel = level => {
-    const levelList = [].concat(level).reduce((list, item) => {
+    let definedLevels = [],
+        customLevels = [];
+
+    [].concat(level).forEach(item => {
         if (typeof item === 'string') {
-            list.push(item);
-        } else {
-            list = list.concat([...item]);
+            return definedLevels.push(item);
         }
 
-        return list;
-    }, []);
+        if (Array.isArray(item)) {
+            return (definedLevels = definedLevels.concat([...item]));
+        }
 
-    return DefinitionsMap.filter(item => levelList.indexOf(item.type) !== -1);
+        if (typeof item === 'object') {
+            definedLevels = definedLevels.concat([...(item.defined || [])]);
+            customLevels = customLevels.concat([...(item.custom || [])]);
+        }
+    });
+
+    return DefinitionsList.filter(item => definedLevels.indexOf(item.type) !== -1).concat(
+        customLevels
+    );
 };
