@@ -58,8 +58,8 @@
     `;
 
     const simpleStrModules = `
-        import a, {b,c} from 'lib-bob';
-        import d from './libbob/file';
+        import { assignState, mergeObjectStructures } from 'shared/utils/composition';
+        import { getCurvedPath, getClosedPath } from 'shared/utils/svgPrimitives';
 
         function o(i, p) {};
 

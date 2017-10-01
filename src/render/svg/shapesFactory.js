@@ -1,7 +1,9 @@
 import { ARROW_TYPE } from 'shared/constants';
 import { getShapeForNode } from './shapesDefinitionsMap';
 import Circle from './shapes/Circle';
-import ConnectionArrow, { getFieldName as getConnectionArrowFieldName } from './ConnectionArrow';
+import ConnectionArrow, {
+    getFieldName as getConnectionArrowFieldName
+} from './connections/ConnectionArrow';
 
 export const createShapeForNode = (node, position, styleTheme) => {
     const shape = getShapeForNode(node),
@@ -24,14 +26,13 @@ export const createConnectionArrow = (config, styleTheme) => {
     const connectionArrowStyle = styleTheme[getConnectionArrowFieldName()],
         arrowConfig = getConnectionConfig(config, connectionArrowStyle);
 
-    return ConnectionArrow(arrowConfig, connectionArrowStyle);
+    return ConnectionArrow({ ...config, ...arrowConfig }, connectionArrowStyle);
 };
 
 export const getConnectionConfig = ({ startPoint, endPoint, boundaryPoint, arrowType }, theme) => {
     const config = {
         linePoints: [],
-        arrowPoint: { x: endPoint.x, y: endPoint.y },
-        arrowType
+        arrowPoint: { x: endPoint.x, y: endPoint.y }
     };
 
     switch (arrowType) {

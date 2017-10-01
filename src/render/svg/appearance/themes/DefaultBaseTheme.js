@@ -139,13 +139,13 @@ export default {
             handlerLength: 5,
             sizeX: 20,
             sizeY: 28,
-            fillColor: '#81d4fa'
+            fillColor: '#fff'
         }
     },
 
     ImportDeclaration: {
         ...BaseShape,
-        fillColor: '#bcaaa4',
+        fillColor: '#fff',
         edgeOffset: 5
     },
 

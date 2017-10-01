@@ -68,12 +68,16 @@ const setupPrintBehaviour = state => ({
     },
 
     print() {
-        const { linePoints, arrowPoint, arrowType } = state.config;
+        const { linePoints, arrowPoint, arrowType, noArrow } = state.config;
+
+        if (noArrow) {
+            linePoints[linePoints.length - 1].x += state.theme.arrow.size.x;
+        }
 
         return `
             <g>
                ${this.printLine(linePoints)}
-               ${this.printArrowByType(arrowType, arrowPoint)}
+               ${!noArrow && this.printArrowByType(arrowType, arrowPoint)}
             </g>`;
     }
 });

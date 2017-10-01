@@ -37284,12 +37284,12 @@ exports.default = {
             handlerLength: 5,
             sizeX: 20,
             sizeY: 28,
-            fillColor: '#81d4fa'
+            fillColor: '#fff'
         })
     }),
 
     ImportDeclaration: _extends({}, BaseShape, {
-        fillColor: '#bcaaa4',
+        fillColor: '#fff',
         edgeOffset: 5
     }),
 
@@ -37491,7 +37491,8 @@ var buildConnections = exports.buildConnections = function buildConnections(shap
 
         var config = {
             endPoint: shape.getToPoint(),
-            arrowType: _constants.ARROW_TYPE.RIGHT
+            arrowType: _constants.ARROW_TYPE.RIGHT,
+            noArrow: [_constants.TOKEN_TYPES.IMPORT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER].includes(shape.getNodeType())
         };
 
         if (shape.getNodeKey() === _constants.TOKEN_KEYS.ALTERNATE) {
@@ -37642,7 +37643,7 @@ var _Circle = __webpack_require__(176);
 
 var _Circle2 = _interopRequireDefault(_Circle);
 
-var _ConnectionArrow = __webpack_require__(461);
+var _ConnectionArrow = __webpack_require__(470);
 
 var _ConnectionArrow2 = _interopRequireDefault(_ConnectionArrow);
 
@@ -37672,7 +37673,7 @@ var createConnectionArrow = exports.createConnectionArrow = function createConne
     var connectionArrowStyle = styleTheme[(0, _ConnectionArrow.getFieldName)()],
         arrowConfig = getConnectionConfig(config, connectionArrowStyle);
 
-    return (0, _ConnectionArrow2.default)(arrowConfig, connectionArrowStyle);
+    return (0, _ConnectionArrow2.default)(_extends({}, config, arrowConfig), connectionArrowStyle);
 };
 
 var getConnectionConfig = exports.getConnectionConfig = function getConnectionConfig(_ref, theme) {
@@ -37683,8 +37684,7 @@ var getConnectionConfig = exports.getConnectionConfig = function getConnectionCo
 
     var config = {
         linePoints: [],
-        arrowPoint: { x: endPoint.x, y: endPoint.y },
-        arrowType: arrowType
+        arrowPoint: { x: endPoint.x, y: endPoint.y }
     };
 
     switch (arrowType) {
@@ -38509,102 +38509,7 @@ var DestructedNode = exports.DestructedNode = function DestructedNode(initialSta
 exports.default = (0, _BaseShape.delegateInit)(DestructedNode, ENTITY_FIELD_NAME);
 
 /***/ }),
-/* 461 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.ConnectionArrow = exports.getFieldName = undefined;
-
-var _composition = __webpack_require__(9);
-
-var _svgPrimitives = __webpack_require__(24);
-
-var _geometry = __webpack_require__(67);
-
-var _constants = __webpack_require__(3);
-
-var ENTITY_FIELD_NAME = 'ConnectionArrow';
-
-var getFieldName = exports.getFieldName = function getFieldName() {
-    return ENTITY_FIELD_NAME;
-};
-
-var setupSelectors = function setupSelectors(state) {
-    return {
-        getFieldName: getFieldName
-    };
-};
-
-var setupUpdateBehaviour = function setupUpdateBehaviour(state) {
-    return {
-        updateTheme: function updateTheme(newTheme) {
-            state.theme = (0, _composition.mergeObjectStructures)(state.theme, newTheme);
-        }
-    };
-};
-
-var setupPrintBehaviour = function setupPrintBehaviour(state) {
-    return {
-        printLine: function printLine(points) {
-            return (0, _svgPrimitives.getCurvedPath)(points, state.theme.line);
-        },
-        printArrow: function printArrow(point, arrowPoints) {
-            return (0, _svgPrimitives.getClosedPath)((0, _geometry.addOffsetToPoints)(arrowPoints, point), state.theme.arrow);
-        },
-        printArrowByType: function printArrowByType(type, _ref) {
-            var x = _ref.x,
-                y = _ref.y;
-
-            var arrowSize = state.theme.arrow.size;
-            var point = void 0;
-
-            //TODO: move to svgPrimitives
-            switch (type) {
-                case _constants.ARROW_TYPE.RIGHT:
-                    point = { x: x - arrowSize.x, y: y - arrowSize.y / 2 };
-
-                    return this.printArrow(point, [{ x: 0, y: 0 }, { x: arrowSize.x, y: arrowSize.y / 2 }, { x: 0, y: arrowSize.y }]);
-
-                case _constants.ARROW_TYPE.LEFT:
-                    point = { x: x, y: y - arrowSize.y / 2 };
-
-                    return this.printArrow(point, [{ x: 0, y: arrowSize.y / 2 }, { x: arrowSize.x, y: 0 }, { x: arrowSize.x, y: arrowSize.y }]);
-
-                case _constants.ARROW_TYPE.DOWN:
-                    point = { x: x - arrowSize.y / 2, y: y - arrowSize.x };
-
-                    return this.printArrow(point, [{ x: 0, y: 0 }, { x: arrowSize.y / 2, y: arrowSize.x }, { x: arrowSize.y, y: 0 }]);
-
-                default:
-                    return '';
-            }
-        },
-        print: function print() {
-            var _state$config = state.config,
-                linePoints = _state$config.linePoints,
-                arrowPoint = _state$config.arrowPoint,
-                arrowType = _state$config.arrowType;
-
-
-            return '\n            <g>\n               ' + this.printLine(linePoints) + '\n               ' + this.printArrowByType(arrowType, arrowPoint) + '\n            </g>';
-        }
-    };
-};
-
-var ConnectionArrow = exports.ConnectionArrow = function ConnectionArrow(state) {
-    return (0, _composition.assignState)(state, [setupUpdateBehaviour, setupPrintBehaviour, setupSelectors]);
-};
-
-exports.default = function (config, theme) {
-    return ConnectionArrow({ config: config, theme: theme });
-};
-
-/***/ }),
+/* 461 */,
 /* 462 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -38826,6 +38731,107 @@ var ENTITY_FIELD_NAME = 'ImportSpecifier';
 
 exports.default = (0, _BaseShape.delegateInit)(_Rectangle.Rectangle, ENTITY_FIELD_NAME);
 module.exports = exports['default'];
+
+/***/ }),
+/* 470 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.ConnectionArrow = exports.getFieldName = undefined;
+
+var _composition = __webpack_require__(9);
+
+var _svgPrimitives = __webpack_require__(24);
+
+var _geometry = __webpack_require__(67);
+
+var _constants = __webpack_require__(3);
+
+var ENTITY_FIELD_NAME = 'ConnectionArrow';
+
+var getFieldName = exports.getFieldName = function getFieldName() {
+    return ENTITY_FIELD_NAME;
+};
+
+var setupSelectors = function setupSelectors(state) {
+    return {
+        getFieldName: getFieldName
+    };
+};
+
+var setupUpdateBehaviour = function setupUpdateBehaviour(state) {
+    return {
+        updateTheme: function updateTheme(newTheme) {
+            state.theme = (0, _composition.mergeObjectStructures)(state.theme, newTheme);
+        }
+    };
+};
+
+var setupPrintBehaviour = function setupPrintBehaviour(state) {
+    return {
+        printLine: function printLine(points) {
+            return (0, _svgPrimitives.getCurvedPath)(points, state.theme.line);
+        },
+        printArrow: function printArrow(point, arrowPoints) {
+            return (0, _svgPrimitives.getClosedPath)((0, _geometry.addOffsetToPoints)(arrowPoints, point), state.theme.arrow);
+        },
+        printArrowByType: function printArrowByType(type, _ref) {
+            var x = _ref.x,
+                y = _ref.y;
+
+            var arrowSize = state.theme.arrow.size;
+            var point = void 0;
+
+            //TODO: move to svgPrimitives
+            switch (type) {
+                case _constants.ARROW_TYPE.RIGHT:
+                    point = { x: x - arrowSize.x, y: y - arrowSize.y / 2 };
+
+                    return this.printArrow(point, [{ x: 0, y: 0 }, { x: arrowSize.x, y: arrowSize.y / 2 }, { x: 0, y: arrowSize.y }]);
+
+                case _constants.ARROW_TYPE.LEFT:
+                    point = { x: x, y: y - arrowSize.y / 2 };
+
+                    return this.printArrow(point, [{ x: 0, y: arrowSize.y / 2 }, { x: arrowSize.x, y: 0 }, { x: arrowSize.x, y: arrowSize.y }]);
+
+                case _constants.ARROW_TYPE.DOWN:
+                    point = { x: x - arrowSize.y / 2, y: y - arrowSize.x };
+
+                    return this.printArrow(point, [{ x: 0, y: 0 }, { x: arrowSize.y / 2, y: arrowSize.x }, { x: arrowSize.y, y: 0 }]);
+
+                default:
+                    return '';
+            }
+        },
+        print: function print() {
+            var _state$config = state.config,
+                linePoints = _state$config.linePoints,
+                arrowPoint = _state$config.arrowPoint,
+                arrowType = _state$config.arrowType,
+                noArrow = _state$config.noArrow;
+
+
+            if (noArrow) {
+                linePoints[linePoints.length - 1].x += state.theme.arrow.size.x;
+            }
+
+            return '\n            <g>\n               ' + this.printLine(linePoints) + '\n               ' + (!noArrow && this.printArrowByType(arrowType, arrowPoint)) + '\n            </g>';
+        }
+    };
+};
+
+var ConnectionArrow = exports.ConnectionArrow = function ConnectionArrow(state) {
+    return (0, _composition.assignState)(state, [setupUpdateBehaviour, setupPrintBehaviour, setupSelectors]);
+};
+
+exports.default = function (config, theme) {
+    return ConnectionArrow({ config: config, theme: theme });
+};
 
 /***/ })
 /******/ ]);

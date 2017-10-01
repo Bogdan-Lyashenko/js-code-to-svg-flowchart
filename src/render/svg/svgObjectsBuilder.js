@@ -89,7 +89,11 @@ export const buildConnections = (shapesTree, styleTheme) => {
 
             const config = {
                 endPoint: shape.getToPoint(),
-                arrowType: ARROW_TYPE.RIGHT
+                arrowType: ARROW_TYPE.RIGHT,
+                noArrow: [
+                    TOKEN_TYPES.IMPORT_SPECIFIER,
+                    TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER
+                ].includes(shape.getNodeType())
             };
 
             if (shape.getNodeKey() === TOKEN_KEYS.ALTERNATE) {
