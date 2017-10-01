@@ -1,6 +1,6 @@
 {
   "name": "js2flowchart",
-  "version": "0.0.2-alpha",
+  "version": "0.0.3-alpha",
   "author": "Bohdan Liashenko",
   "license": "MIT",
   "main": "./index.js",
