@@ -37275,6 +37275,17 @@ exports.default = {
     DebuggerStatement: _extends({}, BaseShape, {
         fillColor: '#EF5350',
         roundBorder: 2
+    }),
+
+    ExportDeclaration: _extends({}, BaseShape, {
+        roundBorder: 3,
+        fillColor: '#81d4fa',
+        arrow: _extends({}, BaseShape, {
+            handlerLength: 5,
+            sizeX: 20,
+            sizeY: 28,
+            fillColor: '#81d4fa'
+        })
     })
 };
 
@@ -37742,6 +37753,10 @@ var _DebuggerStatement = __webpack_require__(466);
 
 var _DebuggerStatement2 = _interopRequireDefault(_DebuggerStatement);
 
+var _ExportDeclaration = __webpack_require__(467);
+
+var _ExportDeclaration2 = _interopRequireDefault(_ExportDeclaration);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
@@ -37766,6 +37781,10 @@ var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
 
         case _constants.TOKEN_TYPES.DEBUGGER_STATEMENT:
             return _DebuggerStatement2.default;
+
+        case _constants.TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION:
+        case _constants.TOKEN_TYPES.EXPORT_NAMED_DECLARATION:
+            return _ExportDeclaration2.default;
 
         default:
             return _Rectangle2.default;
@@ -38721,6 +38740,26 @@ var _Rectangle = __webpack_require__(456);
 var ENTITY_FIELD_NAME = 'DebuggerStatement';
 
 exports.default = (0, _BaseShape.delegateInit)(_Rectangle.Rectangle, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
+
+/***/ }),
+/* 467 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _BaseShape = __webpack_require__(25);
+
+var _ReturnStatement = __webpack_require__(459);
+
+var ENTITY_FIELD_NAME = 'ExportDeclaration';
+
+exports.default = (0, _BaseShape.delegateInit)(_ReturnStatement.ReturnStatement, ENTITY_FIELD_NAME);
 module.exports = exports['default'];
 
 /***/ })

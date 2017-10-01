@@ -128,5 +128,18 @@ export default {
         ...BaseShape,
         fillColor: '#EF5350',
         roundBorder: 2
+    },
+
+    ExportDeclaration: {
+        ...BaseShape,
+        roundBorder: 3,
+        fillColor: '#81d4fa',
+        arrow: {
+            ...BaseShape,
+            handlerLength: 5,
+            sizeX: 20,
+            sizeY: 28,
+            fillColor: '#81d4fa'
+        }
     }
 };

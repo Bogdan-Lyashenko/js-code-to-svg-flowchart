@@ -9,6 +9,7 @@ import ReturnStatement from './shapes/ReturnStatement';
 import DestructedNode from './shapes/DestructedNode';
 import ClassDeclaration from './shapes/ClassDeclaration';
 import DebuggerStatement from './shapes/DebuggerStatement';
+import ExportDeclaration from './shapes/ExportDeclaration';
 
 export const getShapeForNode = node => {
     switch (node.type) {
@@ -32,6 +33,10 @@ export const getShapeForNode = node => {
 
         case TOKEN_TYPES.DEBUGGER_STATEMENT:
             return DebuggerStatement;
+
+        case TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION:
+        case TOKEN_TYPES.EXPORT_NAMED_DECLARATION:
+            return ExportDeclaration;
 
         default:
             return Rectangle;
