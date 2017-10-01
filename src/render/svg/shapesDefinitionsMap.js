@@ -8,6 +8,7 @@ import Circle from './shapes/Circle';
 import ReturnStatement from './shapes/ReturnStatement';
 import DestructedNode from './shapes/DestructedNode';
 import ClassDeclaration from './shapes/ClassDeclaration';
+import DebuggerStatement from './shapes/DebuggerStatement';
 
 export const getShapeForNode = node => {
     switch (node.type) {
@@ -28,6 +29,9 @@ export const getShapeForNode = node => {
 
         case TOKEN_TYPES.CLASS_DECLARATION:
             return ClassDeclaration;
+
+        case TOKEN_TYPES.DEBUGGER_STATEMENT:
+            return DebuggerStatement;
 
         default:
             return Rectangle;

@@ -37270,6 +37270,11 @@ exports.default = {
     ClassDeclaration: _extends({}, BaseShape, {
         fillColor: '#80cbc4',
         edgeOffset: 10
+    }),
+
+    DebuggerStatement: _extends({}, BaseShape, {
+        fillColor: '#EF5350',
+        roundBorder: 2
     })
 };
 
@@ -37733,6 +37738,10 @@ var _ClassDeclaration = __webpack_require__(465);
 
 var _ClassDeclaration2 = _interopRequireDefault(_ClassDeclaration);
 
+var _DebuggerStatement = __webpack_require__(466);
+
+var _DebuggerStatement2 = _interopRequireDefault(_DebuggerStatement);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
@@ -37754,6 +37763,9 @@ var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
 
         case _constants.TOKEN_TYPES.CLASS_DECLARATION:
             return _ClassDeclaration2.default;
+
+        case _constants.TOKEN_TYPES.DEBUGGER_STATEMENT:
+            return _DebuggerStatement2.default;
 
         default:
             return _Rectangle2.default;
@@ -38689,6 +38701,26 @@ var _VerticalEdgedRectangle = __webpack_require__(451);
 var ENTITY_FIELD_NAME = 'ClassDeclaration';
 
 exports.default = (0, _BaseShape.delegateInit)(_VerticalEdgedRectangle.VerticalEdgedRectangle, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
+
+/***/ }),
+/* 466 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _BaseShape = __webpack_require__(25);
+
+var _Rectangle = __webpack_require__(456);
+
+var ENTITY_FIELD_NAME = 'DebuggerStatement';
+
+exports.default = (0, _BaseShape.delegateInit)(_Rectangle.Rectangle, ENTITY_FIELD_NAME);
 module.exports = exports['default'];
 
 /***/ })

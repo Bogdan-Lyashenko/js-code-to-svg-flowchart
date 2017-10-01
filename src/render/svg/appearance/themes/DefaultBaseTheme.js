@@ -122,5 +122,11 @@ export default {
         ...BaseShape,
         fillColor: '#80cbc4',
         edgeOffset: 10
+    },
+
+    DebuggerStatement: {
+        ...BaseShape,
+        fillColor: '#EF5350',
+        roundBorder: 2
     }
 };
