@@ -145,7 +145,7 @@ export default {
 
     ImportDeclaration: {
         ...BaseShape,
-        fillColor: '#b0bec5',
+        fillColor: '#bcaaa4',
         edgeOffset: 5
     },
 

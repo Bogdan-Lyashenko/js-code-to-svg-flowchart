@@ -37289,7 +37289,7 @@ exports.default = {
     }),
 
     ImportDeclaration: _extends({}, BaseShape, {
-        fillColor: '#b0bec5',
+        fillColor: '#bcaaa4',
         edgeOffset: 5
     }),
 
