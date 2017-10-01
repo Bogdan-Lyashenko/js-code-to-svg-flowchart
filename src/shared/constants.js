@@ -4,6 +4,7 @@ export const TOKEN_TYPES = {
     FUNCTION_DECLARATION: 'FunctionDeclaration',
     VARIABLE_DECLARATOR: 'VariableDeclarator',
     ASSIGNMENT_EXPRESSION: 'AssignmentExpression',
+    MEMBER_EXPRESSION: 'MemberExpression',
     VARIABLE_DECLARATION: 'VariableDeclaration',
     UPDATE_EXPRESSION: 'UpdateExpression',
     CALL_EXPRESSION: 'CallExpression',

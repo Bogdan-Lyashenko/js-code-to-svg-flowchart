@@ -943,6 +943,7 @@ var TOKEN_TYPES = exports.TOKEN_TYPES = {
     FUNCTION_DECLARATION: 'FunctionDeclaration',
     VARIABLE_DECLARATOR: 'VariableDeclarator',
     ASSIGNMENT_EXPRESSION: 'AssignmentExpression',
+    MEMBER_EXPRESSION: 'MemberExpression',
     VARIABLE_DECLARATION: 'VariableDeclaration',
     UPDATE_EXPRESSION: 'UpdateExpression',
     CALL_EXPRESSION: 'CallExpression',
@@ -29632,16 +29633,33 @@ var assignmentExpressionConverter = exports.assignmentExpressionConverter = func
 var callExpressionConverter = exports.callExpressionConverter = function callExpressionConverter(_ref4) {
     var node = _ref4.node;
 
-    var isFunctionPassed = !!(node.arguments || []).find(isNodeContainsFunc);
-    if (!isFunctionPassed) {
-        return (0, _babelGenerator2.default)(node).code;
+    if (!!(node.arguments || []).find(isNodeContainsFunc)) {
+        var argumentsCode = node.arguments.map(function (argument) {
+            return isNodeContainsFunc(argument) ? '*' : argument.name || argument.value;
+        }).join(', ');
+
+        return (0, _babelGenerator2.default)(node.callee).code + '(' + argumentsCode + ')';
     }
 
-    var argumentsCode = node.arguments.map(function (argument) {
-        return isNodeContainsFunc(argument) ? '*' : argument.name || argument.value;
-    }).join(', ');
+    //TODO: fix chain: leave only one method call per node,   $('#id').show().addClass('name').hide();
+    //run traversal after build and with modifier reverse order of chains
+    var callee = node.callee;
+    if (callee.type === _constants.TOKEN_TYPES.MEMBER_EXPRESSION && callee.object.type === _constants.TOKEN_TYPES.CALL_EXPRESSION) {
+        //console.log(getFirstCallee(callee));
+        //console.log(generate(node).code)
+        //return callee.property.name;
+    }
 
-    return (0, _babelGenerator2.default)(node.callee).code + '(' + argumentsCode + ')';
+    return (0, _babelGenerator2.default)(node).code;
+};
+
+var getFirstCallee = function getFirstCallee(callee) {
+    if (!callee) return callee;
+    if (callee.type === _constants.TOKEN_TYPES.MEMBER_EXPRESSION && callee.object.type === _constants.TOKEN_TYPES.CALL_EXPRESSION) {
+        return getFirstCallee(callee.object);
+    }
+
+    return callee;
 };
 
 //TODO: node.properties, case when function is property.value of object
@@ -37185,7 +37203,7 @@ exports.default = {
 
     VerticalEdgedRectangle: _extends({}, BaseShape, {
         fillColor: '#a5d6a7',
-        edgeOffset: 10
+        edgeOffset: 5
     }),
 
     Circle: _extends({}, BaseShape, {
@@ -37247,6 +37265,11 @@ exports.default = {
             width: 8,
             space: 4
         })
+    }),
+
+    ClassDeclaration: _extends({}, BaseShape, {
+        fillColor: '#80cbc4',
+        edgeOffset: 10
     })
 };
 
@@ -37706,6 +37729,10 @@ var _DestructedNode = __webpack_require__(460);
 
 var _DestructedNode2 = _interopRequireDefault(_DestructedNode);
 
+var _ClassDeclaration = __webpack_require__(465);
+
+var _ClassDeclaration2 = _interopRequireDefault(_ClassDeclaration);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
@@ -37724,6 +37751,9 @@ var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
 
         case _constants.MODIFIED_TYPES.DESTRUCTED:
             return _DestructedNode2.default;
+
+        case _constants.TOKEN_TYPES.CLASS_DECLARATION:
+            return _ClassDeclaration2.default;
 
         default:
             return _Rectangle2.default;
@@ -38640,6 +38670,26 @@ var getFunctionDependenciesLevel = exports.getFunctionDependenciesLevel = functi
         custom: [getCustomAssignmentExpression(), getCustomVariableDeclarator()]
     };
 };
+
+/***/ }),
+/* 465 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _BaseShape = __webpack_require__(25);
+
+var _VerticalEdgedRectangle = __webpack_require__(451);
+
+var ENTITY_FIELD_NAME = 'ClassDeclaration';
+
+exports.default = (0, _BaseShape.delegateInit)(_VerticalEdgedRectangle.VerticalEdgedRectangle, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
 
 /***/ })
 /******/ ]);

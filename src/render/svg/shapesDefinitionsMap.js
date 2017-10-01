@@ -7,6 +7,7 @@ import LoopRhombus from './shapes/LoopRhombus';
 import Circle from './shapes/Circle';
 import ReturnStatement from './shapes/ReturnStatement';
 import DestructedNode from './shapes/DestructedNode';
+import ClassDeclaration from './shapes/ClassDeclaration';
 
 export const getShapeForNode = node => {
     switch (node.type) {
@@ -24,6 +25,9 @@ export const getShapeForNode = node => {
 
         case MODIFIED_TYPES.DESTRUCTED:
             return DestructedNode;
+
+        case TOKEN_TYPES.CLASS_DECLARATION:
+            return ClassDeclaration;
 
         default:
             return Rectangle;

@@ -154,16 +154,39 @@ export const assignmentExpressionConverter = ({ node }) => {
 };
 
 export const callExpressionConverter = ({ node }) => {
-    const isFunctionPassed = !!(node.arguments || []).find(isNodeContainsFunc);
-    if (!isFunctionPassed) {
-        return generate(node).code;
+    if (!!(node.arguments || []).find(isNodeContainsFunc)) {
+        const argumentsCode = node.arguments
+            .map(argument => (isNodeContainsFunc(argument) ? '*' : argument.name || argument.value))
+            .join(', ');
+
+        return `${generate(node.callee).code}(${argumentsCode})`;
     }
 
-    const argumentsCode = node.arguments
-        .map(argument => (isNodeContainsFunc(argument) ? '*' : argument.name || argument.value))
-        .join(', ');
+    //TODO: fix chain: leave only one method call per node,   $('#id').show().addClass('name').hide();
+    //run traversal after build and with modifier reverse order of chains
+    const callee = node.callee;
+    if (
+        callee.type === TOKEN_TYPES.MEMBER_EXPRESSION &&
+        callee.object.type === TOKEN_TYPES.CALL_EXPRESSION
+    ) {
+        //console.log(getFirstCallee(callee));
+        //console.log(generate(node).code)
+        //return callee.property.name;
+    }
 
-    return `${generate(node.callee).code}(${argumentsCode})`;
+    return generate(node).code;
+};
+
+const getFirstCallee = callee => {
+    if (!callee) return callee;
+    if (
+        callee.type === TOKEN_TYPES.MEMBER_EXPRESSION &&
+        callee.object.type === TOKEN_TYPES.CALL_EXPRESSION
+    ) {
+        return getFirstCallee(callee.object);
+    }
+
+    return callee;
 };
 
 //TODO: node.properties, case when function is property.value of object

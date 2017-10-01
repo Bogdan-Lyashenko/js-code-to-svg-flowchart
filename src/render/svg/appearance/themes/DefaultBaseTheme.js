@@ -47,7 +47,7 @@ export default {
     VerticalEdgedRectangle: {
         ...BaseShape,
         fillColor: '#a5d6a7',
-        edgeOffset: 10
+        edgeOffset: 5
     },
 
     Circle: {
@@ -116,5 +116,11 @@ export default {
             width: 8,
             space: 4
         }
+    },
+
+    ClassDeclaration: {
+        ...BaseShape,
+        fillColor: '#80cbc4',
+        edgeOffset: 10
     }
 };
