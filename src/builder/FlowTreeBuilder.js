@@ -12,13 +12,17 @@ import {
     MODIFIER_PRESETS,
     destructionModifier
 } from './modifiers/modifiersFactory';
+import { TOKEN_TYPES } from 'shared/constants';
 
 const buildFlowTree = (astTree, astVisitorConfig) => {
     const treeNodes = [];
 
     traverse(astTree, buildVisitor(astVisitorConfig, treeNodes));
 
-    return { name: '', body: treeNodes };
+    const root = (treeNodes.length && treeNodes[0]) || {};
+    return root.type === TOKEN_TYPES.PROGRAM
+        ? root
+        : { name: 'Root', type: TOKEN_TYPES.PROGRAM, body: treeNodes };
 };
 
 export const createFlowTreeModifier = () => {

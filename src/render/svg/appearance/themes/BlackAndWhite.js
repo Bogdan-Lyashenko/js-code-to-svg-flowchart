@@ -29,7 +29,7 @@ export default {
         fillColor: '#C8C8C8'
     },
 
-    Circle: {
+    RootCircle: {
         ...BaseShape,
         fillColor: '#F1F1F1'
     },

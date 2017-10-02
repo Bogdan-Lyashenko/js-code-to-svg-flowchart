@@ -1,4 +1,4 @@
-import { getCircle } from 'shared/utils/svgPrimitives';
+import { getCircle, getRectangle } from 'shared/utils/svgPrimitives';
 import { assignState } from 'shared/utils/composition';
 
 import {
@@ -9,10 +9,10 @@ import {
     delegateInit
 } from './BaseShape';
 
-const ENTITY_FIELD_NAME = 'Circle';
+const ENTITY_FIELD_NAME = 'RootCircle';
 
-const calculateFromPoint = ({ position, dimensions }) => {
-    const r = dimensions.w / 2;
+const calculateFromPoint = ({ position, theme }) => {
+    const r = theme.radius;
     return { x: position.x, y: position.y + r };
 };
 
@@ -25,12 +25,16 @@ const setupCircleBehavior = state => ({
     print() {
         const theme = state.theme;
         const { x, y } = state.position,
-            r = state.dimensions.w / 2;
+            { w, h } = state.dimensions,
+            r = theme.radius;
+
+        const namePosition = { x: x + r, y: y - r };
 
         return `
             <g>
+               ${getRectangle(x, y - r + r / 4, w + r, h - theme.padding * 2, theme)}
                ${getCircle(x, y, r, theme)}
-               ${this.printName()}
+               ${this.printName(namePosition)}
             </g>`;
     },
 
@@ -39,7 +43,7 @@ const setupCircleBehavior = state => ({
     }
 });
 
-export const Circle = initialState => {
+export const RootCircle = initialState => {
     let state = extractBasicState(initialState);
 
     state = { ...state, ...setupInitialProperties(state) };
@@ -47,4 +51,4 @@ export const Circle = initialState => {
     return assignState(state, [setupInitialSelectors, setupBasicBehaviour, setupCircleBehavior]);
 };
 
-export default delegateInit(Circle, ENTITY_FIELD_NAME);
+export default delegateInit(RootCircle, ENTITY_FIELD_NAME);

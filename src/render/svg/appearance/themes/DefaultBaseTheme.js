@@ -10,7 +10,7 @@ export const BaseShape = {
     symbolWidth: 7.8,
     horizontalPadding: 10,
     verticalPadding: 10,
-    childOffset: 50,
+    childOffset: 35,
     margin: 10,
 
     debugFontSize: 8,
@@ -50,8 +50,10 @@ export default {
         edgeOffset: 10
     },
 
-    Circle: {
+    RootCircle: {
         ...BaseShape,
+        radius: 15,
+        padding: 4,
         fillColor: '#fff59d'
     },
 
@@ -83,12 +85,12 @@ export default {
 
     RootStartPoint: {
         center: {
-            x: 15,
-            y: 15
+            x: 25,
+            y: 25
         },
         childOffset: {
-            x: 20,
-            y: 50
+            x: 30,
+            y: 65
         }
     },
 

@@ -4,7 +4,7 @@ import VerticalEdgedRectangle from './shapes/VerticalEdgedRectangle';
 import Rectangle from './shapes/Rectangle';
 import ConditionRhombus from './shapes/ConditionRhombus';
 import LoopRhombus from './shapes/LoopRhombus';
-import Circle from './shapes/Circle';
+import RootCircle from './shapes/RootCircle';
 import ReturnStatement from './shapes/ReturnStatement';
 import DestructedNode from './shapes/DestructedNode';
 import ClassDeclaration from './shapes/ClassDeclaration';
@@ -50,6 +50,9 @@ export const getShapeForNode = node => {
 
         case TOKEN_TYPES.THROW_STATEMENT:
             return ThrowStatement;
+
+        case TOKEN_TYPES.PROGRAM:
+            return RootCircle;
 
         default:
             return Rectangle;

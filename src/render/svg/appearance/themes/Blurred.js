@@ -26,7 +26,7 @@ export default {
         ...BaseShape
     },
 
-    Circle: {
+    RootCircle: {
         ...BaseShape
     },
 

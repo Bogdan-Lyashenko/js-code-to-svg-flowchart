@@ -1,6 +1,5 @@
 import { ARROW_TYPE } from 'shared/constants';
 import { getShapeForNode } from './shapesDefinitionsMap';
-import Circle from './shapes/Circle';
 import ConnectionArrow, {
     getFieldName as getConnectionArrowFieldName
 } from './connections/ConnectionArrow';
@@ -13,10 +12,12 @@ export const createShapeForNode = (node, position, styleTheme) => {
 };
 
 export const createRootCircle = (node, styleTheme) => {
-    const circleTheme = styleTheme[Circle.getThemeFieldName()];
-    const { center, childOffset } = { ...styleTheme.RootStartPoint };
+    const shape = getShapeForNode(node),
+        shapeStyle = styleTheme[shape.getThemeFieldName()];
 
-    const root = Circle(node, center, circleTheme);
+    const { center, childOffset } = { ...styleTheme.RootStartPoint };
+    const root = shape(node, center, shapeStyle);
+
     root.setChildOffsetPoint(childOffset);
 
     return root;

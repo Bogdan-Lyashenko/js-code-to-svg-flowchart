@@ -6872,6 +6872,8 @@ var _FlowTreeModifier2 = _interopRequireDefault(_FlowTreeModifier);
 
 var _modifiersFactory = __webpack_require__(444);
 
+var _constants = __webpack_require__(3);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -6881,7 +6883,8 @@ var buildFlowTree = function buildFlowTree(astTree, astVisitorConfig) {
 
     (0, _babelTraverse2.default)(astTree, (0, _astBuilder.buildVisitor)(astVisitorConfig, treeNodes));
 
-    return { name: '', body: treeNodes };
+    var root = treeNodes.length && treeNodes[0] || {};
+    return root.type === _constants.TOKEN_TYPES.PROGRAM ? root : { name: 'Root', type: _constants.TOKEN_TYPES.PROGRAM, body: treeNodes };
 };
 
 var createFlowTreeModifier = exports.createFlowTreeModifier = function createFlowTreeModifier() {
@@ -17810,71 +17813,7 @@ var calculateChildOffsetPoint = exports.calculateChildOffsetPoint = function cal
 };
 
 /***/ }),
-/* 180 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.Circle = undefined;
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _svgPrimitives = __webpack_require__(25);
-
-var _composition = __webpack_require__(10);
-
-var _BaseShape = __webpack_require__(4);
-
-var ENTITY_FIELD_NAME = 'Circle';
-
-var calculateFromPoint = function calculateFromPoint(_ref) {
-    var position = _ref.position,
-        dimensions = _ref.dimensions;
-
-    var r = dimensions.w / 2;
-    return { x: position.x, y: position.y + r };
-};
-
-var setupInitialProperties = function setupInitialProperties(state) {
-    return {
-        fromPoint: calculateFromPoint(state),
-        boundaries: (0, _BaseShape.calculateBoundaries)(state)
-    };
-};
-
-var setupCircleBehavior = function setupCircleBehavior(state) {
-    return {
-        print: function print() {
-            var theme = state.theme;
-            var _state$position = state.position,
-                x = _state$position.x,
-                y = _state$position.y,
-                r = state.dimensions.w / 2;
-
-
-            return '\n            <g>\n               ' + (0, _svgPrimitives.getCircle)(x, y, r, theme) + '\n               ' + this.printName() + '\n            </g>';
-        },
-        setChildOffsetPoint: function setChildOffsetPoint(point) {
-            state.childOffsetPoint = point;
-        }
-    };
-};
-
-var Circle = exports.Circle = function Circle(initialState) {
-    var state = (0, _BaseShape.extractBasicState)(initialState);
-
-    state = _extends({}, state, setupInitialProperties(state));
-
-    return (0, _composition.assignState)(state, [_BaseShape.setupInitialSelectors, _BaseShape.setupBasicBehaviour, setupCircleBehavior]);
-};
-
-exports.default = (0, _BaseShape.delegateInit)(Circle, ENTITY_FIELD_NAME);
-
-/***/ }),
+/* 180 */,
 /* 181 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -37430,7 +37369,7 @@ var BaseShape = exports.BaseShape = {
     symbolWidth: 7.8,
     horizontalPadding: 10,
     verticalPadding: 10,
-    childOffset: 50,
+    childOffset: 35,
     margin: 10,
 
     debugFontSize: 8,
@@ -37466,7 +37405,9 @@ exports.default = {
         edgeOffset: 10
     }),
 
-    Circle: _extends({}, BaseShape, {
+    RootCircle: _extends({}, BaseShape, {
+        radius: 15,
+        padding: 4,
         fillColor: '#fff59d'
     }),
 
@@ -37496,12 +37437,12 @@ exports.default = {
 
     RootStartPoint: {
         center: {
-            x: 15,
-            y: 15
+            x: 25,
+            y: 25
         },
         childOffset: {
-            x: 20,
-            y: 50
+            x: 30,
+            y: 65
         }
     },
 
@@ -37603,7 +37544,7 @@ exports.default = {
         fillColor: '#C8C8C8'
     }),
 
-    Circle: _extends({}, BaseShape, {
+    RootCircle: _extends({}, BaseShape, {
         fillColor: '#F1F1F1'
     }),
 
@@ -37651,7 +37592,7 @@ exports.default = {
 
     VerticalEdgedRectangle: _extends({}, BaseShape),
 
-    Circle: _extends({}, BaseShape),
+    RootCircle: _extends({}, BaseShape),
 
     LoopRhombus: _extends({}, BaseShape),
 
@@ -37904,10 +37845,6 @@ var _constants = __webpack_require__(3);
 
 var _shapesDefinitionsMap = __webpack_require__(454);
 
-var _Circle = __webpack_require__(180);
-
-var _Circle2 = _interopRequireDefault(_Circle);
-
 var _ConnectionArrow = __webpack_require__(468);
 
 var _ConnectionArrow2 = _interopRequireDefault(_ConnectionArrow);
@@ -37922,13 +37859,15 @@ var createShapeForNode = exports.createShapeForNode = function createShapeForNod
 };
 
 var createRootCircle = exports.createRootCircle = function createRootCircle(node, styleTheme) {
-    var circleTheme = styleTheme[_Circle2.default.getThemeFieldName()];
+    var shape = (0, _shapesDefinitionsMap.getShapeForNode)(node),
+        shapeStyle = styleTheme[shape.getThemeFieldName()];
 
     var _styleTheme$RootStart = _extends({}, styleTheme.RootStartPoint),
         center = _styleTheme$RootStart.center,
         childOffset = _styleTheme$RootStart.childOffset;
 
-    var root = (0, _Circle2.default)(node, center, circleTheme);
+    var root = shape(node, center, shapeStyle);
+
     root.setChildOffsetPoint(childOffset);
 
     return root;
@@ -38008,9 +37947,9 @@ var _LoopRhombus = __webpack_require__(460);
 
 var _LoopRhombus2 = _interopRequireDefault(_LoopRhombus);
 
-var _Circle = __webpack_require__(180);
+var _RootCircle = __webpack_require__(470);
 
-var _Circle2 = _interopRequireDefault(_Circle);
+var _RootCircle2 = _interopRequireDefault(_RootCircle);
 
 var _ReturnStatement = __webpack_require__(181);
 
@@ -38082,6 +38021,9 @@ var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
 
         case _constants.TOKEN_TYPES.THROW_STATEMENT:
             return _ThrowStatement2.default;
+
+        case _constants.TOKEN_TYPES.PROGRAM:
+            return _RootCircle2.default;
 
         default:
             return _Rectangle2.default;
@@ -38866,6 +38808,76 @@ exports.default = function (code) {
         }
     };
 };
+
+/***/ }),
+/* 470 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.RootCircle = undefined;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _svgPrimitives = __webpack_require__(25);
+
+var _composition = __webpack_require__(10);
+
+var _BaseShape = __webpack_require__(4);
+
+var ENTITY_FIELD_NAME = 'RootCircle';
+
+var calculateFromPoint = function calculateFromPoint(_ref) {
+    var position = _ref.position,
+        theme = _ref.theme;
+
+    var r = theme.radius;
+    return { x: position.x, y: position.y + r };
+};
+
+var setupInitialProperties = function setupInitialProperties(state) {
+    return {
+        fromPoint: calculateFromPoint(state),
+        boundaries: (0, _BaseShape.calculateBoundaries)(state)
+    };
+};
+
+var setupCircleBehavior = function setupCircleBehavior(state) {
+    return {
+        print: function print() {
+            var theme = state.theme;
+            var _state$position = state.position,
+                x = _state$position.x,
+                y = _state$position.y,
+                _state$dimensions = state.dimensions,
+                w = _state$dimensions.w,
+                h = _state$dimensions.h,
+                r = theme.radius;
+
+
+            var namePosition = { x: x + r, y: y - r };
+
+            return '\n            <g>\n               ' + (0, _svgPrimitives.getRectangle)(x, y - r + r / 4, w + r, h - theme.padding * 2, theme) + '\n               ' + (0, _svgPrimitives.getCircle)(x, y, r, theme) + '\n               ' + this.printName(namePosition) + '\n            </g>';
+        },
+        setChildOffsetPoint: function setChildOffsetPoint(point) {
+            state.childOffsetPoint = point;
+        }
+    };
+};
+
+var RootCircle = exports.RootCircle = function RootCircle(initialState) {
+    var state = (0, _BaseShape.extractBasicState)(initialState);
+
+    state = _extends({}, state, setupInitialProperties(state));
+
+    return (0, _composition.assignState)(state, [_BaseShape.setupInitialSelectors, _BaseShape.setupBasicBehaviour, setupCircleBehavior]);
+};
+
+exports.default = (0, _BaseShape.delegateInit)(RootCircle, ENTITY_FIELD_NAME);
 
 /***/ })
 /******/ ]);
