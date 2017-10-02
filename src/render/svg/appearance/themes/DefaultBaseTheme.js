@@ -89,7 +89,7 @@ export default {
             y: 25
         },
         childOffset: {
-            x: 30,
+            x: 25,
             y: 65
         }
     },
