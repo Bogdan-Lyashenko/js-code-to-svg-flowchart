@@ -1,8 +1,12 @@
 {
   "name": "js2flowchart",
-  "version": "0.0.3-alpha",
+  "version": "0.0.4-alpha",
   "author": "Bohdan Liashenko",
   "license": "MIT",
+  "repository": {
+      "type" : "git",
+      "url" : "https://github.com/Bogdan-Lyashenko/js-code-to-svg-flowchart.git"
+  },
   "main": "./index.js",
   "scripts": {
     "build": "webpack --env build",
