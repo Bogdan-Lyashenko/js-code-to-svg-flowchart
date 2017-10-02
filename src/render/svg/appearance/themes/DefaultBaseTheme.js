@@ -10,7 +10,7 @@ export const BaseShape = {
     symbolWidth: 7.8,
     horizontalPadding: 10,
     verticalPadding: 10,
-    childOffset: 40,
+    childOffset: 50,
     margin: 10,
 
     debugFontSize: 8,
@@ -151,7 +151,7 @@ export default {
 
     ImportSpecifier: {
         ...BaseShape,
-        fillColor: '#fff',
+        fillColor: '#80deea',
         roundBorder: 2
     },
 

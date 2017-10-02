@@ -964,6 +964,7 @@ var TOKEN_TYPES = exports.TOKEN_TYPES = {
     IDENTIFIER: 'Identifier',
     OBJECT_EXPRESSION: 'ObjectExpression',
     OBJECT_PROPERTY: 'ObjectProperty',
+    BINARY_EXPRESSION: 'BinaryExpression',
 
     //ES Harmony features
     ARROW_FUNCTION_EXPRESSION: 'ArrowFunctionExpression',
@@ -6528,13 +6529,16 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
     getName: _core.programConverter,
     body: true
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.THROW_STATEMENT, {
-    type: _constants.TOKEN_TYPES.THROW_STATEMENT, //TODO: visual (breaks flow because of error)
+    type: _constants.TOKEN_TYPES.THROW_STATEMENT,
     getName: _core.throwStatementConverter,
     body: true
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.DEBUGGER_STATEMENT, {
-    type: _constants.TOKEN_TYPES.DEBUGGER_STATEMENT, //TODO: visual (makes it RED!)
+    type: _constants.TOKEN_TYPES.DEBUGGER_STATEMENT,
     getName: _core.debuggerConverter,
     body: true
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.BINARY_EXPRESSION, {
+    type: _constants.TOKEN_TYPES.BINARY_EXPRESSION,
+    getName: _core.idleConverter
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.IMPORT_DECLARATION, {
     type: _constants.TOKEN_TYPES.IMPORT_DECLARATION, //TODO: visual display in separate way libs (npm modules) and local dependencies
     getName: _Harmony.importDeclarationConverter,
@@ -37426,7 +37430,7 @@ var BaseShape = exports.BaseShape = {
     symbolWidth: 7.8,
     horizontalPadding: 10,
     verticalPadding: 10,
-    childOffset: 40,
+    childOffset: 50,
     margin: 10,
 
     debugFontSize: 8,
@@ -37550,7 +37554,7 @@ exports.default = {
     }),
 
     ImportSpecifier: _extends({}, BaseShape, {
-        fillColor: '#fff',
+        fillColor: '#80deea',
         roundBorder: 2
     }),
 

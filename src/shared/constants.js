@@ -25,6 +25,7 @@ export const TOKEN_TYPES = {
     IDENTIFIER: 'Identifier',
     OBJECT_EXPRESSION: 'ObjectExpression',
     OBJECT_PROPERTY: 'ObjectProperty',
+    BINARY_EXPRESSION: 'BinaryExpression',
 
     //ES Harmony features
     ARROW_FUNCTION_EXPRESSION: 'ArrowFunctionExpression',

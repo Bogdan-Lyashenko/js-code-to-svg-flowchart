@@ -134,14 +134,18 @@ export const DefinitionsMap = {
         body: true
     },
     [TOKEN_TYPES.THROW_STATEMENT]: {
-        type: TOKEN_TYPES.THROW_STATEMENT, //TODO: visual (breaks flow because of error)
+        type: TOKEN_TYPES.THROW_STATEMENT,
         getName: throwStatementConverter,
         body: true
     },
     [TOKEN_TYPES.DEBUGGER_STATEMENT]: {
-        type: TOKEN_TYPES.DEBUGGER_STATEMENT, //TODO: visual (makes it RED!)
+        type: TOKEN_TYPES.DEBUGGER_STATEMENT,
         getName: debuggerConverter,
         body: true
+    },
+    [TOKEN_TYPES.BINARY_EXPRESSION]: {
+        type: TOKEN_TYPES.BINARY_EXPRESSION,
+        getName: idleConverter
     },
 
     //ES Harmony features

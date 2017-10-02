@@ -113,7 +113,11 @@
     //===================================
     const flowTreeBuilder = JS2FlowChart.createFlowTreeBuilder();
 
-    const flowTree = flowTreeBuilder.build(simpleStr);
+    const flowTree = flowTreeBuilder.build(`
+
+    [].map(i=>calla())
+
+    `);
 /*
     const flowTreeModifier = JS2FlowChart.createFlowTreeModifier();
     flowTreeModifier.filterNodes((node)=> node.name.includes('=>'));
