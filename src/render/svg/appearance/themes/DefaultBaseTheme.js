@@ -12,6 +12,7 @@ export const BaseShape = {
     verticalPadding: 10,
     childOffset: 35,
     margin: 10,
+    roundBorder: 2,
 
     debugFontSize: 8,
     debugTextColor: '#666'
@@ -153,13 +154,28 @@ export default {
 
     ImportSpecifier: {
         ...BaseShape,
-        fillColor: '#80deea',
-        roundBorder: 2
+        fillColor: '#80deea'
     },
 
     ThrowStatement: {
         ...BaseShape,
+        fillColor: '#ef9a9a'
+    },
+
+    TryStatement: {
+        ...BaseShape,
+        fillColor: '#FFE082'
+    },
+
+    CatchClause: {
+        ...BaseShape,
         fillColor: '#ef9a9a',
-        roundBorder: 2
+        arrow: {
+            ...BaseShape,
+            handlerLength: 2,
+            sizeX: 16,
+            sizeY: 28,
+            fillColor: '#ef9a9a'
+        }
     }
 };

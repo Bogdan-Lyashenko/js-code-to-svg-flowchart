@@ -965,6 +965,7 @@ var TOKEN_TYPES = exports.TOKEN_TYPES = {
     OBJECT_EXPRESSION: 'ObjectExpression',
     OBJECT_PROPERTY: 'ObjectProperty',
     BINARY_EXPRESSION: 'BinaryExpression',
+    EXPRESSION_STATEMENT: 'ExpressionStatement',
 
     //ES Harmony features
     ARROW_FUNCTION_EXPRESSION: 'ArrowFunctionExpression',
@@ -6543,7 +6544,7 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
         var statementParent = path.getStatementParent(),
             parent = path.parent || {};
 
-        return statementParent.isLoop() || statementParent.isConditional() && parent.test && parent.test.type === _constants.TOKEN_TYPES.BINARY_EXPRESSION || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION;
+        return statementParent.isLoop() || statementParent.isReturnStatement() || parent.type === _constants.TOKEN_TYPES.CALL_EXPRESSION || statementParent.isConditional() && parent.test && parent.test.type === _constants.TOKEN_TYPES.BINARY_EXPRESSION || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION;
     }
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.IMPORT_DECLARATION, {
     type: _constants.TOKEN_TYPES.IMPORT_DECLARATION, //TODO: visual display in separate way libs (npm modules) and local dependencies
@@ -17512,7 +17513,7 @@ var parseCodeToAST = exports.parseCodeToAST = function parseCodeToAST(code, conf
     (0, _babelTraverse2.default)(ast, {
         enter: function enter(path) {
             if (path.node.type === 'BinaryExpression') {
-                debugger;
+                //debugger;
             }
             console.log(path.node.type, path.node.name);
         }
@@ -37378,6 +37379,7 @@ var BaseShape = exports.BaseShape = {
     verticalPadding: 10,
     childOffset: 35,
     margin: 10,
+    roundBorder: 2,
 
     debugFontSize: 8,
     debugTextColor: '#666'
@@ -37502,13 +37504,25 @@ exports.default = {
     }),
 
     ImportSpecifier: _extends({}, BaseShape, {
-        fillColor: '#80deea',
-        roundBorder: 2
+        fillColor: '#80deea'
     }),
 
     ThrowStatement: _extends({}, BaseShape, {
+        fillColor: '#ef9a9a'
+    }),
+
+    TryStatement: _extends({}, BaseShape, {
+        fillColor: '#FFE082'
+    }),
+
+    CatchClause: _extends({}, BaseShape, {
         fillColor: '#ef9a9a',
-        roundBorder: 2
+        arrow: _extends({}, BaseShape, {
+            handlerLength: 2,
+            sizeX: 16,
+            sizeY: 28,
+            fillColor: '#ef9a9a'
+        })
     })
 };
 
@@ -37653,6 +37667,17 @@ exports.default = {
 
     ThrowStatement: _extends({}, BaseShape, {
         fillColor: '#ffebee'
+    }),
+
+    TryStatement: _extends({}, BaseShape, {
+        fillColor: '#FFE082'
+    }),
+
+    CatchClause: _extends({}, BaseShape, {
+        fillColor: '#FFF8E1',
+        arrow: _extends({}, BaseShape, {
+            fillColor: '#ffebee'
+        })
     })
 };
 
@@ -38038,6 +38063,14 @@ var _ThrowStatement = __webpack_require__(467);
 
 var _ThrowStatement2 = _interopRequireDefault(_ThrowStatement);
 
+var _TryStatement = __webpack_require__(471);
+
+var _TryStatement2 = _interopRequireDefault(_TryStatement);
+
+var _CatchClause = __webpack_require__(472);
+
+var _CatchClause2 = _interopRequireDefault(_CatchClause);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
@@ -38079,6 +38112,12 @@ var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
 
         case _constants.TOKEN_TYPES.PROGRAM:
             return _RootCircle2.default;
+
+        case _constants.TOKEN_TYPES.TRY_STATEMENT:
+            return _TryStatement2.default;
+
+        case _constants.TOKEN_TYPES.CATCH_CLAUSE:
+            return _CatchClause2.default;
 
         default:
             return _Rectangle2.default;
@@ -38933,6 +38972,46 @@ var RootCircle = exports.RootCircle = function RootCircle(initialState) {
 };
 
 exports.default = (0, _BaseShape.delegateInit)(RootCircle, ENTITY_FIELD_NAME);
+
+/***/ }),
+/* 471 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _BaseShape = __webpack_require__(4);
+
+var _Rectangle = __webpack_require__(68);
+
+var ENTITY_FIELD_NAME = 'TryStatement';
+
+exports.default = (0, _BaseShape.delegateInit)(_Rectangle.Rectangle, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
+
+/***/ }),
+/* 472 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _BaseShape = __webpack_require__(4);
+
+var _ReturnStatement = __webpack_require__(181);
+
+var ENTITY_FIELD_NAME = 'CatchClause';
+
+exports.default = (0, _BaseShape.delegateInit)(_ReturnStatement.ReturnStatement, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
 
 /***/ })
 /******/ ]);

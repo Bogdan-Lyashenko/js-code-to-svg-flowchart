@@ -13,6 +13,8 @@ import ExportDeclaration from './shapes/ExportDeclaration';
 import ImportDeclaration from './shapes/ImportDeclaration';
 import ImportSpecifier from './shapes/ImportSpecifier';
 import ThrowStatement from './shapes/ThrowStatement';
+import TryStatement from './shapes/TryStatement';
+import CatchClause from './shapes/CatchClause';
 
 export const getShapeForNode = node => {
     switch (node.type) {
@@ -53,6 +55,12 @@ export const getShapeForNode = node => {
 
         case TOKEN_TYPES.PROGRAM:
             return RootCircle;
+
+        case TOKEN_TYPES.TRY_STATEMENT:
+            return TryStatement;
+
+        case TOKEN_TYPES.CATCH_CLAUSE:
+            return CatchClause;
 
         default:
             return Rectangle;

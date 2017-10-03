@@ -91,5 +91,19 @@ export default {
     ThrowStatement: {
         ...BaseShape,
         fillColor: '#ffebee'
+    },
+
+    TryStatement: {
+        ...BaseShape,
+        fillColor: '#FFE082'
+    },
+
+    CatchClause: {
+        ...BaseShape,
+        fillColor: '#FFF8E1',
+        arrow: {
+            ...BaseShape,
+            fillColor: '#ffebee'
+        }
     }
 };
