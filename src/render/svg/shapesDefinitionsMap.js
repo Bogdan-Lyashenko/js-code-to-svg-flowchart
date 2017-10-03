@@ -15,6 +15,9 @@ import ImportSpecifier from './shapes/ImportSpecifier';
 import ThrowStatement from './shapes/ThrowStatement';
 import TryStatement from './shapes/TryStatement';
 import CatchClause from './shapes/CatchClause';
+import SwitchStatement from './shapes/SwitchStatement';
+import BreakStatement from './shapes/BreakStatement';
+import SwitchCase from './shapes/SwitchCase';
 
 export const getShapeForNode = node => {
     switch (node.type) {
@@ -61,6 +64,15 @@ export const getShapeForNode = node => {
 
         case TOKEN_TYPES.CATCH_CLAUSE:
             return CatchClause;
+
+        case TOKEN_TYPES.SWITCH_STATEMENT:
+            return SwitchStatement;
+
+        case TOKEN_TYPES.BREAK:
+            return BreakStatement;
+
+        case TOKEN_TYPES.SWITCH_CASE:
+            return SwitchCase;
 
         default:
             return Rectangle;

@@ -17511,14 +17511,14 @@ var parseCodeToAST = exports.parseCodeToAST = function parseCodeToAST(code, conf
     });
 
     //TODO: remove when finish with defining types
-    /*traverse(ast, {
-        enter(path) {
+    (0, _babelTraverse2.default)(ast, {
+        enter: function enter(path) {
             if (path.node.type === 'BinaryExpression') {
                 //debugger;
             }
-            //console.log(path.node.type, path.node.name);
+            console.log(path.node.type, path.node.name);
         }
-    });*/
+    });
 
     return ast;
 };
@@ -37524,6 +37524,33 @@ exports.default = {
             sizeY: 28,
             fillColor: '#ef9a9a'
         })
+    }),
+
+    SwitchStatement: _extends({}, BaseShape, {
+        fillColor: '#ce93d8',
+        thinPartOffset: 15,
+        roundBorder: 3,
+        childOffset: 20,
+        alternateBranchOffset: 40,
+        markOffset: {
+            x: 15,
+            y: 5
+        },
+        margin: 20
+    }),
+
+    BreakStatement: _extends({}, BaseShape, {
+        fillColor: '#b39ddb',
+        arrow: _extends({}, BaseShape, {
+            handlerLength: 5,
+            sizeX: 16,
+            sizeY: 28,
+            fillColor: '#ce93d8'
+        })
+    }),
+
+    SwitchCase: _extends({}, BaseShape, {
+        fillColor: '#ce93d8'
     })
 };
 
@@ -38072,6 +38099,18 @@ var _CatchClause = __webpack_require__(472);
 
 var _CatchClause2 = _interopRequireDefault(_CatchClause);
 
+var _SwitchStatement = __webpack_require__(473);
+
+var _SwitchStatement2 = _interopRequireDefault(_SwitchStatement);
+
+var _BreakStatement = __webpack_require__(474);
+
+var _BreakStatement2 = _interopRequireDefault(_BreakStatement);
+
+var _SwitchCase = __webpack_require__(475);
+
+var _SwitchCase2 = _interopRequireDefault(_SwitchCase);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
@@ -38119,6 +38158,15 @@ var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
 
         case _constants.TOKEN_TYPES.CATCH_CLAUSE:
             return _CatchClause2.default;
+
+        case _constants.TOKEN_TYPES.SWITCH_STATEMENT:
+            return _SwitchStatement2.default;
+
+        case _constants.TOKEN_TYPES.BREAK:
+            return _BreakStatement2.default;
+
+        case _constants.TOKEN_TYPES.SWITCH_CASE:
+            return _SwitchCase2.default;
 
         default:
             return _Rectangle2.default;
@@ -39012,6 +39060,66 @@ var _ReturnStatement = __webpack_require__(181);
 var ENTITY_FIELD_NAME = 'CatchClause';
 
 exports.default = (0, _BaseShape.delegateInit)(_ReturnStatement.ReturnStatement, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
+
+/***/ }),
+/* 473 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _BaseShape = __webpack_require__(4);
+
+var _ConditionRhombus = __webpack_require__(459);
+
+var ENTITY_FIELD_NAME = 'SwitchStatement';
+
+exports.default = (0, _BaseShape.delegateInit)(_ConditionRhombus.ConditionRhombus, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
+
+/***/ }),
+/* 474 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _BaseShape = __webpack_require__(4);
+
+var _ReturnStatement = __webpack_require__(181);
+
+var ENTITY_FIELD_NAME = 'BreakStatement';
+
+exports.default = (0, _BaseShape.delegateInit)(_ReturnStatement.ReturnStatement, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
+
+/***/ }),
+/* 475 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _BaseShape = __webpack_require__(4);
+
+var _Rectangle = __webpack_require__(68);
+
+var ENTITY_FIELD_NAME = 'SwitchCase';
+
+exports.default = (0, _BaseShape.delegateInit)(_Rectangle.Rectangle, ENTITY_FIELD_NAME);
 module.exports = exports['default'];
 
 /***/ })

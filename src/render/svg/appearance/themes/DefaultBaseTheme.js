@@ -177,5 +177,36 @@ export default {
             sizeY: 28,
             fillColor: '#ef9a9a'
         }
+    },
+
+    SwitchStatement: {
+        ...BaseShape,
+        fillColor: '#ce93d8',
+        thinPartOffset: 15,
+        roundBorder: 3,
+        childOffset: 20,
+        alternateBranchOffset: 40,
+        markOffset: {
+            x: 15,
+            y: 5
+        },
+        margin: 20
+    },
+
+    BreakStatement: {
+        ...BaseShape,
+        fillColor: '#b39ddb',
+        arrow: {
+            ...BaseShape,
+            handlerLength: 5,
+            sizeX: 16,
+            sizeY: 28,
+            fillColor: '#ce93d8'
+        }
+    },
+
+    SwitchCase: {
+        ...BaseShape,
+        fillColor: '#ce93d8'
     }
 };
