@@ -13,14 +13,14 @@ export const parseCodeToAST = (code, config) => {
     });
 
     //TODO: remove when finish with defining types
-    traverse(ast, {
+    /*traverse(ast, {
         enter(path) {
             if (path.node.type === 'BinaryExpression') {
                 //debugger;
             }
-            console.log(path.node.type, path.node.name);
+            //console.log(path.node.type, path.node.name);
         }
-    });
+    });*/
 
     return ast;
 };

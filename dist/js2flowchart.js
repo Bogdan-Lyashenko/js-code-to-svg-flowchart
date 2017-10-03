@@ -6457,7 +6457,8 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
     body: true,
     getName: _core.variableDeclaratorConverter,
     ignore: function ignore(path) {
-        return (0, _core.isNodeContainsFunc)(path.node.init);
+        var statementParent = path.getStatementParent();
+        return (0, _core.isNodeContainsFunc)(path.node.init) || statementParent.isLoop();
     }
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION, {
     type: _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION,
@@ -17510,14 +17511,14 @@ var parseCodeToAST = exports.parseCodeToAST = function parseCodeToAST(code, conf
     });
 
     //TODO: remove when finish with defining types
-    (0, _babelTraverse2.default)(ast, {
-        enter: function enter(path) {
+    /*traverse(ast, {
+        enter(path) {
             if (path.node.type === 'BinaryExpression') {
                 //debugger;
             }
-            console.log(path.node.type, path.node.name);
+            //console.log(path.node.type, path.node.name);
         }
-    });
+    });*/
 
     return ast;
 };

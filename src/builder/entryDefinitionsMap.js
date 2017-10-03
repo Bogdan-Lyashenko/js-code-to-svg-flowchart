@@ -44,7 +44,10 @@ export const DefinitionsMap = {
         type: TOKEN_TYPES.VARIABLE_DECLARATOR,
         body: true,
         getName: variableDeclaratorConverter,
-        ignore: path => isNodeContainsFunc(path.node.init)
+        ignore: path => {
+            const statementParent = path.getStatementParent();
+            return isNodeContainsFunc(path.node.init) || statementParent.isLoop();
+        }
     },
     [TOKEN_TYPES.ASSIGNMENT_EXPRESSION]: {
         type: TOKEN_TYPES.ASSIGNMENT_EXPRESSION,
