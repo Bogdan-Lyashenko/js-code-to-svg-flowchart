@@ -6538,7 +6538,13 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
     body: true
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.BINARY_EXPRESSION, {
     type: _constants.TOKEN_TYPES.BINARY_EXPRESSION,
-    getName: _core.idleConverter
+    getName: _core.idleConverter,
+    ignore: function ignore(path) {
+        var statementParent = path.getStatementParent(),
+            parent = path.parent || {};
+
+        return statementParent.isLoop() || statementParent.isConditional() && parent.test && parent.test.type === _constants.TOKEN_TYPES.BINARY_EXPRESSION || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION;
+    }
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.IMPORT_DECLARATION, {
     type: _constants.TOKEN_TYPES.IMPORT_DECLARATION, //TODO: visual display in separate way libs (npm modules) and local dependencies
     getName: _Harmony.importDeclarationConverter,
@@ -17505,8 +17511,8 @@ var parseCodeToAST = exports.parseCodeToAST = function parseCodeToAST(code, conf
     //TODO: remove when finish with defining types
     (0, _babelTraverse2.default)(ast, {
         enter: function enter(path) {
-            if (path.node.type === 'ExpressionStatement') {
-                //debugger;
+            if (path.node.type === 'BinaryExpression') {
+                debugger;
             }
             console.log(path.node.type, path.node.name);
         }
@@ -17710,6 +17716,7 @@ var ShapesTreeEditor = exports.ShapesTreeEditor = function ShapesTreeEditor(svgO
 
         if (connectionArrowStyles) {
             shape.getAssignedConnectionArrow().updateTheme(connectionArrowStyles);
+            shape.getLoopedConnectionArrow && shape.getLoopedConnectionArrow().updateTheme(connectionArrowStyles);
         }
     };
 
@@ -37407,7 +37414,7 @@ exports.default = {
 
     RootCircle: _extends({}, BaseShape, {
         radius: 15,
-        padding: 4,
+        padding: 3,
         fillColor: '#fff59d'
     }),
 
@@ -37575,31 +37582,77 @@ Object.defineProperty(exports, "__esModule", {
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var BaseShape = exports.BaseShape = {
-    strokeOpacity: 0.1,
-    fillOpacity: 0.1,
-    textColor: '#ccc'
+    textColor: '#ccc',
+    strokeColor: '#ccc'
 };
 
 exports.default = {
     ConnectionArrow: {
-        arrow: _extends({}, BaseShape),
+        arrow: _extends({}, BaseShape, {
+            fillColor: '#ccc'
+        }),
         line: _extends({}, BaseShape)
     },
 
     Shape: _extends({}, BaseShape),
 
-    Rectangle: _extends({}, BaseShape),
+    Rectangle: _extends({}, BaseShape, {
+        fillColor: '#F3E5F5'
+    }),
 
-    VerticalEdgedRectangle: _extends({}, BaseShape),
+    VerticalEdgedRectangle: _extends({}, BaseShape, {
+        fillColor: '#F1F8E9'
+    }),
 
-    RootCircle: _extends({}, BaseShape),
+    RootCircle: _extends({}, BaseShape, {
+        fillColor: '#FFFDE7'
+    }),
 
-    LoopRhombus: _extends({}, BaseShape),
+    LoopRhombus: _extends({}, BaseShape, {
+        fillColor: '#E3F2FD'
+    }),
 
-    ConditionRhombus: _extends({}, BaseShape),
+    ConditionRhombus: _extends({}, BaseShape, {
+        fillColor: '#F3E5F5'
+    }),
 
     ReturnStatement: _extends({}, BaseShape, {
-        arrow: _extends({}, BaseShape)
+        fillColor: '#EDE7F6',
+        arrow: _extends({}, BaseShape, {
+            fillColor: '#F1F8E9'
+        })
+    }),
+    DestructedNode: _extends({}, BaseShape, {
+        fillColor: '#FFF8E1',
+        suffix: _extends({}, BaseShape, {
+            fillColor: '#FFF8E1'
+        })
+    }),
+    ClassDeclaration: _extends({}, BaseShape, {
+        fillColor: '#E0F7FA'
+    }),
+
+    DebuggerStatement: _extends({}, BaseShape, {
+        fillColor: '#ffebee'
+    }),
+
+    ExportDeclaration: _extends({}, BaseShape, {
+        fillColor: '#e1f5fe',
+        arrow: _extends({}, BaseShape, {
+            fillColor: '#fff'
+        })
+    }),
+
+    ImportDeclaration: _extends({}, BaseShape, {
+        fillColor: '#fff'
+    }),
+
+    ImportSpecifier: _extends({}, BaseShape, {
+        fillColor: '#e0f7fa'
+    }),
+
+    ThrowStatement: _extends({}, BaseShape, {
+        fillColor: '#ffebee'
     })
 };
 
@@ -37666,6 +37719,8 @@ var buildShapeStructures = exports.buildShapeStructures = function buildShapeStr
         if (parentNode.type === _constants.TOKEN_TYPES.CONDITIONAL) {
             position.y = parentShape.getChildBoundaries().max.y + parentShape.getMargin();
         }
+
+        //position.y += 40;
 
         position.x = parentShape.getPosition().x;
     });

@@ -53,7 +53,7 @@ export default {
     RootCircle: {
         ...BaseShape,
         radius: 15,
-        padding: 4,
+        padding: 3,
         fillColor: '#fff59d'
     },
 

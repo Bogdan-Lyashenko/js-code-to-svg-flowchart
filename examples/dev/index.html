@@ -114,8 +114,14 @@
     const flowTreeBuilder = JS2FlowChart.createFlowTreeBuilder();
 
     const flowTree = flowTreeBuilder.build(`
+    var count = 12;
 
-    [].map(i=>calla())
+    function couPlus() {
+        for (i; i<12; i++) {
+            count++;
+            if (count > 5) return;
+        }
+    }
 
     `);
 /*
@@ -126,6 +132,9 @@
 
     const svgRender = JS2FlowChart.createSVGRender();
     const shapesTree = svgRender.buildShapesTree(flowTree);
+
+    const editor = JS2FlowChart.createShapesTreeEditor(shapesTree);
+    editor.focus((shape)=>shape.getName().indexOf('count')!==-1)
 
     document.getElementById('svgImage').innerHTML = shapesTree.print();
 

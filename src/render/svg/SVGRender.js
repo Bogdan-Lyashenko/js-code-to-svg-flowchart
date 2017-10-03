@@ -14,6 +14,8 @@ export const ShapesTreeEditor = svgObjectsTree => {
 
         if (connectionArrowStyles) {
             shape.getAssignedConnectionArrow().updateTheme(connectionArrowStyles);
+            shape.getLoopedConnectionArrow &&
+                shape.getLoopedConnectionArrow().updateTheme(connectionArrowStyles);
         }
     };
 

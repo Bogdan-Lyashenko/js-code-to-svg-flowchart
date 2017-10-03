@@ -54,6 +54,8 @@ export const buildShapeStructures = (flowTree, styleTheme) => {
                 position.y = parentShape.getChildBoundaries().max.y + parentShape.getMargin();
             }
 
+            //position.y += 40;
+
             position.x = parentShape.getPosition().x;
         }
     );

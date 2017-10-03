@@ -15,8 +15,8 @@ export const parseCodeToAST = (code, config) => {
     //TODO: remove when finish with defining types
     traverse(ast, {
         enter(path) {
-            if (path.node.type === 'ExpressionStatement') {
-                //debugger;
+            if (path.node.type === 'BinaryExpression') {
+                debugger;
             }
             console.log(path.node.type, path.node.name);
         }

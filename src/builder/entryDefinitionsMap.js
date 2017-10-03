@@ -145,7 +145,19 @@ export const DefinitionsMap = {
     },
     [TOKEN_TYPES.BINARY_EXPRESSION]: {
         type: TOKEN_TYPES.BINARY_EXPRESSION,
-        getName: idleConverter
+        getName: idleConverter,
+        ignore: path => {
+            const statementParent = path.getStatementParent(),
+                parent = path.parent || {};
+
+            return (
+                statementParent.isLoop() ||
+                (statementParent.isConditional() &&
+                    parent.test &&
+                    parent.test.type === TOKEN_TYPES.BINARY_EXPRESSION) ||
+                path.parent.type === TOKEN_TYPES.ASSIGNMENT_EXPRESSION
+            );
+        }
     },
 
     //ES Harmony features

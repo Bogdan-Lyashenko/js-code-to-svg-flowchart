@@ -1,13 +1,13 @@
 export const BaseShape = {
-    strokeOpacity: 0.1,
-    fillOpacity: 0.1,
-    textColor: '#ccc'
+    textColor: '#ccc',
+    strokeColor: '#ccc'
 };
 
 export default {
     ConnectionArrow: {
         arrow: {
-            ...BaseShape
+            ...BaseShape,
+            fillColor: '#ccc'
         },
         line: {
             ...BaseShape
@@ -19,29 +19,77 @@ export default {
     },
 
     Rectangle: {
-        ...BaseShape
+        ...BaseShape,
+        fillColor: '#F3E5F5'
     },
 
     VerticalEdgedRectangle: {
-        ...BaseShape
+        ...BaseShape,
+        fillColor: '#F1F8E9'
     },
 
     RootCircle: {
-        ...BaseShape
+        ...BaseShape,
+        fillColor: '#FFFDE7'
     },
 
     LoopRhombus: {
-        ...BaseShape
+        ...BaseShape,
+        fillColor: '#E3F2FD'
     },
 
     ConditionRhombus: {
-        ...BaseShape
+        ...BaseShape,
+        fillColor: '#F3E5F5'
     },
 
     ReturnStatement: {
         ...BaseShape,
+        fillColor: '#EDE7F6',
         arrow: {
-            ...BaseShape
+            ...BaseShape,
+            fillColor: '#F1F8E9'
         }
+    },
+    DestructedNode: {
+        ...BaseShape,
+        fillColor: '#FFF8E1',
+        suffix: {
+            ...BaseShape,
+            fillColor: '#FFF8E1'
+        }
+    },
+    ClassDeclaration: {
+        ...BaseShape,
+        fillColor: '#E0F7FA'
+    },
+
+    DebuggerStatement: {
+        ...BaseShape,
+        fillColor: '#ffebee'
+    },
+
+    ExportDeclaration: {
+        ...BaseShape,
+        fillColor: '#e1f5fe',
+        arrow: {
+            ...BaseShape,
+            fillColor: '#fff'
+        }
+    },
+
+    ImportDeclaration: {
+        ...BaseShape,
+        fillColor: '#fff'
+    },
+
+    ImportSpecifier: {
+        ...BaseShape,
+        fillColor: '#e0f7fa'
+    },
+
+    ThrowStatement: {
+        ...BaseShape,
+        fillColor: '#ffebee'
     }
 };
