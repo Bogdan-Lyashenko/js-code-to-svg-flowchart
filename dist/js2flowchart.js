@@ -36951,7 +36951,7 @@ var ABSTRACTION_LEVELS = exports.ABSTRACTION_LEVELS = {
 };
 
 var rebuildConfigForAbstractionLevel = exports.rebuildConfigForAbstractionLevel = function rebuildConfigForAbstractionLevel(level) {
-    var definedLevels = [],
+    var definedLevels = [_constants.TOKEN_TYPES.PROGRAM],
         customLevels = [];
 
     [].concat(level).forEach(function (item) {
@@ -37378,15 +37378,17 @@ var BaseShape = exports.BaseShape = {
     symbolWidth: 7.8,
     horizontalPadding: 10,
     verticalPadding: 10,
-    childOffset: 35,
+    childOffset: 37,
     margin: 10,
     roundBorder: 2,
+    complexTypeExtraSpace: 15,
 
     debugFontSize: 8,
     debugTextColor: '#666'
 };
 
 exports.default = {
+    BaseShape: BaseShape,
     ConnectionArrow: {
         arrow: {
             size: {
@@ -37505,7 +37507,7 @@ exports.default = {
     }),
 
     ImportSpecifier: _extends({}, BaseShape, {
-        fillColor: '#80deea'
+        fillColor: '#81d4fa'
     }),
 
     ThrowStatement: _extends({}, BaseShape, {
@@ -37800,9 +37802,13 @@ var buildShapeStructures = exports.buildShapeStructures = function buildShapeStr
         position = _extends({}, root.getChildOffsetPoint()),
         shapesList = [];
 
+    var latestNode = void 0;
+
     (0, _traversalWithTreeLevelsPointer.complexTraversal)(flowTree, root, function (parentNode, parentShape) {
         position.x += parentShape.getChildOffsetPoint().x;
     }, function (node, parentShape) {
+        position.y += addExtraSpacingBeforeShape(styleTheme, node, latestNode);
+
         //TODO: refactor, move cases out of func, it will to many of them soon
         if (parentShape.getNodeType() === _constants.TOKEN_TYPES.CONDITIONAL && node.key === _constants.TOKEN_KEYS.ALTERNATE && !parentShape.checkIfChildExist(_constants.TOKEN_KEYS.ALTERNATE)) {
             var alternatePoint = parentShape.getAlternativeBranchChildOffsetPoint();
@@ -37819,13 +37825,12 @@ var buildShapeStructures = exports.buildShapeStructures = function buildShapeStr
         parentShape.connectChild(shape);
         position.y += shape.getChildOffsetPoint().y;
 
+        latestNode = node;
         return shape;
     }, function (parentNode, parentShape) {
         if (parentNode.type === _constants.TOKEN_TYPES.CONDITIONAL) {
             position.y = parentShape.getChildBoundaries().max.y + parentShape.getMargin();
         }
-
-        //position.y += 40;
 
         position.x = parentShape.getPosition().x;
     });
@@ -37834,6 +37839,18 @@ var buildShapeStructures = exports.buildShapeStructures = function buildShapeStr
         list: shapesList,
         root: root
     };
+};
+
+var addExtraSpacingBeforeShape = function addExtraSpacingBeforeShape(theme, node) {
+    var latestNode = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+    var complexNodeTypes = [_constants.TOKEN_TYPES.FUNCTION, _constants.TOKEN_TYPES.FUNCTION_DECLARATION, _constants.TOKEN_TYPES.FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.CLASS_DECLARATION, _constants.TOKEN_TYPES.IMPORT_DECLARATION, _constants.TOKEN_TYPES.EXPORT_NAMED_DECLARATION, _constants.TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION];
+
+    if (complexNodeTypes.includes(node.type) && !complexNodeTypes.includes(latestNode.type)) {
+        return theme.BaseShape.complexTypeExtraSpace;
+    }
+
+    return 0;
 };
 
 var buildConnections = exports.buildConnections = function buildConnections(shapesTree, styleTheme) {

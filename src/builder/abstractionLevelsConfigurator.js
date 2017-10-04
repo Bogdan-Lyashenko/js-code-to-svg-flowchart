@@ -15,7 +15,7 @@ export const ABSTRACTION_LEVELS = {
 };
 
 export const rebuildConfigForAbstractionLevel = level => {
-    let definedLevels = [],
+    let definedLevels = [TOKEN_TYPES.PROGRAM],
         customLevels = [];
 
     [].concat(level).forEach(item => {

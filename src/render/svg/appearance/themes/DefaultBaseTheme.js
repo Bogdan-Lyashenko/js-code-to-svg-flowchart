@@ -10,15 +10,17 @@ export const BaseShape = {
     symbolWidth: 7.8,
     horizontalPadding: 10,
     verticalPadding: 10,
-    childOffset: 35,
+    childOffset: 37,
     margin: 10,
     roundBorder: 2,
+    complexTypeExtraSpace: 15,
 
     debugFontSize: 8,
     debugTextColor: '#666'
 };
 
 export default {
+    BaseShape,
     ConnectionArrow: {
         arrow: {
             size: {
@@ -154,7 +156,7 @@ export default {
 
     ImportSpecifier: {
         ...BaseShape,
-        fillColor: '#80deea'
+        fillColor: '#81d4fa'
     },
 
     ThrowStatement: {

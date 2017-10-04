@@ -20,6 +20,8 @@ export const buildShapeStructures = (flowTree, styleTheme) => {
         position = { ...root.getChildOffsetPoint() },
         shapesList = [];
 
+    let latestNode;
+
     complexTraversal(
         flowTree,
         root,
@@ -27,6 +29,8 @@ export const buildShapeStructures = (flowTree, styleTheme) => {
             position.x += parentShape.getChildOffsetPoint().x;
         },
         (node, parentShape) => {
+            position.y += addExtraSpacingBeforeShape(styleTheme, node, latestNode);
+
             //TODO: refactor, move cases out of func, it will to many of them soon
             if (
                 parentShape.getNodeType() === TOKEN_TYPES.CONDITIONAL &&
@@ -47,14 +51,13 @@ export const buildShapeStructures = (flowTree, styleTheme) => {
             parentShape.connectChild(shape);
             position.y += shape.getChildOffsetPoint().y;
 
+            latestNode = node;
             return shape;
         },
         (parentNode, parentShape) => {
             if (parentNode.type === TOKEN_TYPES.CONDITIONAL) {
                 position.y = parentShape.getChildBoundaries().max.y + parentShape.getMargin();
             }
-
-            //position.y += 40;
 
             position.x = parentShape.getPosition().x;
         }
@@ -64,6 +67,25 @@ export const buildShapeStructures = (flowTree, styleTheme) => {
         list: shapesList,
         root: root
     };
+};
+
+const addExtraSpacingBeforeShape = (theme, node, latestNode = {}) => {
+    const complexNodeTypes = [
+        TOKEN_TYPES.FUNCTION,
+        TOKEN_TYPES.FUNCTION_DECLARATION,
+        TOKEN_TYPES.FUNCTION_EXPRESSION,
+        TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION,
+        TOKEN_TYPES.CLASS_DECLARATION,
+        TOKEN_TYPES.IMPORT_DECLARATION,
+        TOKEN_TYPES.EXPORT_NAMED_DECLARATION,
+        TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION
+    ];
+
+    if (complexNodeTypes.includes(node.type) && !complexNodeTypes.includes(latestNode.type)) {
+        return theme.BaseShape.complexTypeExtraSpace;
+    }
+
+    return 0;
 };
 
 export const buildConnections = (shapesTree, styleTheme) => {
