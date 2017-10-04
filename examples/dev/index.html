@@ -128,7 +128,7 @@
     //flowTreeBuilder.setAbstractionLevel(ABSTRACTION_LEVELS.FUNCTION_DEPENDENCIES);
 
     const svgRender = JS2FlowChart.createSVGRender();
-    const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(simpleStrSwitch));
+    const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(simpleStrContinue));
 
     document.getElementById('svgImage').innerHTML = shapesTree.print();
 

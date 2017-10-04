@@ -18,6 +18,7 @@ import CatchClause from './shapes/CatchClause';
 import SwitchStatement from './shapes/SwitchStatement';
 import BreakStatement from './shapes/BreakStatement';
 import SwitchCase from './shapes/SwitchCase';
+import ContinueStatement from './shapes/ContinueStatement';
 
 export const getShapeForNode = node => {
     switch (node.type) {
@@ -73,6 +74,9 @@ export const getShapeForNode = node => {
 
         case TOKEN_TYPES.SWITCH_CASE:
             return SwitchCase;
+
+        case TOKEN_TYPES.CONTINUE:
+            return ContinueStatement;
 
         default:
             return Rectangle;

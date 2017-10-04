@@ -7,11 +7,10 @@ export const BaseShape = {
 export default {
     ConnectionArrow: {
         arrow: {
-            ...BaseShape,
-            fillColor: '#222'
+            ...BaseShape
         },
         line: {
-            strokeColor: '#333'
+            ...BaseShape
         }
     },
 
@@ -20,31 +19,91 @@ export default {
     },
 
     Rectangle: {
-        ...BaseShape,
-        fillColor: '#A6A6A6'
+        ...BaseShape
     },
 
     VerticalEdgedRectangle: {
-        ...BaseShape,
-        fillColor: '#C8C8C8'
+        ...BaseShape
     },
 
     RootCircle: {
-        ...BaseShape,
-        fillColor: '#F1F1F1'
+        ...BaseShape
     },
 
     LoopRhombus: {
-        ...BaseShape,
-        fillColor: '#C1C1C1'
+        ...BaseShape
     },
 
     ConditionRhombus: {
-        ...BaseShape,
-        fillColor: '#A5A5A5'
+        ...BaseShape
     },
 
     ReturnStatement: {
+        ...BaseShape,
+        arrow: {
+            ...BaseShape
+        }
+    },
+    DestructedNode: {
+        ...BaseShape,
+        suffix: {
+            ...BaseShape
+        }
+    },
+    ClassDeclaration: {
+        ...BaseShape
+    },
+
+    DebuggerStatement: {
+        ...BaseShape
+    },
+
+    ExportDeclaration: {
+        ...BaseShape,
+        arrow: {
+            ...BaseShape
+        }
+    },
+
+    ImportDeclaration: {
+        ...BaseShape
+    },
+
+    ImportSpecifier: {
+        ...BaseShape
+    },
+
+    ThrowStatement: {
+        ...BaseShape
+    },
+
+    TryStatement: {
+        ...BaseShape
+    },
+
+    CatchClause: {
+        ...BaseShape,
+        arrow: {
+            ...BaseShape
+        }
+    },
+
+    SwitchStatement: {
+        ...BaseShape
+    },
+
+    BreakStatement: {
+        ...BaseShape,
+        arrow: {
+            ...BaseShape
+        }
+    },
+
+    SwitchCase: {
+        ...BaseShape
+    },
+
+    ContinueStatement: {
         ...BaseShape,
         arrow: {
             ...BaseShape

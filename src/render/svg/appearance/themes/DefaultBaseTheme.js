@@ -208,5 +208,17 @@ export default {
     SwitchCase: {
         ...BaseShape,
         fillColor: '#ce93d8'
+    },
+
+    ContinueStatement: {
+        ...BaseShape,
+        fillColor: '#b39ddb',
+        arrow: {
+            ...BaseShape,
+            handlerLength: 5,
+            sizeX: 16,
+            sizeY: 28,
+            fillColor: '#90CAF9'
+        }
     }
 };

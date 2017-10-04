@@ -18,7 +18,7 @@ export const parseCodeToAST = (code, config) => {
             if (path.node.type === 'BinaryExpression') {
                 //debugger;
             }
-            console.log(path.node.type, path.node.name);
+            //console.log(path.node.type, path.node.name);
         }
     });
 

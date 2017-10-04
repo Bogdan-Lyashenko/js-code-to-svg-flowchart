@@ -105,5 +105,33 @@ export default {
             ...BaseShape,
             fillColor: '#ffebee'
         }
+    },
+
+    SwitchStatement: {
+        ...BaseShape,
+        fillColor: '#f3e5f5'
+    },
+
+    BreakStatement: {
+        ...BaseShape,
+        fillColor: '#ede7f6',
+        arrow: {
+            ...BaseShape,
+            fillColor: '#f3e5f5'
+        }
+    },
+
+    SwitchCase: {
+        ...BaseShape,
+        fillColor: '#f3e5f5'
+    },
+
+    ContinueStatement: {
+        ...BaseShape,
+        fillColor: '#ede7f6',
+        arrow: {
+            ...BaseShape,
+            fillColor: '#e3f2fd'
+        }
     }
 };

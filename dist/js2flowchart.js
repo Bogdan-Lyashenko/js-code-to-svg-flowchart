@@ -6545,7 +6545,7 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
         var statementParent = path.getStatementParent(),
             parent = path.parent || {};
 
-        return statementParent.isLoop() || statementParent.isReturnStatement() || parent.type === _constants.TOKEN_TYPES.CALL_EXPRESSION || statementParent.isConditional() && parent.test && parent.test.type === _constants.TOKEN_TYPES.BINARY_EXPRESSION || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION;
+        return statementParent.isLoop() || statementParent.isReturnStatement() || statementParent.isConditional() || parent.type === _constants.TOKEN_TYPES.CALL_EXPRESSION || statementParent.isConditional() && parent.test && parent.test.type === _constants.TOKEN_TYPES.BINARY_EXPRESSION || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION;
     }
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.IMPORT_DECLARATION, {
     type: _constants.TOKEN_TYPES.IMPORT_DECLARATION, //TODO: visual display in separate way libs (npm modules) and local dependencies
@@ -17513,10 +17513,10 @@ var parseCodeToAST = exports.parseCodeToAST = function parseCodeToAST(code, conf
     //TODO: remove when finish with defining types
     (0, _babelTraverse2.default)(ast, {
         enter: function enter(path) {
-            if (path.node.type === 'BinaryExpression') {
-                //debugger;
-            }
-            console.log(path.node.type, path.node.name);
+            if (path.node.type === 'BinaryExpression') {}
+            //debugger;
+
+            //console.log(path.node.type, path.node.name);
         }
     });
 
@@ -37551,6 +37551,16 @@ exports.default = {
 
     SwitchCase: _extends({}, BaseShape, {
         fillColor: '#ce93d8'
+    }),
+
+    ContinueStatement: _extends({}, BaseShape, {
+        fillColor: '#b39ddb',
+        arrow: _extends({}, BaseShape, {
+            handlerLength: 5,
+            sizeX: 16,
+            sizeY: 28,
+            fillColor: '#90CAF9'
+        })
     })
 };
 
@@ -37575,37 +37585,57 @@ var BaseShape = exports.BaseShape = {
 
 exports.default = {
     ConnectionArrow: {
-        arrow: _extends({}, BaseShape, {
-            fillColor: '#222'
-        }),
-        line: {
-            strokeColor: '#333'
-        }
+        arrow: _extends({}, BaseShape),
+        line: _extends({}, BaseShape)
     },
 
     Shape: _extends({}, BaseShape),
 
-    Rectangle: _extends({}, BaseShape, {
-        fillColor: '#A6A6A6'
-    }),
+    Rectangle: _extends({}, BaseShape),
 
-    VerticalEdgedRectangle: _extends({}, BaseShape, {
-        fillColor: '#C8C8C8'
-    }),
+    VerticalEdgedRectangle: _extends({}, BaseShape),
 
-    RootCircle: _extends({}, BaseShape, {
-        fillColor: '#F1F1F1'
-    }),
+    RootCircle: _extends({}, BaseShape),
 
-    LoopRhombus: _extends({}, BaseShape, {
-        fillColor: '#C1C1C1'
-    }),
+    LoopRhombus: _extends({}, BaseShape),
 
-    ConditionRhombus: _extends({}, BaseShape, {
-        fillColor: '#A5A5A5'
-    }),
+    ConditionRhombus: _extends({}, BaseShape),
 
     ReturnStatement: _extends({}, BaseShape, {
+        arrow: _extends({}, BaseShape)
+    }),
+    DestructedNode: _extends({}, BaseShape, {
+        suffix: _extends({}, BaseShape)
+    }),
+    ClassDeclaration: _extends({}, BaseShape),
+
+    DebuggerStatement: _extends({}, BaseShape),
+
+    ExportDeclaration: _extends({}, BaseShape, {
+        arrow: _extends({}, BaseShape)
+    }),
+
+    ImportDeclaration: _extends({}, BaseShape),
+
+    ImportSpecifier: _extends({}, BaseShape),
+
+    ThrowStatement: _extends({}, BaseShape),
+
+    TryStatement: _extends({}, BaseShape),
+
+    CatchClause: _extends({}, BaseShape, {
+        arrow: _extends({}, BaseShape)
+    }),
+
+    SwitchStatement: _extends({}, BaseShape),
+
+    BreakStatement: _extends({}, BaseShape, {
+        arrow: _extends({}, BaseShape)
+    }),
+
+    SwitchCase: _extends({}, BaseShape),
+
+    ContinueStatement: _extends({}, BaseShape, {
         arrow: _extends({}, BaseShape)
     })
 };
@@ -37705,6 +37735,28 @@ exports.default = {
         fillColor: '#FFF8E1',
         arrow: _extends({}, BaseShape, {
             fillColor: '#ffebee'
+        })
+    }),
+
+    SwitchStatement: _extends({}, BaseShape, {
+        fillColor: '#f3e5f5'
+    }),
+
+    BreakStatement: _extends({}, BaseShape, {
+        fillColor: '#ede7f6',
+        arrow: _extends({}, BaseShape, {
+            fillColor: '#f3e5f5'
+        })
+    }),
+
+    SwitchCase: _extends({}, BaseShape, {
+        fillColor: '#f3e5f5'
+    }),
+
+    ContinueStatement: _extends({}, BaseShape, {
+        fillColor: '#ede7f6',
+        arrow: _extends({}, BaseShape, {
+            fillColor: '#e3f2fd'
         })
     })
 };
@@ -38111,6 +38163,10 @@ var _SwitchCase = __webpack_require__(475);
 
 var _SwitchCase2 = _interopRequireDefault(_SwitchCase);
 
+var _ContinueStatement = __webpack_require__(476);
+
+var _ContinueStatement2 = _interopRequireDefault(_ContinueStatement);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
@@ -38167,6 +38223,9 @@ var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
 
         case _constants.TOKEN_TYPES.SWITCH_CASE:
             return _SwitchCase2.default;
+
+        case _constants.TOKEN_TYPES.CONTINUE:
+            return _ContinueStatement2.default;
 
         default:
             return _Rectangle2.default;
@@ -39120,6 +39179,26 @@ var _Rectangle = __webpack_require__(68);
 var ENTITY_FIELD_NAME = 'SwitchCase';
 
 exports.default = (0, _BaseShape.delegateInit)(_Rectangle.Rectangle, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
+
+/***/ }),
+/* 476 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _BaseShape = __webpack_require__(4);
+
+var _ReturnStatement = __webpack_require__(181);
+
+var ENTITY_FIELD_NAME = 'ContinueStatement';
+
+exports.default = (0, _BaseShape.delegateInit)(_ReturnStatement.ReturnStatement, ENTITY_FIELD_NAME);
 module.exports = exports['default'];
 
 /***/ })

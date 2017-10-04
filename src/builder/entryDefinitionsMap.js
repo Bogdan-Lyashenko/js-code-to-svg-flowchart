@@ -156,6 +156,7 @@ export const DefinitionsMap = {
             return (
                 statementParent.isLoop() ||
                 statementParent.isReturnStatement() ||
+                statementParent.isConditional() ||
                 parent.type === TOKEN_TYPES.CALL_EXPRESSION ||
                 (statementParent.isConditional() &&
                     parent.test &&
