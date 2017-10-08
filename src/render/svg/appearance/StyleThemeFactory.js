@@ -1,6 +1,6 @@
 import { mergeObjectStructures } from 'shared/utils/composition';
 
-import DefaultBaseTheme from './themes/DefaultBaseTheme';
+import DefaultBaseTheme, { buildTheme } from './themes/DefaultBaseTheme';
 import BlackAndWhiteTheme from './themes/BlackAndWhite';
 import BLURRED from './themes/Blurred';
 
@@ -31,3 +31,5 @@ export const getBlackAndWhiteTheme = () => getTheme(ThemeNamesMap.BLACK_AND_WHIT
 export const getBlurredTheme = () => getTheme(ThemeNamesMap.BLURRED);
 
 export const applyStyleToTheme = (theme, styles) => mergeObjectStructures(theme, styles);
+
+export const buildColorsBasedTheme = colors => buildTheme(colors);

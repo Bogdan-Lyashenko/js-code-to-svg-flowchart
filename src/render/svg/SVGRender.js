@@ -2,7 +2,8 @@ import {
     getDefaultTheme,
     getBlurredTheme,
     getBlackAndWhiteTheme,
-    applyStyleToTheme
+    applyStyleToTheme,
+    buildColorsBasedTheme
 } from './appearance/StyleThemeFactory';
 import { buildSVGObjectsTree } from './svgObjectsBuilder';
 
@@ -77,6 +78,10 @@ export default (customStyleTheme = {}) => {
         },
         applyBlurredTheme() {
             this.applyTheme(getBlurredTheme());
+        },
+
+        applyColorBasedTheme(colors) {
+            this.applyTheme(buildColorsBasedTheme(colors));
         }
     };
 };

@@ -17859,6 +17859,9 @@ exports.default = function () {
         },
         applyBlurredTheme: function applyBlurredTheme() {
             this.applyTheme((0, _StyleThemeFactory.getBlurredTheme)());
+        },
+        applyColorBasedTheme: function applyColorBasedTheme(colors) {
+            this.applyTheme((0, _StyleThemeFactory.buildColorsBasedTheme)(colors));
         }
     };
 };
@@ -37394,7 +37397,7 @@ var MODIFIER_PRESETS = exports.MODIFIER_PRESETS = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.applyStyleToTheme = exports.getBlurredTheme = exports.getBlackAndWhiteTheme = exports.getDefaultTheme = exports.getTheme = exports.Themes = undefined;
+exports.buildColorsBasedTheme = exports.applyStyleToTheme = exports.getBlurredTheme = exports.getBlackAndWhiteTheme = exports.getDefaultTheme = exports.getTheme = exports.Themes = undefined;
 
 var _Themes;
 
@@ -37446,6 +37449,10 @@ var getBlurredTheme = exports.getBlurredTheme = function getBlurredTheme() {
 
 var applyStyleToTheme = exports.applyStyleToTheme = function applyStyleToTheme(theme, styles) {
     return (0, _composition.mergeObjectStructures)(theme, styles);
+};
+
+var buildColorsBasedTheme = exports.buildColorsBasedTheme = function buildColorsBasedTheme(colors) {
+    return (0, _DefaultBaseTheme.buildTheme)(colors);
 };
 
 /***/ }),
@@ -37555,209 +37562,241 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var BaseShape = exports.BaseShape = {
-    strokeColor: '#444',
-    strokeWidth: 1,
-    fillColor: '#fff',
-    textColor: '#222',
-    fontFamily: 'monospace',
-    fontSize: 13,
-    lineHeight: 5,
-    symbolHeight: 10,
-    symbolWidth: 7.8,
-    horizontalPadding: 10,
-    verticalPadding: 10,
-    childOffset: 37,
-    margin: 10,
-    roundBorder: 2,
-    complexTypeExtraSpace: 15,
-
-    debugFontSize: 8,
-    debugTextColor: '#666'
+var DefaultColors = exports.DefaultColors = {
+    c1: '#444', //stroke color
+    c2: '#fff', //default fill color
+    c3: '#222', //text color
+    c4: '#333', //arrow fill color
+    c5: '#b39ddb', //rectangle&other default fill color
+    c6: '#ede7f6', //rectangle dot fill color
+    c7: '#a5d6a7', //function fill color
+    c8: '#fff59d', //root circle fill color
+    c9: '#90CAF9', //loop fill color
+    c10: '#ce93d8', //conditional fill color
+    c11: '#ffcc80', //destructed node fill color
+    c12: '#80cbc4', //class fill color
+    c13: '#EF5350', //debugger fill color
+    c14: '#81d4fa', //export fill color
+    c15: '#ef9a9a', //throw fill color
+    c16: '#FFE082', //try fill color
+    c17: '#666' //debug text color
 };
 
-exports.default = {
-    BaseShape: BaseShape,
-    ConnectionArrow: {
-        arrow: {
-            size: {
-                x: 8,
-                y: 6
-            },
-            fillColor: '#333'
-        },
-        line: {
-            strokeColor: '#444',
-            strokeWidth: 1,
-            curveTurnRadius: 4
-        },
-        lineTurnOffset: 20
-    },
-
-    Shape: _extends({}, BaseShape),
-
-    Rectangle: _extends({}, BaseShape, {
-        fillColor: '#b39ddb',
-        dot: _extends({}, BaseShape, {
-            offset: 4,
-            radius: 2,
-            fillColor: '#ede7f6'
-        }),
-        roundBorder: 3
-    }),
-
-    VerticalEdgedRectangle: _extends({}, BaseShape, {
-        fillColor: '#a5d6a7',
-        edgeOffset: 10
-    }),
-
-    RootCircle: _extends({}, BaseShape, {
-        radius: 15,
-        padding: 3,
-        fillColor: '#fff59d'
-    }),
-
-    LoopRhombus: _extends({}, BaseShape, {
-        fillColor: '#90CAF9',
-        thinPartOffset: 15,
-        rhombusSize: 50,
-        roundBorder: 3,
-        doubleLayerOffsetA: 4,
-        doubleLayerOffsetB: 8,
-        childOffset: 20,
-        positionTopShift: 20
-    }),
-
-    ConditionRhombus: _extends({}, BaseShape, {
-        fillColor: '#ce93d8',
-        thinPartOffset: 15,
-        roundBorder: 3,
-        childOffset: 20,
-        alternateBranchOffset: 40,
-        markOffset: {
-            x: 15,
-            y: 5
-        },
-        margin: 20
-    }),
-
-    RootStartPoint: {
-        center: {
-            x: 25,
-            y: 25
-        },
-        childOffset: {
-            x: 25,
-            y: 65
-        }
-    },
-
-    ReturnStatement: _extends({}, BaseShape, {
-        roundBorder: 3,
-        fillColor: '#b39ddb',
-        arrow: _extends({}, BaseShape, {
-            handlerLength: 5,
-            sizeX: 16,
-            sizeY: 22,
-            fillColor: '#a5d6a7'
-        })
-    }),
-
-    DestructedNode: _extends({}, BaseShape, {
-        fillColor: '#ffcc80',
+var buildTheme = exports.buildTheme = function buildTheme(color) {
+    var BaseShape = {
+        strokeColor: color.c1,
+        strokeWidth: 1,
+        fillColor: color.c2,
+        textColor: color.c3,
+        fontFamily: 'monospace',
+        fontSize: 13,
+        lineHeight: 5, //depends on fontSize
+        symbolHeight: 10, //depends on fontSize
+        symbolWidth: 7.8, //depends on fontSize
+        horizontalPadding: 15,
+        verticalPadding: 10,
+        childOffset: 37,
+        margin: 10,
         roundBorder: 2,
-        suffix: _extends({}, BaseShape, {
-            roundBorder: 2,
-            fillColor: '#ffcc80',
-            width: 8,
-            space: 4
-        })
-    }),
+        complexTypeExtraSpace: 15,
 
-    ClassDeclaration: _extends({}, BaseShape, {
-        fillColor: '#80cbc4',
-        edgeOffset: 10
-    }),
+        debugFontSize: 8,
+        debugTextColor: color.c17
+    };
 
-    DebuggerStatement: _extends({}, BaseShape, {
-        fillColor: '#EF5350',
-        roundBorder: 2
-    }),
-
-    ExportDeclaration: _extends({}, BaseShape, {
-        roundBorder: 3,
-        fillColor: '#81d4fa',
-        arrow: _extends({}, BaseShape, {
-            handlerLength: 5,
-            sizeX: 20,
-            sizeY: 28,
-            fillColor: '#fff'
-        })
-    }),
-
-    ImportDeclaration: _extends({}, BaseShape, {
-        fillColor: '#fff',
-        edgeOffset: 5
-    }),
-
-    ImportSpecifier: _extends({}, BaseShape, {
-        fillColor: '#81d4fa'
-    }),
-
-    ThrowStatement: _extends({}, BaseShape, {
-        fillColor: '#ef9a9a'
-    }),
-
-    TryStatement: _extends({}, BaseShape, {
-        fillColor: '#FFE082'
-    }),
-
-    CatchClause: _extends({}, BaseShape, {
-        fillColor: '#ef9a9a',
-        arrow: _extends({}, BaseShape, {
-            handlerLength: 2,
-            sizeX: 16,
-            sizeY: 28,
-            fillColor: '#ef9a9a'
-        })
-    }),
-
-    SwitchStatement: _extends({}, BaseShape, {
-        fillColor: '#ce93d8',
-        thinPartOffset: 15,
-        roundBorder: 3,
-        childOffset: 20,
-        alternateBranchOffset: 40,
-        markOffset: {
-            x: 15,
-            y: 5
+    return {
+        BaseShape: BaseShape,
+        ConnectionArrow: {
+            arrow: {
+                size: {
+                    x: 8,
+                    y: 6
+                },
+                fillColor: color.c4
+            },
+            line: {
+                strokeColor: color.c1,
+                strokeWidth: 1,
+                curveTurnRadius: 4
+            },
+            lineTurnOffset: 20
         },
-        margin: 20
-    }),
 
-    BreakStatement: _extends({}, BaseShape, {
-        fillColor: '#b39ddb',
-        arrow: _extends({}, BaseShape, {
-            handlerLength: 5,
-            sizeX: 16,
-            sizeY: 28,
-            fillColor: '#ce93d8'
+        Shape: _extends({}, BaseShape),
+
+        Rectangle: _extends({}, BaseShape, {
+            fillColor: color.c5,
+            dot: _extends({}, BaseShape, {
+                offset: 4,
+                radius: 2,
+                fillColor: color.c6
+            }),
+            roundBorder: 3
+        }),
+
+        VerticalEdgedRectangle: _extends({}, BaseShape, {
+            fillColor: color.c7,
+            edgeOffset: 10
+        }),
+
+        RootCircle: _extends({}, BaseShape, {
+            radius: 15,
+            padding: 3,
+            fillColor: color.c8
+        }),
+
+        LoopRhombus: _extends({}, BaseShape, {
+            fillColor: color.c9,
+            thinPartOffset: 15,
+            rhombusSize: 50,
+            roundBorder: 3,
+            doubleLayerOffsetA: 4,
+            doubleLayerOffsetB: 8,
+            childOffset: 20,
+            positionTopShift: 20
+        }),
+
+        ConditionRhombus: _extends({}, BaseShape, {
+            fillColor: color.c10,
+            thinPartOffset: 15,
+            roundBorder: 3,
+            childOffset: 20,
+            alternateBranchOffset: 40,
+            markOffset: {
+                x: 15,
+                y: 5
+            },
+            margin: 20
+        }),
+
+        RootStartPoint: {
+            center: {
+                x: 25,
+                y: 25
+            },
+            childOffset: {
+                x: 25,
+                y: 65
+            }
+        },
+
+        ReturnStatement: _extends({}, BaseShape, {
+            roundBorder: 3,
+            fillColor: color.c5,
+            arrow: _extends({}, BaseShape, {
+                handlerLength: 5,
+                sizeX: 16,
+                sizeY: 22,
+                fillColor: color.c7
+            })
+        }),
+
+        DestructedNode: _extends({}, BaseShape, {
+            fillColor: color.c11,
+            roundBorder: 2,
+            suffix: _extends({}, BaseShape, {
+                roundBorder: 2,
+                fillColor: color.c11,
+                width: 8,
+                space: 4
+            })
+        }),
+
+        ClassDeclaration: _extends({}, BaseShape, {
+            fillColor: color.c12,
+            edgeOffset: 10
+        }),
+
+        DebuggerStatement: _extends({}, BaseShape, {
+            fillColor: color.c13,
+            roundBorder: 2
+        }),
+
+        ExportDeclaration: _extends({}, BaseShape, {
+            roundBorder: 3,
+            fillColor: color.c14,
+            arrow: _extends({}, BaseShape, {
+                handlerLength: 5,
+                sizeX: 20,
+                sizeY: 28,
+                fillColor: color.c2
+            })
+        }),
+
+        ImportDeclaration: _extends({}, BaseShape, {
+            fillColor: color.c2,
+            edgeOffset: 5
+        }),
+
+        ImportSpecifier: _extends({}, BaseShape, {
+            fillColor: color.c14
+        }),
+
+        ThrowStatement: _extends({}, BaseShape, {
+            fillColor: color.c15
+        }),
+
+        TryStatement: _extends({}, BaseShape, {
+            fillColor: color.c16
+        }),
+
+        CatchClause: _extends({}, BaseShape, {
+            fillColor: color.c15,
+            arrow: _extends({}, BaseShape, {
+                handlerLength: 2,
+                sizeX: 16,
+                sizeY: 28,
+                fillColor: color.c15
+            })
+        }),
+
+        SwitchStatement: _extends({}, BaseShape, {
+            fillColor: color.c10,
+            thinPartOffset: 15,
+            roundBorder: 3,
+            childOffset: 20,
+            alternateBranchOffset: 40,
+            markOffset: {
+                x: 15,
+                y: 5
+            },
+            margin: 20
+        }),
+
+        BreakStatement: _extends({}, BaseShape, {
+            fillColor: color.c5,
+            arrow: _extends({}, BaseShape, {
+                handlerLength: 5,
+                sizeX: 16,
+                sizeY: 28,
+                fillColor: color.c10
+            })
+        }),
+
+        SwitchCase: _extends({}, BaseShape, {
+            fillColor: color.c10
+        }),
+
+        ContinueStatement: _extends({}, BaseShape, {
+            fillColor: color.c5,
+            arrow: _extends({}, BaseShape, {
+                handlerLength: 5,
+                sizeX: 16,
+                sizeY: 28,
+                fillColor: color.c9
+            })
         })
-    }),
+    };
+};
 
-    SwitchCase: _extends({}, BaseShape, {
-        fillColor: '#ce93d8'
-    }),
+exports.default = buildTheme(DefaultColors);
+var getAlignedColors = exports.getAlignedColors = function getAlignedColors(theme, defaultColor) {
+    var themeCopy = _extends({}, theme);
+    Object.keys(themeCopy).forEach(function (color) {
+        themeCopy[color] = defaultColor;
+    });
 
-    ContinueStatement: _extends({}, BaseShape, {
-        fillColor: '#b39ddb',
-        arrow: _extends({}, BaseShape, {
-            handlerLength: 5,
-            sizeX: 16,
-            sizeY: 28,
-            fillColor: '#90CAF9'
-        })
-    })
+    return themeCopy;
 };
 
 /***/ }),
@@ -37770,71 +37809,21 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.Colors = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var BaseShape = exports.BaseShape = {
-    strokeColor: '#333',
-    fillColor: '#A6A6A6',
-    textColor: '#333'
-};
+var _DefaultBaseTheme = __webpack_require__(447);
 
-exports.default = {
-    ConnectionArrow: {
-        arrow: _extends({}, BaseShape),
-        line: _extends({}, BaseShape)
-    },
+var Colors = exports.Colors = _extends({}, (0, _DefaultBaseTheme.getAlignedColors)(_DefaultBaseTheme.DefaultColors, '#A6A6A6'), {
 
-    Shape: _extends({}, BaseShape),
+    c1: '#333',
+    c2: '#A6A6A6',
+    c3: '#333',
+    c4: '#333'
+});
 
-    Rectangle: _extends({}, BaseShape),
-
-    VerticalEdgedRectangle: _extends({}, BaseShape),
-
-    RootCircle: _extends({}, BaseShape),
-
-    LoopRhombus: _extends({}, BaseShape),
-
-    ConditionRhombus: _extends({}, BaseShape),
-
-    ReturnStatement: _extends({}, BaseShape, {
-        arrow: _extends({}, BaseShape)
-    }),
-    DestructedNode: _extends({}, BaseShape, {
-        suffix: _extends({}, BaseShape)
-    }),
-    ClassDeclaration: _extends({}, BaseShape),
-
-    DebuggerStatement: _extends({}, BaseShape),
-
-    ExportDeclaration: _extends({}, BaseShape, {
-        arrow: _extends({}, BaseShape)
-    }),
-
-    ImportDeclaration: _extends({}, BaseShape),
-
-    ImportSpecifier: _extends({}, BaseShape),
-
-    ThrowStatement: _extends({}, BaseShape),
-
-    TryStatement: _extends({}, BaseShape),
-
-    CatchClause: _extends({}, BaseShape, {
-        arrow: _extends({}, BaseShape)
-    }),
-
-    SwitchStatement: _extends({}, BaseShape),
-
-    BreakStatement: _extends({}, BaseShape, {
-        arrow: _extends({}, BaseShape)
-    }),
-
-    SwitchCase: _extends({}, BaseShape),
-
-    ContinueStatement: _extends({}, BaseShape, {
-        arrow: _extends({}, BaseShape)
-    })
-};
+exports.default = (0, _DefaultBaseTheme.buildTheme)(Colors);
 
 /***/ }),
 /* 449 */
@@ -37846,116 +37835,31 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.Colors = undefined;
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _DefaultBaseTheme = __webpack_require__(447);
 
-var BaseShape = exports.BaseShape = {
-    textColor: '#ccc',
-    strokeColor: '#ccc'
+var Colors = exports.Colors = {
+    c1: '#ccc', //stroke color
+    c2: '#fff', //default fill color
+    c3: '#ccc', //text color
+    c4: '#ccc', //arrow fill color
+    c5: '#ede7f6', //rectangle&other default fill color
+    c6: '#ede7f6', //rectangle dot fill color
+    c7: '#f1f8e9', //function fill color
+    c8: '#fffde7', //root circle fill color
+    c9: '#e3f2fd', //loop fill color
+    c10: '#f3e5f5', //conditional fill color
+    c11: '#fff8e1', //destructed node fill color
+    c12: '#e0f2f1', //class fill color
+    c13: '#ffebee', //debugger fill color
+    c14: '#e1f5fe', //export fill color
+    c15: '#fce4ec', //throw fill color
+    c16: '#fff8e1', //try fill color
+    c17: '#666' //debug text color
 };
 
-exports.default = {
-    ConnectionArrow: {
-        arrow: _extends({}, BaseShape, {
-            fillColor: '#ccc'
-        }),
-        line: _extends({}, BaseShape)
-    },
-
-    Shape: _extends({}, BaseShape),
-
-    Rectangle: _extends({}, BaseShape, {
-        fillColor: '#F3E5F5'
-    }),
-
-    VerticalEdgedRectangle: _extends({}, BaseShape, {
-        fillColor: '#F1F8E9'
-    }),
-
-    RootCircle: _extends({}, BaseShape, {
-        fillColor: '#FFFDE7'
-    }),
-
-    LoopRhombus: _extends({}, BaseShape, {
-        fillColor: '#E3F2FD'
-    }),
-
-    ConditionRhombus: _extends({}, BaseShape, {
-        fillColor: '#F3E5F5'
-    }),
-
-    ReturnStatement: _extends({}, BaseShape, {
-        fillColor: '#EDE7F6',
-        arrow: _extends({}, BaseShape, {
-            fillColor: '#F1F8E9'
-        })
-    }),
-    DestructedNode: _extends({}, BaseShape, {
-        fillColor: '#FFF8E1',
-        suffix: _extends({}, BaseShape, {
-            fillColor: '#FFF8E1'
-        })
-    }),
-    ClassDeclaration: _extends({}, BaseShape, {
-        fillColor: '#E0F7FA'
-    }),
-
-    DebuggerStatement: _extends({}, BaseShape, {
-        fillColor: '#ffebee'
-    }),
-
-    ExportDeclaration: _extends({}, BaseShape, {
-        fillColor: '#e1f5fe',
-        arrow: _extends({}, BaseShape, {
-            fillColor: '#fff'
-        })
-    }),
-
-    ImportDeclaration: _extends({}, BaseShape, {
-        fillColor: '#fff'
-    }),
-
-    ImportSpecifier: _extends({}, BaseShape, {
-        fillColor: '#e0f7fa'
-    }),
-
-    ThrowStatement: _extends({}, BaseShape, {
-        fillColor: '#ffebee'
-    }),
-
-    TryStatement: _extends({}, BaseShape, {
-        fillColor: '#FFE082'
-    }),
-
-    CatchClause: _extends({}, BaseShape, {
-        fillColor: '#FFF8E1',
-        arrow: _extends({}, BaseShape, {
-            fillColor: '#ffebee'
-        })
-    }),
-
-    SwitchStatement: _extends({}, BaseShape, {
-        fillColor: '#f3e5f5'
-    }),
-
-    BreakStatement: _extends({}, BaseShape, {
-        fillColor: '#ede7f6',
-        arrow: _extends({}, BaseShape, {
-            fillColor: '#f3e5f5'
-        })
-    }),
-
-    SwitchCase: _extends({}, BaseShape, {
-        fillColor: '#f3e5f5'
-    }),
-
-    ContinueStatement: _extends({}, BaseShape, {
-        fillColor: '#ede7f6',
-        arrow: _extends({}, BaseShape, {
-            fillColor: '#e3f2fd'
-        })
-    })
-};
+exports.default = (0, _DefaultBaseTheme.buildTheme)(Colors);
 
 /***/ }),
 /* 450 */
