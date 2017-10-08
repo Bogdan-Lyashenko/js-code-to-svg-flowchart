@@ -10,7 +10,8 @@ import FlowTreeModifier from './FlowTreeModifier';
 import {
     DEFINED_MODIFIERS,
     MODIFIER_PRESETS,
-    destructionModifier
+    destructionModifier,
+    expressionCallbacksModifier
 } from './modifiers/modifiersFactory';
 import { TOKEN_TYPES } from 'shared/constants';
 
@@ -25,6 +26,7 @@ const buildFlowTree = (astTree, astVisitorConfig) => {
         : { name: 'Root', type: TOKEN_TYPES.PROGRAM, body: treeNodes };
 };
 
+//TODO: seems redundant abstraction, refactor
 export const createFlowTreeModifier = () => {
     const modifiers = FlowTreeModifier();
 
@@ -59,6 +61,9 @@ export default ({ astParser = {}, astVisitor = {} } = {}) => {
         ...astVisitor
     };
 
+    const defaultModifier = createFlowTreeModifier();
+    defaultModifier.setModifier(expressionCallbacksModifier());
+
     return {
         setAbstractionLevel(level) {
             astVisitorConfig.definitionsMap = rebuildConfigForAbstractionLevel(level);
@@ -82,7 +87,11 @@ export default ({ astParser = {}, astVisitor = {} } = {}) => {
         },
 
         buildFlowTreeFromAst(ast) {
-            return buildFlowTree(ast, astVisitorConfig);
+            const flowTree = buildFlowTree(ast, astVisitorConfig);
+
+            defaultModifier.applyToFlowTree(flowTree);
+
+            return flowTree;
         }
     };
 };

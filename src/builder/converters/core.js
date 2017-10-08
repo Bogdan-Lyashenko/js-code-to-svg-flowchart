@@ -7,24 +7,25 @@ export const idleConverter = path => {
 
 /* function */
 export const functionConverter = path => {
-    const node = path.node;
-    const paramsCode = getFunctionParametersCode(node.params);
+    const node = path.node,
+        paramsCode = getFunctionParametersCode(node.params);
+
+    let name = '';
 
     if (node.id) {
-        return getAnonymousFunctionName(path) + 'function ' + node.id.name + paramsCode;
+        name = getAnonymousFunctionName(path) + 'function ' + node.id.name + paramsCode;
+    } else if (node.type === TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION) {
+        name = getAnonymousFunctionName(path) + paramsCode + ' =>';
+    } else if (node.type === TOKEN_TYPES.CLASS_METHOD) {
+        name =
+            node.kind === CLASS_FUNCTION_KINDS.CONSTRUCTOR
+                ? 'constructor' + paramsCode
+                : node.key.name + paramsCode;
+    } else {
+        name = getAnonymousFunctionName(path) + 'function' + paramsCode;
     }
 
-    if (node.type === TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION) {
-        return getAnonymousFunctionName(path) + paramsCode + ' =>';
-    }
-
-    if (node.type === TOKEN_TYPES.CLASS_METHOD) {
-        return node.kind === CLASS_FUNCTION_KINDS.CONSTRUCTOR
-            ? 'constructor' + paramsCode
-            : node.key.name + paramsCode;
-    }
-
-    return getAnonymousFunctionName(path) + 'function' + paramsCode;
+    return { name, pathParentType: path.parent.type };
 };
 
 export const getAnonymousFunctionName = path => {
@@ -154,24 +155,22 @@ export const assignmentExpressionConverter = ({ node }) => {
 };
 
 export const callExpressionConverter = ({ node }) => {
-    if (!!(node.arguments || []).find(isNodeContainsFunc)) {
-        const argumentsCode = node.arguments
+    let argumentsCode = '';
+
+    if (node.arguments && node.arguments.length) {
+        argumentsCode = node.arguments
             .map(argument => (isNodeContainsFunc(argument) ? '*' : argument.name || argument.value))
             .join(', ');
-
-        return `${generate(node.callee).code}(${argumentsCode})`;
     }
 
-    //TODO: fix chain: leave only one method call per node,   $('#id').show().addClass('name').hide();
-    //run traversal after build and with modifier reverse order of chains
     const callee = node.callee;
     if (
         callee.type === TOKEN_TYPES.MEMBER_EXPRESSION &&
         callee.object.type === TOKEN_TYPES.CALL_EXPRESSION
     ) {
-        //console.log(getFirstCallee(callee));
-        //console.log(generate(node).code)
-        //return callee.property.name;
+        return { name: `.${callee.property.name}(${argumentsCode})`, chain: true };
+    } else if (argumentsCode) {
+        return `${generate(node.callee).code}(${argumentsCode})`;
     }
 
     return generate(node).code;

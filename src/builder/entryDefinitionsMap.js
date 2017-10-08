@@ -58,7 +58,8 @@ export const DefinitionsMap = {
     },
     [TOKEN_TYPES.CALL_EXPRESSION]: {
         type: TOKEN_TYPES.CALL_EXPRESSION,
-        body: true,
+        body: false,
+        reversed: true,
         getName: callExpressionConverter,
         ignore: path => {
             const statementParent = path.getStatementParent(),
@@ -66,6 +67,7 @@ export const DefinitionsMap = {
 
             return (
                 statementParent.isVariableDeclaration() ||
+                parent.type === TOKEN_TYPES.UNARY_EXPRESSION ||
                 (statementParent.isConditional() &&
                     parent.test &&
                     parent.test.type === TOKEN_TYPES.CALL_EXPRESSION) ||

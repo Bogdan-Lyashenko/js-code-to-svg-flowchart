@@ -29,11 +29,17 @@ const applyModifierUpdates = (tree, modifier) => {
 
     if (!nodes.length) return;
 
-    Object.keys(modifier.updates).forEach(updateName => {
+    const updates = Object.keys(modifier.updates || {});
+
+    updates.filter(i => i !== 'subTreeUpdate').forEach(updateName => {
         nodes.forEach(node => {
             UpdatesMap[updateName](node, modifier.updates[updateName]);
         });
     });
+
+    if (updates.includes('subTreeUpdate')) {
+        modifier.updates.subTreeUpdate(nodes, tree);
+    }
 };
 
 export default () => {

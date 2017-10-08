@@ -81,7 +81,11 @@ const addExtraSpacingBeforeShape = (theme, node, latestNode = {}) => {
         TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION
     ];
 
-    if (complexNodeTypes.includes(node.type) && !complexNodeTypes.includes(latestNode.type)) {
+    if (
+        complexNodeTypes.includes(node.type) &&
+        !complexNodeTypes.includes(latestNode.type) &&
+        node.pathParentType !== TOKEN_TYPES.CALL_EXPRESSION
+    ) {
         return theme.BaseShape.complexTypeExtraSpace;
     }
 

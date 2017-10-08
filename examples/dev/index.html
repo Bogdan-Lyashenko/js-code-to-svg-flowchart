@@ -103,23 +103,23 @@
     `;
 
     const simpleStr = `
+class Animal extends Zero {
 
-            throw new Error('error');
+            setName(name) {
+                if (!callCheck()) {
+                    name = this.getAa();
+                }
+            }
+        }
     `;
 
     const t0 = performance.now();
     //===================================
     const code = `
-    function print(list) {
-
-        for (var i = 0; i< 10; i++) {
-            const a = 12;
-            console.log(i);
-        }
-    }
-
-    print(list);
+        jquery('#id').addClass(function(a){return a+1}).show();
     `;
+
+    const code2 = 'list.map((i)=>i+1).filter(a=> a > 0).forEach(o=>console.log(o))'
 
     const JS2FlowChart = window['js2flowchart'],
         ABSTRACTION_LEVELS = JS2FlowChart.ABSTRACTION_LEVELS;
@@ -128,7 +128,7 @@
     //flowTreeBuilder.setAbstractionLevel(ABSTRACTION_LEVELS.FUNCTION_DEPENDENCIES);
 
     const svgRender = JS2FlowChart.createSVGRender();
-    const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(code));
+    const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(simpleStr));
 
     document.getElementById('svgImage').innerHTML = shapesTree.print();
 

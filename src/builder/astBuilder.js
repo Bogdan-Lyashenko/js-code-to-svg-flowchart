@@ -1,5 +1,6 @@
 import * as babylon from 'babylon';
 import traverse from 'babel-traverse'; //TODO: remove, needed only for debug now
+import generate from 'babel-generator';
 
 import { TOKEN_KEYS } from 'shared/constants';
 import { setupPointer } from 'shared/utils/treeLevelsPointer';
@@ -15,10 +16,10 @@ export const parseCodeToAST = (code, config) => {
     //TODO: remove when finish with defining types
     traverse(ast, {
         enter(path) {
-            if (path.node.type === 'BinaryExpression') {
+            if (path.node.type === 'CallExpression') {
                 //debugger;
             }
-            //console.log(path.node.type, path.node.name);
+            //console.log(path.node.type,' ==== ' ,generate(path.node).code);
         }
     });
 
@@ -31,7 +32,9 @@ export const buildVisitor = ({ definitionsMap, globalIgnore }, treeNodesDestinat
 
     return definitionsMap.reduce((acc, item) => {
         if (!item.body) {
-            acc[item.type] = wrapByGlobalIgnore(visitSimpleEntry(item, pointer));
+            acc[item.type] = item.reversed
+                ? { exit: wrapByGlobalIgnore(visitSimpleEntry(item, pointer)) }
+                : wrapByGlobalIgnore(visitSimpleEntry(item, pointer));
         } else {
             acc[item.type] = {
                 enter: wrapByGlobalIgnore(enterComplexEntry(item, pointer)),
@@ -60,6 +63,12 @@ const visitSimpleEntry = (item, pointer) => (path, globalIgnore) => {
 const enterComplexEntry = (item, pointer) => (path, globalIgnore) => {
     if (item.ignore && item.ignore(path)) return;
 
+    const entryConfig = pushComplexEntry(item, pointer, path, globalIgnore);
+
+    pointer.stepIn(entryConfig);
+};
+
+const pushComplexEntry = (item, pointer, path, globalIgnore) => {
     const entryConfig = {
         ...getBasicEntryConfig(item, path),
         key: getStatementParentKey(path),
@@ -70,7 +79,7 @@ const enterComplexEntry = (item, pointer) => (path, globalIgnore) => {
         pushEntry(pointer, entryConfig);
     }
 
-    pointer.stepIn(entryConfig);
+    return entryConfig;
 };
 
 const pushEntry = (pointer, entry) => {
@@ -93,8 +102,11 @@ const exitComplexEntry = (item, pointer) => path => {
 };
 
 const getBasicEntryConfig = (item, path) => {
+    const name = item.getName(path),
+        nameOptions = typeof name === 'string' ? { name } : name;
+
     const config = {
-        name: item.getName(path),
+        ...nameOptions,
         type: item.type
     };
 

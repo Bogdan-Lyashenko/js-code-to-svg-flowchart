@@ -52,6 +52,24 @@ export const destructionModifier = (test, newNameFn) => ({
     }
 });
 
+export const expressionCallbacksModifier = () => ({
+    test: node => node.pathParentType === TOKEN_TYPES.CALL_EXPRESSION,
+    updates: {
+        subTreeUpdate: nodes => {
+            nodes.forEach(node => {
+                const parentBody = node.parent.body,
+                    index = parentBody.indexOf(node),
+                    sibling = parentBody[index + 1];
+
+                if (sibling && sibling.type === TOKEN_TYPES.CALL_EXPRESSION) {
+                    node.parent.body = parentBody.filter(n => n !== node);
+                    sibling.body = [node];
+                }
+            });
+        }
+    }
+});
+
 export const MODIFIER_PRESETS = {
     es5ArrayIterators: [DEFINED_MODIFIERS.forEach, DEFINED_MODIFIERS.filter, DEFINED_MODIFIERS.map]
 };
