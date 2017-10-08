@@ -1,6 +1,7 @@
 import { TOKEN_TYPES } from 'shared/constants';
 import { callExpressionConverter } from 'builder/converters/core';
 import { DefinitionsMap } from 'builder/entryDefinitionsMap';
+import { getCustomFunctionDeclaration } from 'builder/abstraction-levels/functions';
 
 const isNodeContainsFunctionCall = node => {
     return node && node.type === TOKEN_TYPES.CALL_EXPRESSION;
@@ -28,9 +29,11 @@ const getCustomVariableDeclarator = () => {
     };
 };
 
-export const getFunctionDependenciesLevel = () => {
-    return {
-        defined: [TOKEN_TYPES.FUNCTION, TOKEN_TYPES.CALL_EXPRESSION],
-        custom: [getCustomAssignmentExpression(), getCustomVariableDeclarator()]
-    };
-};
+export const getFunctionDependenciesLevel = () => ({
+    defined: [TOKEN_TYPES.CALL_EXPRESSION],
+    custom: [
+        getCustomFunctionDeclaration(),
+        getCustomAssignmentExpression(),
+        getCustomVariableDeclarator()
+    ]
+});

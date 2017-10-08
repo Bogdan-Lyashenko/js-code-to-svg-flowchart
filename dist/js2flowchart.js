@@ -37110,10 +37110,12 @@ var _entryDefinitionsMap = __webpack_require__(107);
 
 var _functionDependencies = __webpack_require__(442);
 
+var _functions = __webpack_require__(477);
+
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var ABSTRACTION_LEVELS = exports.ABSTRACTION_LEVELS = {
-    FUNCTION: [_constants.TOKEN_TYPES.FUNCTION],
+    FUNCTION: (0, _functions.getFunctionsLevel)(),
     FUNCTION_DEPENDENCIES: (0, _functionDependencies.getFunctionDependenciesLevel)(),
     CLASS: [_constants.TOKEN_TYPES.CLASS_DECLARATION],
     IMPORT: [_constants.TOKEN_TYPES.IMPORT_DECLARATION, _constants.TOKEN_TYPES.IMPORT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER],
@@ -37164,6 +37166,8 @@ var _core = __webpack_require__(164);
 
 var _entryDefinitionsMap = __webpack_require__(107);
 
+var _functions = __webpack_require__(477);
+
 var isNodeContainsFunctionCall = function isNodeContainsFunctionCall(node) {
     return node && node.type === _constants.TOKEN_TYPES.CALL_EXPRESSION;
 };
@@ -37198,8 +37202,8 @@ var getCustomVariableDeclarator = function getCustomVariableDeclarator() {
 
 var getFunctionDependenciesLevel = exports.getFunctionDependenciesLevel = function getFunctionDependenciesLevel() {
     return {
-        defined: [_constants.TOKEN_TYPES.FUNCTION, _constants.TOKEN_TYPES.CALL_EXPRESSION],
-        custom: [getCustomAssignmentExpression(), getCustomVariableDeclarator()]
+        defined: [_constants.TOKEN_TYPES.CALL_EXPRESSION],
+        custom: [(0, _functions.getCustomFunctionDeclaration)(), getCustomAssignmentExpression(), getCustomVariableDeclarator()]
     };
 };
 
@@ -39278,6 +39282,42 @@ exports.default = function (code) {
                 return shapesTree.print();
             });
         }
+    };
+};
+
+/***/ }),
+/* 476 */,
+/* 477 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.getFunctionsLevel = exports.getCustomFunctionDeclaration = undefined;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _constants = __webpack_require__(4);
+
+var _entryDefinitionsMap = __webpack_require__(107);
+
+var getCustomFunctionDeclaration = exports.getCustomFunctionDeclaration = function getCustomFunctionDeclaration() {
+    var functionDeclaration = _entryDefinitionsMap.DefinitionsMap[_constants.TOKEN_TYPES.FUNCTION];
+
+    return _extends({}, functionDeclaration, {
+        ignore: function ignore(path) {
+            return functionDeclaration.ignore && functionDeclaration.ignore(path) || path.parent.type === _constants.TOKEN_TYPES.CALL_EXPRESSION;
+        }
+    });
+};
+
+var getFunctionsLevel = exports.getFunctionsLevel = function getFunctionsLevel() {
+    return {
+        defined: [],
+        custom: [getCustomFunctionDeclaration()]
     };
 };
 

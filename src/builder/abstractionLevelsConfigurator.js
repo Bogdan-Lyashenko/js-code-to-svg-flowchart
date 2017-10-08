@@ -1,9 +1,10 @@
 import { TOKEN_TYPES } from 'shared/constants';
 import { DefinitionsList } from './entryDefinitionsMap';
 import { getFunctionDependenciesLevel } from './abstraction-levels/functionDependencies';
+import { getFunctionsLevel } from './abstraction-levels/functions';
 
 export const ABSTRACTION_LEVELS = {
-    FUNCTION: [TOKEN_TYPES.FUNCTION],
+    FUNCTION: getFunctionsLevel(),
     FUNCTION_DEPENDENCIES: getFunctionDependenciesLevel(),
     CLASS: [TOKEN_TYPES.CLASS_DECLARATION],
     IMPORT: [
