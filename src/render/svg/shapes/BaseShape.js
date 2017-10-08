@@ -151,7 +151,8 @@ export const setupSharedPrint = state => ({
             .join('');
 
         //TODO: move to svg primitives
-        return `<text x="${x + theme.horizontalPadding}" y="${y + 2 * theme.verticalPadding}"
+        return `${nameParts[0].length < state.name.length ? `<title>${state.name}</title>` : ''}
+            <text x="${x + theme.horizontalPadding}" y="${y + 2 * theme.verticalPadding}"
                 font-family="${theme.fontFamily}" font-size="${theme.fontSize}" fill="${theme.textColor}">
                 ${name}
             </text>`;

@@ -1073,7 +1073,7 @@ var setupSharedPrint = exports.setupSharedPrint = function setupSharedPrint(stat
             }).join('');
 
             //TODO: move to svg primitives
-            return '<text x="' + (x + theme.horizontalPadding) + '" y="' + (y + 2 * theme.verticalPadding) + '"\n                font-family="' + theme.fontFamily + '" font-size="' + theme.fontSize + '" fill="' + theme.textColor + '">\n                ' + name + '\n            </text>';
+            return (nameParts[0].length < state.name.length ? '<title>' + state.name + '</title>' : '') + '\n            <text x="' + (x + theme.horizontalPadding) + '" y="' + (y + 2 * theme.verticalPadding) + '"\n                font-family="' + theme.fontFamily + '" font-size="' + theme.fontSize + '" fill="' + theme.textColor + '">\n                ' + name + '\n            </text>';
         },
         printDebugInfo: function printDebugInfo() {
             var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
@@ -6561,7 +6561,7 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
         var statementParent = path.getStatementParent(),
             parent = path.parent || {};
 
-        return statementParent.isVariableDeclaration() || parent.type === _constants.TOKEN_TYPES.UNARY_EXPRESSION || statementParent.isConditional() && parent.test && parent.test.type === _constants.TOKEN_TYPES.CALL_EXPRESSION || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION //TODO: BUG, fix line: list = list.filter(i => i % 2)
+        return statementParent.isVariableDeclaration() || parent.type === _constants.TOKEN_TYPES.UNARY_EXPRESSION || parent.type === _constants.TOKEN_TYPES.BINARY_EXPRESSION || statementParent.isConditional() && parent.test && parent.test.type === _constants.TOKEN_TYPES.CALL_EXPRESSION || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION //TODO: BUG, fix line: list = list.filter(i => i % 2)
         ;
     }
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.UPDATE_EXPRESSION, {
@@ -6631,7 +6631,7 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
         var statementParent = path.getStatementParent(),
             parent = path.parent || {};
 
-        return statementParent.isLoop() || statementParent.isReturnStatement() || statementParent.isConditional() || parent.type === _constants.TOKEN_TYPES.CALL_EXPRESSION || statementParent.isConditional() && parent.test && parent.test.type === _constants.TOKEN_TYPES.BINARY_EXPRESSION || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION;
+        return statementParent.isLoop() || statementParent.isReturnStatement() || statementParent.isConditional() || parent.type === _constants.TOKEN_TYPES.CALL_EXPRESSION || parent.type === _constants.TOKEN_TYPES.BINARY_EXPRESSION || statementParent.isConditional() && parent.test && parent.test.type === _constants.TOKEN_TYPES.BINARY_EXPRESSION || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION;
     }
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.IMPORT_DECLARATION, {
     type: _constants.TOKEN_TYPES.IMPORT_DECLARATION, //TODO: visual display in separate way libs (npm modules) and local dependencies
@@ -38388,15 +38388,13 @@ var getPathId = exports.getPathId = function getPathId(node) {
     return id.replace(/\s/g, '').toUpperCase();
 };
 
-var splitNameString = exports.splitNameString = function splitNameString(str) {
-    var maxLineLength = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 20;
-    var nameSplitterTokensIterator = arguments[2];
-
+var splitNameString = exports.splitNameString = function splitNameString(str, maxLineLength, nameSplitterTokensIterator) {
     var strLength = str.length;
 
-    return [str];
+    if (strLength <= maxLineLength) return [str];
+
+    return [str.slice(0, maxLineLength) + '...'];
     //TODO: fix
-    //if (strLength <= maxLineLength) return [str];
 
     var parts = [],
         currentPositionIndex = 0,
@@ -38470,7 +38468,7 @@ exports.getNameSplitterTokensIterator = exports.NAME_SPLITTER_TOKENS = exports.M
 
 var _iteratorBuilder = __webpack_require__(458);
 
-var MAX_NAME_STR_LENGTH = exports.MAX_NAME_STR_LENGTH = 20;
+var MAX_NAME_STR_LENGTH = exports.MAX_NAME_STR_LENGTH = 50;
 
 var NAME_SPLITTER_TOKENS = exports.NAME_SPLITTER_TOKENS = ['||', '&&', '=', '?', ':', '<==', '>==', '<', '>', '===', '==', ',', '.', '('];
 

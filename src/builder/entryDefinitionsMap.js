@@ -68,6 +68,7 @@ export const DefinitionsMap = {
             return (
                 statementParent.isVariableDeclaration() ||
                 parent.type === TOKEN_TYPES.UNARY_EXPRESSION ||
+                parent.type === TOKEN_TYPES.BINARY_EXPRESSION ||
                 (statementParent.isConditional() &&
                     parent.test &&
                     parent.test.type === TOKEN_TYPES.CALL_EXPRESSION) ||
@@ -160,6 +161,7 @@ export const DefinitionsMap = {
                 statementParent.isReturnStatement() ||
                 statementParent.isConditional() ||
                 parent.type === TOKEN_TYPES.CALL_EXPRESSION ||
+                parent.type === TOKEN_TYPES.BINARY_EXPRESSION ||
                 (statementParent.isConditional() &&
                     parent.test &&
                     parent.test.type === TOKEN_TYPES.BINARY_EXPRESSION) ||

@@ -103,11 +103,11 @@
     `;
 
     const simpleStr = `
-class Animal extends Zero {
+        class AnimalAndSomethingElseSingleLongName extends Zero {
 
             setName(name) {
-                if (!callCheck()) {
-                    name = this.getAa();
+                if (!callCheck() && longParameterName || booleanFlag) {
+                    name = this.getAa() + this.getAa() + this.getAa() + this.getAa();
                 }
             }
         }
@@ -128,7 +128,7 @@ class Animal extends Zero {
     //flowTreeBuilder.setAbstractionLevel(ABSTRACTION_LEVELS.FUNCTION_DEPENDENCIES);
 
     const svgRender = JS2FlowChart.createSVGRender();
-    const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(code));
+    const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(simpleStr));
 
     document.getElementById('svgImage').innerHTML = shapesTree.print();
 

@@ -25,12 +25,13 @@ export const getPathId = node => {
     return id.replace(/\s/g, '').toUpperCase();
 };
 
-export const splitNameString = (str, maxLineLength = 20, nameSplitterTokensIterator) => {
+export const splitNameString = (str, maxLineLength, nameSplitterTokensIterator) => {
     const strLength = str.length;
 
-    return [str];
+    if (strLength <= maxLineLength) return [str];
+
+    return [str.slice(0, maxLineLength) + '...'];
     //TODO: fix
-    //if (strLength <= maxLineLength) return [str];
 
     let parts = [],
         currentPositionIndex = 0,
