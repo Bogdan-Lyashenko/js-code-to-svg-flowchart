@@ -116,7 +116,7 @@ class Animal extends Zero {
     const t0 = performance.now();
     //===================================
     const code = `
-        jquery('#id').addClass(function(a){return a+1}).show();
+        jquery('#id').addClass(function(a){return a+1}).show(par());
     `;
 
     const code2 = 'list.map((i)=>i+1).filter(a=> a > 0).forEach(o=>console.log(o))'
@@ -128,7 +128,7 @@ class Animal extends Zero {
     //flowTreeBuilder.setAbstractionLevel(ABSTRACTION_LEVELS.FUNCTION_DEPENDENCIES);
 
     const svgRender = JS2FlowChart.createSVGRender();
-    const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(simpleStr));
+    const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(code2));
 
     document.getElementById('svgImage').innerHTML = shapesTree.print();
 

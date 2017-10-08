@@ -44,6 +44,12 @@ export default {
     Rectangle: {
         ...BaseShape,
         fillColor: '#b39ddb',
+        dot: {
+            ...BaseShape,
+            offset: 4,
+            radius: 2,
+            fillColor: '#ede7f6'
+        },
         roundBorder: 3
     },
 

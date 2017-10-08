@@ -2711,16 +2711,18 @@ var setupRectangleBehavior = function setupRectangleBehavior(state) {
         print: function print() {
             var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-            var theme = state.theme;
+            var theme = state.theme,
+                dotTheme = theme.dot;
             var _state$position = state.position,
                 x = _state$position.x,
                 y = _state$position.y,
                 _state$dimensions = state.dimensions,
                 w = _state$dimensions.w,
-                h = _state$dimensions.h;
+                h = _state$dimensions.h,
+                node = state.node;
 
 
-            return '\n                <g>\n                   ' + (0, _svgPrimitives.getRoundedRectangle)(x, y, w, h, theme) + '\n                   ' + this.printName() + '\n                   ' + this.printDebugInfo(config) + '\n                </g>';
+            return '\n                <g>\n                   ' + (0, _svgPrimitives.getRoundedRectangle)(x, y, w, h, theme) + '\n                   ' + this.printName() + '\n                   ' + (node.chain ? (0, _svgPrimitives.getCircle)(x + dotTheme.offset, y + h - dotTheme.offset, dotTheme.radius, dotTheme) : '') + '\n                   ' + this.printDebugInfo(config) + '\n                </g>';
         }
     };
 };
@@ -37609,6 +37611,11 @@ exports.default = {
 
     Rectangle: _extends({}, BaseShape, {
         fillColor: '#b39ddb',
+        dot: _extends({}, BaseShape, {
+            offset: 4,
+            radius: 2,
+            fillColor: '#ede7f6'
+        }),
         roundBorder: 3
     }),
 
@@ -38063,34 +38070,19 @@ var buildConnections = exports.buildConnections = function buildConnections(shap
     };
 
     var latestShape = null,
-        startShape = null,
         latestParentShape = null;
 
     (0, _traversalWithTreeLevelsPointer.complexTraversal)(shapesTree, shapesTree, function (parentShape) {}, function (shape, parentShape) {
-        startShape = parentShape;
         latestShape = shape;
 
-        //TODO: add const startShape = ; because it's not always parent (like `continue` in loop actually change flow)
+        var config = buildConnectionConfig(shape, parentShape),
+            arrow = pushArrow(config);
 
-        var config = {
-            endPoint: shape.getToPoint(),
-            arrowType: _constants.ARROW_TYPE.RIGHT,
-            noArrow: [_constants.TOKEN_TYPES.IMPORT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER].includes(shape.getNodeType())
-        };
-
-        if (shape.getNodeKey() === _constants.TOKEN_KEYS.ALTERNATE) {
-            var boundaryPoint = parentShape.getAlternativeBranchChildOffsetPoint();
-
-            config.startPoint = parentShape.getAlternateFromPoint();
-            config.boundaryPoint = { x: boundaryPoint.x };
-        } else {
-            config.startPoint = startShape.getFromPoint();
-        }
-
-        shape.assignConnectionArrow(pushArrow(config));
+        shape.assignConnectionArrow(arrow);
 
         return shape;
     }, function (parentShape) {
+        latestParentShape = parentShape;
         if (parentShape.getNodeType() !== _constants.TOKEN_TYPES.LOOP) return;
 
         var _parentShape$getChild = parentShape.getChildBoundaries(),
@@ -38109,6 +38101,25 @@ var buildConnections = exports.buildConnections = function buildConnections(shap
     });
 
     return connections;
+};
+
+var buildConnectionConfig = function buildConnectionConfig(toShape, fromShape) {
+    var config = {
+        endPoint: toShape.getToPoint(),
+        arrowType: _constants.ARROW_TYPE.RIGHT,
+        noArrow: [_constants.TOKEN_TYPES.IMPORT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER].includes(toShape.getNodeType())
+    };
+
+    if (toShape.getNodeKey() === _constants.TOKEN_KEYS.ALTERNATE) {
+        var boundaryPoint = fromShape.getAlternativeBranchChildOffsetPoint();
+
+        config.startPoint = fromShape.getAlternateFromPoint();
+        config.boundaryPoint = { x: boundaryPoint.x };
+    } else {
+        config.startPoint = fromShape.getFromPoint();
+    }
+
+    return config;
 };
 
 /***/ }),

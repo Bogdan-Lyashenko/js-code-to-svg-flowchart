@@ -102,7 +102,6 @@ export const buildConnections = (shapesTree, styleTheme) => {
         };
 
     let latestShape = null,
-        startShape = null,
         latestParentShape = null;
 
     complexTraversal(
@@ -110,34 +109,17 @@ export const buildConnections = (shapesTree, styleTheme) => {
         shapesTree,
         parentShape => {},
         (shape, parentShape) => {
-            startShape = parentShape;
             latestShape = shape;
 
-            //TODO: add const startShape = ; because it's not always parent (like `continue` in loop actually change flow)
+            const config = buildConnectionConfig(shape, parentShape),
+                arrow = pushArrow(config);
 
-            const config = {
-                endPoint: shape.getToPoint(),
-                arrowType: ARROW_TYPE.RIGHT,
-                noArrow: [
-                    TOKEN_TYPES.IMPORT_SPECIFIER,
-                    TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER
-                ].includes(shape.getNodeType())
-            };
-
-            if (shape.getNodeKey() === TOKEN_KEYS.ALTERNATE) {
-                const boundaryPoint = parentShape.getAlternativeBranchChildOffsetPoint();
-
-                config.startPoint = parentShape.getAlternateFromPoint();
-                config.boundaryPoint = { x: boundaryPoint.x };
-            } else {
-                config.startPoint = startShape.getFromPoint();
-            }
-
-            shape.assignConnectionArrow(pushArrow(config));
+            shape.assignConnectionArrow(arrow);
 
             return shape;
         },
         parentShape => {
+            latestParentShape = parentShape;
             if (parentShape.getNodeType() !== TOKEN_TYPES.LOOP) return;
 
             const { max } = parentShape.getChildBoundaries();
@@ -157,4 +139,25 @@ export const buildConnections = (shapesTree, styleTheme) => {
     );
 
     return connections;
+};
+
+const buildConnectionConfig = (toShape, fromShape) => {
+    const config = {
+        endPoint: toShape.getToPoint(),
+        arrowType: ARROW_TYPE.RIGHT,
+        noArrow: [TOKEN_TYPES.IMPORT_SPECIFIER, TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER].includes(
+            toShape.getNodeType()
+        )
+    };
+
+    if (toShape.getNodeKey() === TOKEN_KEYS.ALTERNATE) {
+        const boundaryPoint = fromShape.getAlternativeBranchChildOffsetPoint();
+
+        config.startPoint = fromShape.getAlternateFromPoint();
+        config.boundaryPoint = { x: boundaryPoint.x };
+    } else {
+        config.startPoint = fromShape.getFromPoint();
+    }
+
+    return config;
 };
