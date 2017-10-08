@@ -17577,47 +17577,30 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.buildVisitor = exports.parseCodeToAST = undefined;
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; //TODO: remove, needed only for debug now
-
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _babylon = __webpack_require__(162);
 
 var babylon = _interopRequireWildcard(_babylon);
 
-var _babelTraverse = __webpack_require__(30);
-
-var _babelTraverse2 = _interopRequireDefault(_babelTraverse);
-
-var _babelGenerator = __webpack_require__(108);
-
-var _babelGenerator2 = _interopRequireDefault(_babelGenerator);
+var _composition = __webpack_require__(10);
 
 var _constants = __webpack_require__(4);
 
 var _treeLevelsPointer = __webpack_require__(177);
 
+var _astParserConfig = __webpack_require__(478);
+
+var _astParserConfig2 = _interopRequireDefault(_astParserConfig);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-var parseCodeToAST = exports.parseCodeToAST = function parseCodeToAST(code, config) {
-    var ast = babylon.parse(code, {
-        sourceType: 'module', //TODO: move to multiple files support, make it configurable
-        plugins: ['objectRestSpread' //TODO: plugins should be configurable
-        ]
-    });
+var parseCodeToAST = exports.parseCodeToAST = function parseCodeToAST(code) {
+    var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-    //TODO: remove when finish with defining types
-    (0, _babelTraverse2.default)(ast, {
-        enter: function enter(path) {
-            if (path.node.type === 'CallExpression') {}
-            //debugger;
-
-            //console.log(path.node.type,' ==== ' ,generate(path.node).code);
-        }
-    });
-
-    return ast;
+    return babylon.parse(code, (0, _composition.mergeObjectStructures)(_astParserConfig2.default, config));
 };
 
 var buildVisitor = exports.buildVisitor = function buildVisitor(_ref, treeNodesDestination) {
@@ -39320,6 +39303,22 @@ var getFunctionsLevel = exports.getFunctionsLevel = function getFunctionsLevel()
         custom: [getCustomFunctionDeclaration()]
     };
 };
+
+/***/ }),
+/* 478 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = {
+    sourceType: 'module',
+    plugins: ['objectRestSpread']
+};
+module.exports = exports['default'];
 
 /***/ })
 /******/ ]);
