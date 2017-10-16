@@ -1277,6 +1277,9 @@ var TOKEN_TYPES = exports.TOKEN_TYPES = {
     BINARY_EXPRESSION: 'BinaryExpression',
     EXPRESSION_STATEMENT: 'ExpressionStatement',
     UNARY_EXPRESSION: 'UnaryExpression',
+    CONDITIONAL_EXPRESSION: 'ConditionalExpression',
+    STRING_LITERAL: 'StringLiteral',
+    NUMERIC_LITERAL: 'NumericLiteral',
 
     //ES Harmony features
     ARROW_FUNCTION_EXPRESSION: 'ArrowFunctionExpression',
@@ -6528,6 +6531,13 @@ var _Harmony = __webpack_require__(440);
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+var singleTypeFilter = function singleTypeFilter(path) {
+    var statementParent = path.getStatementParent(),
+        parent = path.parent || {};
+
+    return statementParent.isReturnStatement() || (statementParent.isLoop() || statementParent.isConditional() || parent.type === _constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION) && ['test'].includes(path.parentKey) || [_constants.TOKEN_TYPES.CALL_EXPRESSION, _constants.TOKEN_TYPES.BINARY_EXPRESSION, _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION, _constants.TOKEN_TYPES.VARIABLE_DECLARATOR, _constants.TOKEN_TYPES.MEMBER_EXPRESSION, _constants.TOKEN_TYPES.NEW_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION_DECLARATION, _constants.TOKEN_TYPES.FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION, _constants.TOKEN_TYPES.OBJECT_PROPERTY, _constants.TOKEN_TYPES.UNARY_EXPRESSION].includes(parent.type);
+};
+
 var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.FUNCTION, {
     type: _constants.TOKEN_TYPES.FUNCTION,
     getName: _core.functionConverter,
@@ -6627,12 +6637,30 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.BINARY_EXPRESSION, {
     type: _constants.TOKEN_TYPES.BINARY_EXPRESSION,
     getName: _core.idleConverter,
+    ignore: singleTypeFilter
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.IDENTIFIER, {
+    type: _constants.TOKEN_TYPES.IDENTIFIER,
+    getName: _core.idleConverter,
+    ignore: singleTypeFilter
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.STRING_LITERAL, {
+    type: _constants.TOKEN_TYPES.STRING_LITERAL,
+    getName: _core.idleConverter,
+    ignore: singleTypeFilter
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.NUMERIC_LITERAL, {
+    type: _constants.TOKEN_TYPES.NUMERIC_LITERAL,
+    getName: _core.idleConverter,
+    ignore: singleTypeFilter
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.OBJECT_EXPRESSION, {
+    type: _constants.TOKEN_TYPES.OBJECT_EXPRESSION,
+    getName: _core.objectExpressionConverter,
     ignore: function ignore(path) {
-        var statementParent = path.getStatementParent(),
-            parent = path.parent || {};
-
-        return statementParent.isLoop() || statementParent.isReturnStatement() || statementParent.isConditional() || parent.type === _constants.TOKEN_TYPES.CALL_EXPRESSION || parent.type === _constants.TOKEN_TYPES.BINARY_EXPRESSION || statementParent.isConditional() && parent.test && parent.test.type === _constants.TOKEN_TYPES.BINARY_EXPRESSION || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION;
-    }
+        return [_constants.TOKEN_TYPES.OBJECT_PROPERTY].includes(path.parent.type);
+    },
+    body: true
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.OBJECT_PROPERTY, {
+    type: _constants.TOKEN_TYPES.OBJECT_PROPERTY,
+    getName: _core.objectPropertyConverter,
+    body: true
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.IMPORT_DECLARATION, {
     type: _constants.TOKEN_TYPES.IMPORT_DECLARATION, //TODO: visual display in separate way libs (npm modules) and local dependencies
     getName: _Harmony.importDeclarationConverter,
@@ -16279,7 +16307,7 @@ module.exports = exports["default"];
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.isNodeContainsFunc = exports.callExpressionConverter = exports.assignmentExpressionConverter = exports.variableDeclaratorConverter = exports.getVariableDeclarations = exports.debuggerConverter = exports.throwStatementConverter = exports.programConverter = exports.withStatementConverter = exports.breakConverter = exports.caseConverter = exports.switchStatementConverter = exports.finallyConverter = exports.catchConverter = exports.tryConverter = exports.conditionalConverter = exports.continueConverter = exports.loopConverter = exports.returnConverter = exports.getFunctionParametersCode = exports.getAnonymousFunctionName = exports.functionConverter = exports.idleConverter = undefined;
+exports.isNodeContainsFunc = exports.objectPropertyConverter = exports.objectExpressionConverter = exports.callExpressionConverter = exports.assignmentExpressionConverter = exports.variableDeclaratorConverter = exports.getVariableDeclarations = exports.debuggerConverter = exports.throwStatementConverter = exports.programConverter = exports.withStatementConverter = exports.breakConverter = exports.caseConverter = exports.switchStatementConverter = exports.finallyConverter = exports.catchConverter = exports.tryConverter = exports.conditionalConverter = exports.continueConverter = exports.loopConverter = exports.returnConverter = exports.getFunctionParametersCode = exports.getAnonymousFunctionName = exports.functionConverter = exports.idleConverter = undefined;
 
 var _babelGenerator = __webpack_require__(108);
 
@@ -16448,9 +16476,7 @@ var callExpressionConverter = exports.callExpressionConverter = function callExp
     var argumentsCode = '';
 
     if (node.arguments && node.arguments.length) {
-        argumentsCode = node.arguments.map(function (argument) {
-            return isNodeContainsFunc(argument) ? '*' : argument.name || argument.value;
-        }).join(', ');
+        argumentsCode = node.arguments.map(getArgumentName).join(', ');
     }
 
     var callee = node.callee;
@@ -16458,6 +16484,33 @@ var callExpressionConverter = exports.callExpressionConverter = function callExp
         return { name: '.' + callee.property.name + '(' + argumentsCode + ')', chain: true };
     } else if (argumentsCode) {
         return (0, _babelGenerator2.default)(node.callee).code + '(' + argumentsCode + ')';
+    }
+
+    return (0, _babelGenerator2.default)(node).code;
+};
+
+var getArgumentName = function getArgumentName(argument) {
+    if (isNodeContainsFunc(argument)) return '*()';
+    if (argument.type === _constants.TOKEN_TYPES.OBJECT_EXPRESSION) return objectExpressionConverter();
+
+    if (argument.name) return argument.name;
+    if (argument.value) return argument.value;
+
+    return (0, _babelGenerator2.default)(argument).code;
+};
+
+var objectExpressionConverter = exports.objectExpressionConverter = function objectExpressionConverter(path) {
+    var name = '{*}';
+    if (path) return { name: name, pathParentType: path.parent.type };
+
+    return name;
+};
+
+var objectPropertyConverter = exports.objectPropertyConverter = function objectPropertyConverter(path) {
+    var node = path.node;
+
+    if (node.value && node.value.type === _constants.TOKEN_TYPES.OBJECT_EXPRESSION) {
+        return node.key.name + ': ' + objectExpressionConverter();
     }
 
     return (0, _babelGenerator2.default)(node).code;
@@ -17593,6 +17646,10 @@ var _astParserConfig = __webpack_require__(478);
 
 var _astParserConfig2 = _interopRequireDefault(_astParserConfig);
 
+var _babelTraverse = __webpack_require__(30);
+
+var _babelTraverse2 = _interopRequireDefault(_babelTraverse);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -17600,7 +17657,18 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 var parseCodeToAST = exports.parseCodeToAST = function parseCodeToAST(code) {
     var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-    return babylon.parse(code, (0, _composition.mergeObjectStructures)(_astParserConfig2.default, config));
+    var ast = babylon.parse(code, (0, _composition.mergeObjectStructures)(_astParserConfig2.default, config));
+
+    (0, _babelTraverse2.default)(ast, {
+        enter: function enter(path) {
+            if (path.node.type === 'UnaryExpression') {}
+            //debugger;
+
+            //console.log(path.node.type, ' ==== ', path.node.name);
+        }
+    });
+
+    return ast;
 };
 
 var buildVisitor = exports.buildVisitor = function buildVisitor(_ref, treeNodesDestination) {

@@ -5,8 +5,21 @@ import { TOKEN_KEYS } from 'shared/constants';
 import { setupPointer } from 'shared/utils/treeLevelsPointer';
 import defaultAstConfig from './astParserConfig';
 
+import traverse from 'babel-traverse';
+
 export const parseCodeToAST = (code, config = {}) => {
-    return babylon.parse(code, mergeObjectStructures(defaultAstConfig, config));
+    const ast = babylon.parse(code, mergeObjectStructures(defaultAstConfig, config));
+
+    traverse(ast, {
+        enter(path) {
+            if (path.node.type === 'UnaryExpression') {
+                //debugger;
+            }
+            //console.log(path.node.type, ' ==== ', path.node.name);
+        }
+    });
+
+    return ast;
 };
 
 export const buildVisitor = ({ definitionsMap, globalIgnore }, treeNodesDestination) => {

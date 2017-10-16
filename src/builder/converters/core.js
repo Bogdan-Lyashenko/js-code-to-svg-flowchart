@@ -158,9 +158,7 @@ export const callExpressionConverter = ({ node }) => {
     let argumentsCode = '';
 
     if (node.arguments && node.arguments.length) {
-        argumentsCode = node.arguments
-            .map(argument => (isNodeContainsFunc(argument) ? '*' : argument.name || argument.value))
-            .join(', ');
+        argumentsCode = node.arguments.map(getArgumentName).join(', ');
     }
 
     const callee = node.callee;
@@ -171,6 +169,33 @@ export const callExpressionConverter = ({ node }) => {
         return { name: `.${callee.property.name}(${argumentsCode})`, chain: true };
     } else if (argumentsCode) {
         return `${generate(node.callee).code}(${argumentsCode})`;
+    }
+
+    return generate(node).code;
+};
+
+const getArgumentName = argument => {
+    if (isNodeContainsFunc(argument)) return '*()';
+    if (argument.type === TOKEN_TYPES.OBJECT_EXPRESSION) return objectExpressionConverter();
+
+    if (argument.name) return argument.name;
+    if (argument.value) return argument.value;
+
+    return generate(argument).code;
+};
+
+export const objectExpressionConverter = path => {
+    const name = '{*}';
+    if (path) return { name, pathParentType: path.parent.type };
+
+    return name;
+};
+
+export const objectPropertyConverter = path => {
+    const node = path.node;
+
+    if (node.value && node.value.type === TOKEN_TYPES.OBJECT_EXPRESSION) {
+        return node.key.name + ': ' + objectExpressionConverter();
     }
 
     return generate(node).code;

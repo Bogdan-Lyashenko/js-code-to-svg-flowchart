@@ -18,7 +18,9 @@ import {
     withStatementConverter,
     programConverter,
     throwStatementConverter,
-    debuggerConverter
+    debuggerConverter,
+    objectExpressionConverter,
+    objectPropertyConverter
 } from './converters/core';
 
 import {
@@ -27,6 +29,32 @@ import {
     exportDefaultDeclarationConverter,
     classDeclarationConverter
 } from './converters/Harmony';
+
+const singleTypeFilter = path => {
+    const statementParent = path.getStatementParent(),
+        parent = path.parent || {};
+
+    return (
+        statementParent.isReturnStatement() ||
+        ((statementParent.isLoop() ||
+            statementParent.isConditional() ||
+            parent.type === TOKEN_TYPES.CONDITIONAL_EXPRESSION) &&
+            ['test'].includes(path.parentKey)) ||
+        [
+            TOKEN_TYPES.CALL_EXPRESSION,
+            TOKEN_TYPES.BINARY_EXPRESSION,
+            TOKEN_TYPES.ASSIGNMENT_EXPRESSION,
+            TOKEN_TYPES.VARIABLE_DECLARATOR,
+            TOKEN_TYPES.MEMBER_EXPRESSION,
+            TOKEN_TYPES.NEW_EXPRESSION,
+            TOKEN_TYPES.FUNCTION_DECLARATION,
+            TOKEN_TYPES.FUNCTION_EXPRESSION,
+            TOKEN_TYPES.FUNCTION,
+            TOKEN_TYPES.OBJECT_PROPERTY,
+            TOKEN_TYPES.UNARY_EXPRESSION
+        ].includes(parent.type)
+    );
+};
 
 export const DefinitionsMap = {
     [TOKEN_TYPES.FUNCTION]: {
@@ -152,22 +180,33 @@ export const DefinitionsMap = {
     [TOKEN_TYPES.BINARY_EXPRESSION]: {
         type: TOKEN_TYPES.BINARY_EXPRESSION,
         getName: idleConverter,
-        ignore: path => {
-            const statementParent = path.getStatementParent(),
-                parent = path.parent || {};
-
-            return (
-                statementParent.isLoop() ||
-                statementParent.isReturnStatement() ||
-                statementParent.isConditional() ||
-                parent.type === TOKEN_TYPES.CALL_EXPRESSION ||
-                parent.type === TOKEN_TYPES.BINARY_EXPRESSION ||
-                (statementParent.isConditional() &&
-                    parent.test &&
-                    parent.test.type === TOKEN_TYPES.BINARY_EXPRESSION) ||
-                path.parent.type === TOKEN_TYPES.ASSIGNMENT_EXPRESSION
-            );
-        }
+        ignore: singleTypeFilter
+    },
+    [TOKEN_TYPES.IDENTIFIER]: {
+        type: TOKEN_TYPES.IDENTIFIER,
+        getName: idleConverter,
+        ignore: singleTypeFilter
+    },
+    [TOKEN_TYPES.STRING_LITERAL]: {
+        type: TOKEN_TYPES.STRING_LITERAL,
+        getName: idleConverter,
+        ignore: singleTypeFilter
+    },
+    [TOKEN_TYPES.NUMERIC_LITERAL]: {
+        type: TOKEN_TYPES.NUMERIC_LITERAL,
+        getName: idleConverter,
+        ignore: singleTypeFilter
+    },
+    [TOKEN_TYPES.OBJECT_EXPRESSION]: {
+        type: TOKEN_TYPES.OBJECT_EXPRESSION,
+        getName: objectExpressionConverter,
+        ignore: path => [TOKEN_TYPES.OBJECT_PROPERTY].includes(path.parent.type),
+        body: true
+    },
+    [TOKEN_TYPES.OBJECT_PROPERTY]: {
+        type: TOKEN_TYPES.OBJECT_PROPERTY,
+        getName: objectPropertyConverter,
+        body: true
     },
 
     //ES Harmony features
