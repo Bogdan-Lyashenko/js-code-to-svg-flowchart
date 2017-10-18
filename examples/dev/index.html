@@ -154,13 +154,14 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
 
     const code2 = 'list.map((i)=>i+1).filter(a=> a > 0).forEach(o=>console.log(o))'
 
-    const JS2FlowChart = window['js2flowchart'],
-        ABSTRACTION_LEVELS = JS2FlowChart.ABSTRACTION_LEVELS;
+    const JS2FlowChart = window['js2flowchart'];
 
-    const flowTreeBuilder = JS2FlowChart.createFlowTreeBuilder();
-    //flowTreeBuilder.setAbstractionLevel(ABSTRACTION_LEVELS.FUNCTION_DEPENDENCIES);
+    //API
+    const {createFlowTreeBuilder, createSVGRender} = JS2FlowChart;
 
-    const svgRender = JS2FlowChart.createSVGRender();
+    const flowTreeBuilder = createFlowTreeBuilder(),
+        svgRender = createSVGRender();
+
     const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(`
 
     if (a === b && v > 2) { c = 12;} else if (a==2 && !k){llog()};

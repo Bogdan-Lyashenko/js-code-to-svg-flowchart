@@ -16,7 +16,7 @@
         const list = [1, 2, 3, 4];
 
         function filterAndPrint(list) {
-            list = list.filter(i => i % 2);
+            list = list.filter((i, b) => a);
 
             list.forEach(i => console.log(i));
 
@@ -28,17 +28,17 @@
 
     const JS2FlowChart = window['js2flowchart'];
 
-    const flowTreeBuilder = JS2FlowChart.createFlowTreeBuilder();
+    //API
+    const {createFlowTreeBuilder, createFlowTreeModifier, convertFlowTreeToSvg} = JS2FlowChart;
+
+    const flowTreeBuilder = createFlowTreeBuilder();
     const flowTree = flowTreeBuilder.build(code);
-    const flowTreeModifier = JS2FlowChart.createFlowTreeModifier();
+    const flowTreeModifier = createFlowTreeModifier();
 
     flowTreeModifier.destructNodeTree((node) => node.name.indexOf('.forEach') !== -1, 'and print list...');
     flowTreeModifier.applyToFlowTree(flowTree);
 
-    const svgRender = JS2FlowChart.createSVGRender();
-    const shapesTree = svgRender.buildShapesTree(flowTree);
-
-    document.getElementById('svgImage').innerHTML = shapesTree.print();
+    document.getElementById('svgImage').innerHTML = convertFlowTreeToSvg(flowTree);
 
 </script>
 </body>

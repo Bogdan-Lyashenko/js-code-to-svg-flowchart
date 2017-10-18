@@ -19,12 +19,18 @@ export const createPresentationGenerator = PresentationGenerator;
 
 export { ABSTRACTION_LEVELS, DEFINED_MODIFIERS, MODIFIER_PRESETS, TOKEN_TYPES, MODIFIED_TYPES };
 
-export const convertCodeToSvg = (code, config) => {
-    const flowTreeBuilder = createFlowTreeBuilder(),
-        svgRender = createSVGRender();
+export const convertCodeToSvg = (code, printConfig) => convertFlowTreeToSvg(convertCodeToFlowTree(code), printConfig);
 
-    const flowTree = flowTreeBuilder.build(code),
-        shapesTree = svgRender.buildShapesTree(flowTree);
+export const convertCodeToFlowTree = (code) => {
+    const flowTreeBuilder = createFlowTreeBuilder();
 
-    return shapesTree.print(config);
+    return flowTreeBuilder.build(code);
+};
+
+export const convertFlowTreeToSvg = (flowTree, printConfig) => {
+    const svgRender = createSVGRender();
+
+    const shapesTree = svgRender.buildShapesTree(flowTree);
+
+    return shapesTree.print(printConfig);
 };

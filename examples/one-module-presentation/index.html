@@ -63,7 +63,10 @@
 
     const JS2FlowChart = window['js2flowchart'];
 
-    const presentationGenerator = JS2FlowChart.createPresentationGenerator(code);
+    //API
+    const {createPresentationGenerator} = JS2FlowChart;
+
+    const presentationGenerator = createPresentationGenerator(code);
     const slides = presentationGenerator.buildSlides();
 
     document.getElementById('container').appendChild(

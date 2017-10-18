@@ -1272,6 +1272,7 @@ var TOKEN_TYPES = exports.TOKEN_TYPES = {
     THROW_STATEMENT: 'ThrowStatement',
     DEBUGGER_STATEMENT: 'DebuggerStatement',
     IDENTIFIER: 'Identifier',
+    ARRAY_EXPRESSION: 'ArrayExpression',
     OBJECT_EXPRESSION: 'ObjectExpression',
     OBJECT_PROPERTY: 'ObjectProperty',
     BINARY_EXPRESSION: 'BinaryExpression',
@@ -6535,7 +6536,7 @@ var singleTypeFilter = function singleTypeFilter(path) {
     var statementParent = path.getStatementParent(),
         parent = path.parent || {};
 
-    return statementParent.isReturnStatement() || (statementParent.isLoop() || statementParent.isConditional() || parent.type === _constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION) && ['test', 'left', 'right'].includes(path.parentKey) || [_constants.TOKEN_TYPES.CALL_EXPRESSION, _constants.TOKEN_TYPES.BINARY_EXPRESSION, _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION, _constants.TOKEN_TYPES.VARIABLE_DECLARATOR, _constants.TOKEN_TYPES.MEMBER_EXPRESSION, _constants.TOKEN_TYPES.NEW_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION_DECLARATION, _constants.TOKEN_TYPES.FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION, _constants.TOKEN_TYPES.OBJECT_PROPERTY, _constants.TOKEN_TYPES.UNARY_EXPRESSION].includes(parent.type);
+    return ['params'].includes(path.listKey) || statementParent.isReturnStatement() || (statementParent.isLoop() || statementParent.isConditional() || parent.type === _constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION) && ['test', 'left', 'right'].includes(path.parentKey) || [_constants.TOKEN_TYPES.CALL_EXPRESSION, _constants.TOKEN_TYPES.BINARY_EXPRESSION, _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION, _constants.TOKEN_TYPES.VARIABLE_DECLARATOR, _constants.TOKEN_TYPES.MEMBER_EXPRESSION, _constants.TOKEN_TYPES.NEW_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION_DECLARATION, _constants.TOKEN_TYPES.FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION, _constants.TOKEN_TYPES.OBJECT_PROPERTY, _constants.TOKEN_TYPES.ARRAY_EXPRESSION, _constants.TOKEN_TYPES.UNARY_EXPRESSION].includes(parent.type) && (!parent.body || parent.body.type !== path.node.type);
 };
 
 var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.FUNCTION, {
@@ -18156,7 +18157,7 @@ var calculateChildOffsetPoint = exports.calculateChildOffsetPoint = function cal
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.convertCodeToSvg = exports.MODIFIED_TYPES = exports.TOKEN_TYPES = exports.MODIFIER_PRESETS = exports.DEFINED_MODIFIERS = exports.ABSTRACTION_LEVELS = exports.createPresentationGenerator = exports.createShapesTreeEditor = exports.createSVGRender = exports.createFlowTreeModifier = exports.createFlowTreeBuilder = undefined;
+exports.convertFlowTreeToSvg = exports.convertCodeToFlowTree = exports.convertCodeToSvg = exports.MODIFIED_TYPES = exports.TOKEN_TYPES = exports.MODIFIER_PRESETS = exports.DEFINED_MODIFIERS = exports.ABSTRACTION_LEVELS = exports.createPresentationGenerator = exports.createShapesTreeEditor = exports.createSVGRender = exports.createFlowTreeModifier = exports.createFlowTreeBuilder = undefined;
 
 var _FlowTreeBuilder = __webpack_require__(112);
 
@@ -18187,14 +18188,22 @@ exports.DEFINED_MODIFIERS = _FlowTreeBuilder.DEFINED_MODIFIERS;
 exports.MODIFIER_PRESETS = _FlowTreeBuilder.MODIFIER_PRESETS;
 exports.TOKEN_TYPES = _constants.TOKEN_TYPES;
 exports.MODIFIED_TYPES = _constants.MODIFIED_TYPES;
-var convertCodeToSvg = exports.convertCodeToSvg = function convertCodeToSvg(code, config) {
-    var flowTreeBuilder = createFlowTreeBuilder(),
-        svgRender = createSVGRender();
+var convertCodeToSvg = exports.convertCodeToSvg = function convertCodeToSvg(code, printConfig) {
+    return convertFlowTreeToSvg(convertCodeToFlowTree(code), printConfig);
+};
 
-    var flowTree = flowTreeBuilder.build(code),
-        shapesTree = svgRender.buildShapesTree(flowTree);
+var convertCodeToFlowTree = exports.convertCodeToFlowTree = function convertCodeToFlowTree(code) {
+    var flowTreeBuilder = createFlowTreeBuilder();
 
-    return shapesTree.print(config);
+    return flowTreeBuilder.build(code);
+};
+
+var convertFlowTreeToSvg = exports.convertFlowTreeToSvg = function convertFlowTreeToSvg(flowTree, printConfig) {
+    var svgRender = createSVGRender();
+
+    var shapesTree = svgRender.buildShapesTree(flowTree);
+
+    return shapesTree.print(printConfig);
 };
 
 /***/ }),

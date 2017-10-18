@@ -23,6 +23,7 @@ export const TOKEN_TYPES = {
     THROW_STATEMENT: 'ThrowStatement',
     DEBUGGER_STATEMENT: 'DebuggerStatement',
     IDENTIFIER: 'Identifier',
+    ARRAY_EXPRESSION: 'ArrayExpression',
     OBJECT_EXPRESSION: 'ObjectExpression',
     OBJECT_PROPERTY: 'ObjectProperty',
     BINARY_EXPRESSION: 'BinaryExpression',

@@ -35,12 +35,13 @@ const singleTypeFilter = path => {
         parent = path.parent || {};
 
     return (
+        ['params'].includes(path.listKey) ||
         statementParent.isReturnStatement() ||
         ((statementParent.isLoop() ||
             statementParent.isConditional() ||
             parent.type === TOKEN_TYPES.CONDITIONAL_EXPRESSION) &&
             ['test', 'left', 'right'].includes(path.parentKey)) ||
-        [
+        ([
             TOKEN_TYPES.CALL_EXPRESSION,
             TOKEN_TYPES.BINARY_EXPRESSION,
             TOKEN_TYPES.ASSIGNMENT_EXPRESSION,
@@ -49,10 +50,12 @@ const singleTypeFilter = path => {
             TOKEN_TYPES.NEW_EXPRESSION,
             TOKEN_TYPES.FUNCTION_DECLARATION,
             TOKEN_TYPES.FUNCTION_EXPRESSION,
+            TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION,
             TOKEN_TYPES.FUNCTION,
             TOKEN_TYPES.OBJECT_PROPERTY,
+            TOKEN_TYPES.ARRAY_EXPRESSION,
             TOKEN_TYPES.UNARY_EXPRESSION
-        ].includes(parent.type)
+        ].includes(parent.type) && (!parent.body || parent.body.type !== path.node.type))
     );
 };
 
