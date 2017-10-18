@@ -40,7 +40,7 @@ export const getAnonymousFunctionName = path => {
         return '';
     }
 
-    const parentId = parent.id || parent.left || parent.key;
+    const parentId = parent.id || parent.left;
     return parentId ? parentId.name + ' = ' : '';
 };
 
@@ -135,12 +135,15 @@ export const variableDeclaratorConverter = ({ node }) => {
         return `${node.id.name} = `;
     }
 
-    if (node.init && node.init.type === TOKEN_TYPES.CALL_EXPRESSION) {
+    if (
+        node.init &&
+        [TOKEN_TYPES.CALL_EXPRESSION, TOKEN_TYPES.NEW_EXPRESSION].includes(node.init.type)
+    ) {
         return `${node.id.name} = ` + callExpressionConverter({ node: node.init });
     }
 
     if (node.init && node.init.type === TOKEN_TYPES.OBJECT_EXPRESSION) {
-        return `${node.id.name} = { * }`;
+        return `${node.id.name} = ${objectExpressionConverter()}`;
     }
 
     return generate(node).code;
@@ -149,6 +152,16 @@ export const variableDeclaratorConverter = ({ node }) => {
 export const assignmentExpressionConverter = ({ node }) => {
     if (isNodeContainsFunc(node.right)) {
         return `${node.left.name} ${node.operator} `;
+    }
+
+    if (node.right.type === TOKEN_TYPES.OBJECT_EXPRESSION) {
+        return `${node.left.name} ${node.operator} ${objectExpressionConverter()}`;
+    }
+
+    if ([TOKEN_TYPES.CALL_EXPRESSION, TOKEN_TYPES.NEW_EXPRESSION].includes(node.right.type)) {
+        return `${node.left.name} ${node.operator} ${callExpressionConverter({
+            node: node.right
+        })}`;
     }
 
     return generate(node).code;
@@ -194,6 +207,10 @@ export const objectExpressionConverter = path => {
 export const objectPropertyConverter = path => {
     const node = path.node;
 
+    if (node.value && isFunctionType(node.value.type)) {
+        return node.key.name + ': ';
+    }
+
     if (node.value && node.value.type === TOKEN_TYPES.OBJECT_EXPRESSION) {
         return node.key.name + ': ' + objectExpressionConverter();
     }
@@ -211,6 +228,15 @@ const getFirstCallee = callee => {
     }
 
     return callee;
+};
+
+export const isFunctionType = type => {
+    return [
+        TOKEN_TYPES.FUNCTION_EXPRESSION,
+        TOKEN_TYPES.FUNCTION,
+        TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION,
+        TOKEN_TYPES.FUNCTION_DECLARATION
+    ].includes(type);
 };
 
 //TODO: node.properties, case when function is property.value of object

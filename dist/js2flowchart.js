@@ -6535,7 +6535,7 @@ var singleTypeFilter = function singleTypeFilter(path) {
     var statementParent = path.getStatementParent(),
         parent = path.parent || {};
 
-    return statementParent.isReturnStatement() || (statementParent.isLoop() || statementParent.isConditional() || parent.type === _constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION) && ['test'].includes(path.parentKey) || [_constants.TOKEN_TYPES.CALL_EXPRESSION, _constants.TOKEN_TYPES.BINARY_EXPRESSION, _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION, _constants.TOKEN_TYPES.VARIABLE_DECLARATOR, _constants.TOKEN_TYPES.MEMBER_EXPRESSION, _constants.TOKEN_TYPES.NEW_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION_DECLARATION, _constants.TOKEN_TYPES.FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION, _constants.TOKEN_TYPES.OBJECT_PROPERTY, _constants.TOKEN_TYPES.UNARY_EXPRESSION].includes(parent.type);
+    return statementParent.isReturnStatement() || (statementParent.isLoop() || statementParent.isConditional() || parent.type === _constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION) && ['test', 'left', 'right'].includes(path.parentKey) || [_constants.TOKEN_TYPES.CALL_EXPRESSION, _constants.TOKEN_TYPES.BINARY_EXPRESSION, _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION, _constants.TOKEN_TYPES.VARIABLE_DECLARATOR, _constants.TOKEN_TYPES.MEMBER_EXPRESSION, _constants.TOKEN_TYPES.NEW_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION_DECLARATION, _constants.TOKEN_TYPES.FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION, _constants.TOKEN_TYPES.OBJECT_PROPERTY, _constants.TOKEN_TYPES.UNARY_EXPRESSION].includes(parent.type);
 };
 
 var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.FUNCTION, {
@@ -6571,7 +6571,7 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
         var statementParent = path.getStatementParent(),
             parent = path.parent || {};
 
-        return statementParent.isVariableDeclaration() || parent.type === _constants.TOKEN_TYPES.UNARY_EXPRESSION || parent.type === _constants.TOKEN_TYPES.BINARY_EXPRESSION || statementParent.isConditional() && parent.test && parent.test.type === _constants.TOKEN_TYPES.CALL_EXPRESSION || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION //TODO: BUG, fix line: list = list.filter(i => i % 2)
+        return statementParent.isVariableDeclaration() || parent.type === _constants.TOKEN_TYPES.CALL_EXPRESSION || parent.type === _constants.TOKEN_TYPES.NEW_EXPRESSION || parent.type === _constants.TOKEN_TYPES.UNARY_EXPRESSION || parent.type === _constants.TOKEN_TYPES.BINARY_EXPRESSION || statementParent.isConditional() && parent.test && parent.test.type === _constants.TOKEN_TYPES.CALL_EXPRESSION || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION //TODO: BUG, fix line: list = list.filter(i => i % 2)
         ;
     }
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.UPDATE_EXPRESSION, {
@@ -6654,7 +6654,7 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
     type: _constants.TOKEN_TYPES.OBJECT_EXPRESSION,
     getName: _core.objectExpressionConverter,
     ignore: function ignore(path) {
-        return [_constants.TOKEN_TYPES.OBJECT_PROPERTY].includes(path.parent.type);
+        return [_constants.TOKEN_TYPES.OBJECT_PROPERTY, _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION, _constants.TOKEN_TYPES.VARIABLE_DECLARATOR].includes(path.parent.type);
     },
     body: true
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.OBJECT_PROPERTY, {
@@ -16307,7 +16307,7 @@ module.exports = exports["default"];
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.isNodeContainsFunc = exports.objectPropertyConverter = exports.objectExpressionConverter = exports.callExpressionConverter = exports.assignmentExpressionConverter = exports.variableDeclaratorConverter = exports.getVariableDeclarations = exports.debuggerConverter = exports.throwStatementConverter = exports.programConverter = exports.withStatementConverter = exports.breakConverter = exports.caseConverter = exports.switchStatementConverter = exports.finallyConverter = exports.catchConverter = exports.tryConverter = exports.conditionalConverter = exports.continueConverter = exports.loopConverter = exports.returnConverter = exports.getFunctionParametersCode = exports.getAnonymousFunctionName = exports.functionConverter = exports.idleConverter = undefined;
+exports.isNodeContainsFunc = exports.isFunctionType = exports.objectPropertyConverter = exports.objectExpressionConverter = exports.callExpressionConverter = exports.assignmentExpressionConverter = exports.variableDeclaratorConverter = exports.getVariableDeclarations = exports.debuggerConverter = exports.throwStatementConverter = exports.programConverter = exports.withStatementConverter = exports.breakConverter = exports.caseConverter = exports.switchStatementConverter = exports.finallyConverter = exports.catchConverter = exports.tryConverter = exports.conditionalConverter = exports.continueConverter = exports.loopConverter = exports.returnConverter = exports.getFunctionParametersCode = exports.getAnonymousFunctionName = exports.functionConverter = exports.idleConverter = undefined;
 
 var _babelGenerator = __webpack_require__(108);
 
@@ -16348,7 +16348,7 @@ var getAnonymousFunctionName = exports.getAnonymousFunctionName = function getAn
         return '';
     }
 
-    var parentId = parent.id || parent.left || parent.key;
+    var parentId = parent.id || parent.left;
     return parentId ? parentId.name + ' = ' : '';
 };
 
@@ -16449,12 +16449,12 @@ var variableDeclaratorConverter = exports.variableDeclaratorConverter = function
         return node.id.name + ' = ';
     }
 
-    if (node.init && node.init.type === _constants.TOKEN_TYPES.CALL_EXPRESSION) {
+    if (node.init && [_constants.TOKEN_TYPES.CALL_EXPRESSION, _constants.TOKEN_TYPES.NEW_EXPRESSION].includes(node.init.type)) {
         return node.id.name + ' = ' + callExpressionConverter({ node: node.init });
     }
 
     if (node.init && node.init.type === _constants.TOKEN_TYPES.OBJECT_EXPRESSION) {
-        return node.id.name + ' = { * }';
+        return node.id.name + ' = ' + objectExpressionConverter();
     }
 
     return (0, _babelGenerator2.default)(node).code;
@@ -16465,6 +16465,16 @@ var assignmentExpressionConverter = exports.assignmentExpressionConverter = func
 
     if (isNodeContainsFunc(node.right)) {
         return node.left.name + ' ' + node.operator + ' ';
+    }
+
+    if (node.right.type === _constants.TOKEN_TYPES.OBJECT_EXPRESSION) {
+        return node.left.name + ' ' + node.operator + ' ' + objectExpressionConverter();
+    }
+
+    if ([_constants.TOKEN_TYPES.CALL_EXPRESSION, _constants.TOKEN_TYPES.NEW_EXPRESSION].includes(node.right.type)) {
+        return node.left.name + ' ' + node.operator + ' ' + callExpressionConverter({
+            node: node.right
+        });
     }
 
     return (0, _babelGenerator2.default)(node).code;
@@ -16509,6 +16519,10 @@ var objectExpressionConverter = exports.objectExpressionConverter = function obj
 var objectPropertyConverter = exports.objectPropertyConverter = function objectPropertyConverter(path) {
     var node = path.node;
 
+    if (node.value && isFunctionType(node.value.type)) {
+        return node.key.name + ': ';
+    }
+
     if (node.value && node.value.type === _constants.TOKEN_TYPES.OBJECT_EXPRESSION) {
         return node.key.name + ': ' + objectExpressionConverter();
     }
@@ -16523,6 +16537,10 @@ var getFirstCallee = function getFirstCallee(callee) {
     }
 
     return callee;
+};
+
+var isFunctionType = exports.isFunctionType = function isFunctionType(type) {
+    return [_constants.TOKEN_TYPES.FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION, _constants.TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION_DECLARATION].includes(type);
 };
 
 //TODO: node.properties, case when function is property.value of object

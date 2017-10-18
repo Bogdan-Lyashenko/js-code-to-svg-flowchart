@@ -39,7 +39,7 @@ const singleTypeFilter = path => {
         ((statementParent.isLoop() ||
             statementParent.isConditional() ||
             parent.type === TOKEN_TYPES.CONDITIONAL_EXPRESSION) &&
-            ['test'].includes(path.parentKey)) ||
+            ['test', 'left', 'right'].includes(path.parentKey)) ||
         [
             TOKEN_TYPES.CALL_EXPRESSION,
             TOKEN_TYPES.BINARY_EXPRESSION,
@@ -95,6 +95,8 @@ export const DefinitionsMap = {
 
             return (
                 statementParent.isVariableDeclaration() ||
+                parent.type === TOKEN_TYPES.CALL_EXPRESSION ||
+                parent.type === TOKEN_TYPES.NEW_EXPRESSION ||
                 parent.type === TOKEN_TYPES.UNARY_EXPRESSION ||
                 parent.type === TOKEN_TYPES.BINARY_EXPRESSION ||
                 (statementParent.isConditional() &&
@@ -200,7 +202,12 @@ export const DefinitionsMap = {
     [TOKEN_TYPES.OBJECT_EXPRESSION]: {
         type: TOKEN_TYPES.OBJECT_EXPRESSION,
         getName: objectExpressionConverter,
-        ignore: path => [TOKEN_TYPES.OBJECT_PROPERTY].includes(path.parent.type),
+        ignore: path =>
+            [
+                TOKEN_TYPES.OBJECT_PROPERTY,
+                TOKEN_TYPES.ASSIGNMENT_EXPRESSION,
+                TOKEN_TYPES.VARIABLE_DECLARATOR
+            ].includes(path.parent.type),
         body: true
     },
     [TOKEN_TYPES.OBJECT_PROPERTY]: {
