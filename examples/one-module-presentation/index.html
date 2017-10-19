@@ -8,6 +8,9 @@
     <style>
         body {
             padding: 20px 50px;
+            font-family: monospace;
+            font-size: 11pt;
+            color: #333333;
         }
     </style>
 </head>
@@ -69,11 +72,22 @@
     const presentationGenerator = createPresentationGenerator(code);
     const slides = presentationGenerator.buildSlides();
 
+    const slideNames = [
+        'See exports: what module provides?',
+        '..and imports: what it depends on?',
+        'Classes and functions',
+        '...and dependencies between functions',
+        'See all details'
+    ];
+
     document.getElementById('container').appendChild(
 
-        slides.reduce((fragment, svg) => {
+        slides.reduce((fragment, svg, i) => {
             const span = document.createElement('span');
-            span.innerHTML = svg;
+            span.innerHTML = `
+                <p>${slideNames[i]}</p>
+                <div>${svg}</div>
+            `;
 
             fragment.appendChild(span);
             return fragment;
