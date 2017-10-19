@@ -39268,7 +39268,9 @@ exports.default = function (code) {
 
             var slides = [generateExportSlideTree(astTree), generateImportExportSlideTree(astTree), generateClassFunctionSlideTree(astTree), generateClassFunctionDependenciesSlideTree(astTree), generateRegularSlideTree(astTree)];
 
-            return slides.map(svgRender.buildShapesTree).map(function (shapesTree) {
+            return slides.filter(function (slide) {
+                return slide.body.length;
+            }).map(svgRender.buildShapesTree).map(function (shapesTree) {
                 return shapesTree.print();
             });
         }

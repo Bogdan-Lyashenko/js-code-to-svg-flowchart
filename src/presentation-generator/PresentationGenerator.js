@@ -55,6 +55,9 @@ export default code => ({
             generateRegularSlideTree(astTree)
         ];
 
-        return slides.map(svgRender.buildShapesTree).map(shapesTree => shapesTree.print());
+        return slides
+            .filter(slide => slide.body.length)
+            .map(svgRender.buildShapesTree)
+            .map(shapesTree => shapesTree.print());
     }
 });
