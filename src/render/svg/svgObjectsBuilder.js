@@ -141,13 +141,38 @@ export const buildConnections = (shapesTree, styleTheme) => {
     return connections;
 };
 
+const isNoArrow = (toShape, fromShape) => {
+    if (
+        [TOKEN_TYPES.IMPORT_SPECIFIER, TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER].includes(
+            toShape.getNodeType()
+        )
+    ) {
+        return true;
+    }
+
+    if (
+        [
+            TOKEN_TYPES.FUNCTION_DECLARATION,
+            TOKEN_TYPES.FUNCTION_EXPRESSION,
+            TOKEN_TYPES.FUNCTION,
+            TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION
+        ].includes(toShape.getNodeType()) &&
+        [
+            TOKEN_TYPES.CALL_EXPRESSION,
+            TOKEN_TYPES.VARIABLE_DECLARATOR,
+            TOKEN_TYPES.ASSIGNMENT_EXPRESSION,
+            TOKEN_TYPES.NEW_EXPRESSION
+        ].includes(fromShape.getNodeType())
+    ) {
+        return true;
+    }
+};
+
 const buildConnectionConfig = (toShape, fromShape) => {
     const config = {
         endPoint: toShape.getToPoint(),
         arrowType: ARROW_TYPE.RIGHT,
-        noArrow: [TOKEN_TYPES.IMPORT_SPECIFIER, TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER].includes(
-            toShape.getNodeType()
-        )
+        noArrow: isNoArrow(toShape, fromShape)
     };
 
     if (toShape.getNodeKey() === TOKEN_KEYS.ALTERNATE) {

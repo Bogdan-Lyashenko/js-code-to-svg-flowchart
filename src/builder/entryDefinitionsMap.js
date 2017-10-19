@@ -55,7 +55,8 @@ const singleTypeFilter = path => {
             TOKEN_TYPES.OBJECT_PROPERTY,
             TOKEN_TYPES.ARRAY_EXPRESSION,
             TOKEN_TYPES.UNARY_EXPRESSION
-        ].includes(parent.type) && (!parent.body || parent.body.type !== path.node.type))
+        ].includes(parent.type) &&
+            (!parent.body || parent.body.type !== path.node.type))
     );
 };
 

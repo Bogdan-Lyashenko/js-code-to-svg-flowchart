@@ -38089,11 +38089,21 @@ var buildConnections = exports.buildConnections = function buildConnections(shap
     return connections;
 };
 
+var isNoArrow = function isNoArrow(toShape, fromShape) {
+    if ([_constants.TOKEN_TYPES.IMPORT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER].includes(toShape.getNodeType())) {
+        return true;
+    }
+
+    if ([_constants.TOKEN_TYPES.FUNCTION_DECLARATION, _constants.TOKEN_TYPES.FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION, _constants.TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION].includes(toShape.getNodeType()) && [_constants.TOKEN_TYPES.CALL_EXPRESSION, _constants.TOKEN_TYPES.VARIABLE_DECLARATOR, _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION, _constants.TOKEN_TYPES.NEW_EXPRESSION].includes(fromShape.getNodeType())) {
+        return true;
+    }
+};
+
 var buildConnectionConfig = function buildConnectionConfig(toShape, fromShape) {
     var config = {
         endPoint: toShape.getToPoint(),
         arrowType: _constants.ARROW_TYPE.RIGHT,
-        noArrow: [_constants.TOKEN_TYPES.IMPORT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER].includes(toShape.getNodeType())
+        noArrow: isNoArrow(toShape, fromShape)
     };
 
     if (toShape.getNodeKey() === _constants.TOKEN_KEYS.ALTERNATE) {
