@@ -164,7 +164,9 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
 
     const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(`
 
-    a = call(1, 2, ()=> {return a + 2;})
+        for (let i = 0; i < doc.parts.length; i++) {
+          traverseDocRec(doc.parts[i]);
+        }
 
     `));
 

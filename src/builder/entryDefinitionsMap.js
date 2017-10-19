@@ -44,6 +44,7 @@ const singleTypeFilter = path => {
         ([
             TOKEN_TYPES.CALL_EXPRESSION,
             TOKEN_TYPES.BINARY_EXPRESSION,
+            TOKEN_TYPES.UPDATE_EXPRESSION,
             TOKEN_TYPES.ASSIGNMENT_EXPRESSION,
             TOKEN_TYPES.VARIABLE_DECLARATOR,
             TOKEN_TYPES.MEMBER_EXPRESSION,
@@ -54,7 +55,14 @@ const singleTypeFilter = path => {
             TOKEN_TYPES.FUNCTION,
             TOKEN_TYPES.OBJECT_PROPERTY,
             TOKEN_TYPES.ARRAY_EXPRESSION,
-            TOKEN_TYPES.UNARY_EXPRESSION
+            TOKEN_TYPES.UNARY_EXPRESSION,
+            TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER,
+            TOKEN_TYPES.IMPORT_SPECIFIER,
+            TOKEN_TYPES.IMPORT_DECLARATION,
+            TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION,
+            TOKEN_TYPES.EXPORT_NAMED_DECLARATION,
+            TOKEN_TYPES.CLASS_DECLARATION,
+            TOKEN_TYPES.CLASS_METHOD
         ].includes(parent.type) &&
             (!parent.body || parent.body.type !== path.node.type))
     );
