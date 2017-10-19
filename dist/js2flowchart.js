@@ -37463,14 +37463,19 @@ var expressionCallbacksModifier = exports.expressionCallbacksModifier = function
             subTreeUpdate: function subTreeUpdate(nodes) {
                 nodes.forEach(function (node) {
                     var parentBody = node.parent.body,
-                        index = parentBody.indexOf(node),
-                        sibling = parentBody[index + 1];
+                        index = parentBody.indexOf(node) + 1;
 
-                    if (sibling && sibling.type === _constants.TOKEN_TYPES.CALL_EXPRESSION) {
-                        node.parent.body = parentBody.filter(function (n) {
-                            return n !== node;
-                        });
-                        sibling.body = [node];
+                    for (var i = index; i < parentBody.length; i++) {
+                        var sibling = parentBody[i];
+
+                        if (sibling && sibling.type === _constants.TOKEN_TYPES.CALL_EXPRESSION) {
+                            node.parent.body = parentBody.filter(function (n) {
+                                return n !== node;
+                            });
+                            sibling.body = [].concat(_toConsumableArray(sibling.body || []), [node]);
+
+                            return;
+                        }
                     }
                 });
             }
