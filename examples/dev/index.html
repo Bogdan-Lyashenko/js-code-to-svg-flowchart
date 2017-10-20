@@ -157,27 +157,47 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
     const JS2FlowChart = window['js2flowchart'];
 
     //API
-    const {createFlowTreeBuilder, createSVGRender} = JS2FlowChart;
+    const {createFlowTreeBuilder, createSVGRender, createShapesTreeEditor} = JS2FlowChart;
 
     const flowTreeBuilder = createFlowTreeBuilder(),
         svgRender = createSVGRender();
 
-    const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(`
+    const flowTree = flowTreeBuilder.build(`
 
-       navigator.geolocation.getCurrentPosition(function(position) {
-            var pos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
+       console.log('test 0');
 
-            infoWindow.setPosition(pos);
-            infoWindow.setContent('Location found.');
-            map.setCenter(pos);
-        }, function() {
-            handleLocationError(true, infoWindow, map.getCenter());
-        });
+                function traverseDoc(doc, onEnter, onExit, shouldTraverseConditionalGroups) {
+                  function traverseDocRec(doc) {
+                    let shouldRecurse = true;
+                    console.log('test 1')
+                    if (onEnter) {
+                      if (onEnter(doc) === false) {
+                        shouldRecurse = false;
+                      }
+                    }
 
-    `));
+                    if (shouldRecurse) {
+                      if (doc.type === "concat" || doc.type === "fill") {
+                        for (let i = 0; i < doc.parts.length; i++) {
+                          traverseDocRec(doc.parts[i]);
+                        }
+                      }
+                    }
+
+                  }
+
+                }
+
+    `);
+
+    const shapesTree = svgRender.buildShapesTree(flowTree);
+
+    const shapesTreeEditor = createShapesTreeEditor(shapesTree);
+
+    shapesTreeEditor.focusShapeBranch([
+        (shape) => shape.getName().indexOf('function traverseDoc(doc, onEnter, onExit, shouldT')!==-1,
+        (shape) => shape.getName() === '(onEnter)'
+    ]);
 
     document.getElementById('svgImage').innerHTML = shapesTree.print();
 

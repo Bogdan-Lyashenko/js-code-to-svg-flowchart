@@ -970,6 +970,7 @@ var getInitialState = exports.getInitialState = function getInitialState(node, _
         type: type,
         body: [],
         theme: theme,
+        originalTheme: theme,
         node: node,
         name: node.name,
         prefixName: node.prefixName,
@@ -1110,10 +1111,8 @@ var setupGetChildBoundaries = exports.setupGetChildBoundaries = function setupGe
                 getBoundaries: function getBoundaries() {
                     return boundaries;
                 }
-            }, {
-                getBody: function getBody(node) {
-                    return node.getBody();
-                }
+            }, function (node) {
+                return node.getBody();
             });
 
             return (0, _geometry.calculateShapesBoundaries)(flattedTree.map(function (item) {
@@ -17849,22 +17848,33 @@ var levelsTraversal = exports.levelsTraversal = function levelsTraversal(tree, s
     stepOut(tree);
 };
 
-var traversalSearch = exports.traversalSearch = function traversalSearch(tree, fn) {
-    var queue = [].concat(tree);
+var traversal = exports.traversal = function traversal(tree, fn) {
+    var getBody = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function (node) {
+        return node.body;
+    };
 
-    var result = [];
+    var queue = [].concat(tree);
 
     while (queue.length) {
         var node = queue.shift();
 
+        fn(node);
+
+        var nodeBody = getBody(node);
+        if (nodeBody) {
+            queue = [].concat(_toConsumableArray(queue), _toConsumableArray(nodeBody));
+        }
+    }
+};
+
+var traversalSearch = exports.traversalSearch = function traversalSearch(tree, fn) {
+    var result = [];
+
+    traversal(tree, function (node) {
         if (fn(node)) {
             result.push(node);
         }
-
-        if (node.body) {
-            queue = [].concat(_toConsumableArray(queue), _toConsumableArray(node.body));
-        }
-    }
+    });
 
     return result;
 };
@@ -17885,6 +17895,10 @@ var _StyleThemeFactory = __webpack_require__(445);
 
 var _svgObjectsBuilder = __webpack_require__(450);
 
+var _traversal = __webpack_require__(178);
+
+var _flatten = __webpack_require__(456);
+
 var ShapesTreeEditor = exports.ShapesTreeEditor = function ShapesTreeEditor(svgObjectsTree) {
     var updateShapeTheme = function updateShapeTheme(shape, shapeStyles, connectionArrowStyles) {
         if (shapeStyles) {
@@ -17898,12 +17912,25 @@ var ShapesTreeEditor = exports.ShapesTreeEditor = function ShapesTreeEditor(svgO
     };
 
     return {
-        findShape: function findShape(fnTest, fnOnFind) {
-            svgObjectsTree.getShapes().filter(fnTest).forEach(fnOnFind);
+        findShape: function findShape(fnTest) {
+            var startIndex = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+
+            return svgObjectsTree.getShapes().filter(function (shape, index) {
+                return index >= startIndex && fnTest(shape);
+            });
         },
         applyShapeStyles: function applyShapeStyles(fn, shapeStyles, connectionArrowStyles) {
-            this.findShape(fn, function (shape) {
+            this.findShape(fn).forEach(function (shape) {
                 updateShapeTheme(shape, shapeStyles, connectionArrowStyles);
+            });
+        },
+        blur: function blur(fn) {
+            var blurredTheme = (0, _StyleThemeFactory.getBlurredTheme)();
+
+            this.findShape(fn).forEach(function (shape) {
+                var connectionArrow = shape.getAssignedConnectionArrow();
+
+                updateShapeTheme(shape, blurredTheme[shape.getShapeType()], connectionArrow ? blurredTheme[connectionArrow.getFieldName()] : null);
             });
         },
         focus: function focus(fn) {
@@ -17911,13 +17938,39 @@ var ShapesTreeEditor = exports.ShapesTreeEditor = function ShapesTreeEditor(svgO
                 return !fn(shape);
             });
         },
-        blur: function blur(fn) {
+        blurShapeBranch: function blurShapeBranch(fn) {
             var blurredTheme = (0, _StyleThemeFactory.getBlurredTheme)();
 
-            this.findShape(fn, function (shape) {
-                var connectionArrow = shape.getAssignedConnectionArrow();
+            this.findShape(fn).forEach(function (shapeBranch) {
+                return (0, _traversal.traversal)(shapeBranch, function (shape) {
+                    var connectionArrow = shape.getAssignedConnectionArrow();
 
-                updateShapeTheme(shape, blurredTheme[shape.getShapeType()], connectionArrow ? blurredTheme[connectionArrow.getFieldName()] : null);
+                    updateShapeTheme(shape, blurredTheme[shape.getShapeType()], connectionArrow ? blurredTheme[connectionArrow.getFieldName()] : null);
+                }, function (shape) {
+                    return shape.state.body;
+                });
+            });
+        },
+        focusShapeBranch: function focusShapeBranch(fns) {
+            var _this = this;
+
+            var blurredTheme = (0, _StyleThemeFactory.getBlurredTheme)();
+
+            [].concat(fns).forEach(function (fn, index) {
+                _this.findShape(fn).forEach(function (shapeBranch) {
+                    var flatShape = (0, _flatten.flatTree)(shapeBranch, function (shape) {
+                        return shape.state.body;
+                    });
+                    var branchIndex = svgObjectsTree.getShapes().indexOf(shapeBranch);
+
+                    _this.findShape(function (shape) {
+                        return !flatShape.includes(shape);
+                    }, index > 0 ? branchIndex : 0).forEach(function (shape) {
+                        var connectionArrow = shape.getAssignedConnectionArrow();
+
+                        updateShapeTheme(shape, blurredTheme[shape.getShapeType()], connectionArrow ? blurredTheme[connectionArrow.getFieldName()] : null);
+                    });
+                });
             });
         },
         print: function print(config) {
@@ -38544,18 +38597,17 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 var flatTree = exports.flatTree = function flatTree(tree) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-    var flatList = [];
-    var getBody = options.getBody || function (node) {
+    var getBody = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function (node) {
         return node.body;
     };
+
+    var flatList = [];
 
     [].concat(tree).forEach(function (node) {
         var body = getBody(node);
 
         if (body && body.length) {
-            flatList = flatList.concat(node, flatTree(body, options));
+            flatList = flatList.concat(node, flatTree(body, getBody));
         } else {
             flatList.push(node);
         }
@@ -39214,7 +39266,7 @@ var ConnectionArrow = exports.ConnectionArrow = function ConnectionArrow(state) 
 };
 
 exports.default = function (config, theme) {
-    return ConnectionArrow({ config: config, theme: theme });
+    return ConnectionArrow({ config: config, theme: theme, originalTheme: theme });
 };
 
 /***/ }),

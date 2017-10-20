@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div>
+    <p id="svgImage"></p>
+</div>
+
+<script src="../../dist/js2flowchart.js"></script>
+<script>
+
+    const code = `
+                console.log('test 0');
+
+                function traverseDoc(doc, onEnter, onExit, shouldTraverseConditionalGroups) {
+                  function traverseDocRec(doc) {
+                    let shouldRecurse = true;
+                    console.log('test 1')
+                    if (onEnter) {
+                      if (onEnter(doc) === false) {
+                        shouldRecurse = false;
+                      }
+                    }
+
+                    if (shouldRecurse) {
+                      if (doc.type === "concat" || doc.type === "fill") {
+                        for (let i = 0; i < doc.parts.length; i++) {
+                          traverseDocRec(doc.parts[i]);
+                        }
+                      }
+                    }
+
+                  }
+
+                }
+
+    `;
+
+    const JS2FlowChart = window['js2flowchart'];
+
+    //API
+    const {createFlowTreeBuilder, createSVGRender, createShapesTreeEditor} = JS2FlowChart;
+
+    const flowTreeBuilder = createFlowTreeBuilder(),
+        svgRender = createSVGRender();
+
+    const shapesTreeEditor = createShapesTreeEditor(svgRender.buildShapesTree(flowTreeBuilder.build(code)));
+
+    shapesTreeEditor.focusShapeBranch([
+        (shape) => shape.getName().indexOf('function traverseDoc(doc, onEnter, onExit, shouldT')!==-1,
+        (shape) => shape.getName() === '(onEnter)'
+    ]);
+
+    document.getElementById('svgImage').innerHTML = shapesTreeEditor.print();
+
+</script>
+</body>
+</html>

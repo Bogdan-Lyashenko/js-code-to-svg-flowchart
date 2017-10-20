@@ -6,6 +6,8 @@ import {
     buildColorsBasedTheme
 } from './appearance/StyleThemeFactory';
 import { buildSVGObjectsTree } from './svgObjectsBuilder';
+import { traversal } from 'shared/utils/traversal';
+import { flatTree } from 'shared/utils/flatten';
 
 export const ShapesTreeEditor = svgObjectsTree => {
     const updateShapeTheme = (shape, shapeStyles, connectionArrowStyles) => {
@@ -21,27 +23,22 @@ export const ShapesTreeEditor = svgObjectsTree => {
     };
 
     return {
-        findShape(fnTest, fnOnFind) {
-            svgObjectsTree
+        findShape(fnTest, startIndex = 0) {
+            return svgObjectsTree
                 .getShapes()
-                .filter(fnTest)
-                .forEach(fnOnFind);
+                .filter((shape, index) => index >= startIndex && fnTest(shape));
         },
 
         applyShapeStyles(fn, shapeStyles, connectionArrowStyles) {
-            this.findShape(fn, shape => {
+            this.findShape(fn).forEach(shape => {
                 updateShapeTheme(shape, shapeStyles, connectionArrowStyles);
             });
-        },
-
-        focus(fn) {
-            this.blur(shape => !fn(shape));
         },
 
         blur(fn) {
             const blurredTheme = getBlurredTheme();
 
-            this.findShape(fn, shape => {
+            this.findShape(fn).forEach(shape => {
                 const connectionArrow = shape.getAssignedConnectionArrow();
 
                 updateShapeTheme(
@@ -49,6 +46,54 @@ export const ShapesTreeEditor = svgObjectsTree => {
                     blurredTheme[shape.getShapeType()],
                     connectionArrow ? blurredTheme[connectionArrow.getFieldName()] : null
                 );
+            });
+        },
+
+        focus(fn) {
+            this.blur(shape => !fn(shape));
+        },
+
+        blurShapeBranch(fn) {
+            const blurredTheme = getBlurredTheme();
+
+            this.findShape(fn).forEach(shapeBranch =>
+                traversal(
+                    shapeBranch,
+                    shape => {
+                        const connectionArrow = shape.getAssignedConnectionArrow();
+
+                        updateShapeTheme(
+                            shape,
+                            blurredTheme[shape.getShapeType()],
+                            connectionArrow ? blurredTheme[connectionArrow.getFieldName()] : null
+                        );
+                    },
+                    shape => shape.state.body
+                )
+            );
+        },
+
+        focusShapeBranch(fns) {
+            const blurredTheme = getBlurredTheme();
+
+            [].concat(fns).forEach((fn, index) => {
+                this.findShape(fn).forEach(shapeBranch => {
+                    const flatShape = flatTree(shapeBranch, shape => shape.state.body);
+                    let branchIndex = svgObjectsTree.getShapes().indexOf(shapeBranch);
+
+                    this.findShape(
+                        shape => !flatShape.includes(shape),
+                        index > 0 ? branchIndex : 0
+                    ).forEach(shape => {
+                        const connectionArrow = shape.getAssignedConnectionArrow();
+
+                        updateShapeTheme(
+                            shape,
+                            blurredTheme[shape.getShapeType()],
+                            connectionArrow ? blurredTheme[connectionArrow.getFieldName()] : null
+                        );
+                    });
+                });
             });
         },
 

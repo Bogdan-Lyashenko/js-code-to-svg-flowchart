@@ -39,6 +39,7 @@ export const getInitialState = (node, { x, y }, theme, type) => {
         type,
         body: [],
         theme,
+        originalTheme: theme,
         node,
         name: node.name,
         prefixName: node.prefixName,
@@ -185,9 +186,7 @@ export const setupGetChildBoundaries = state => ({
                 getBody: () => (filterFn ? body.filter(filterFn) : body),
                 getBoundaries: () => boundaries
             },
-            {
-                getBody: node => node.getBody()
-            }
+            node => node.getBody()
         );
 
         return calculateShapesBoundaries(flattedTree.map(item => item.getBoundaries()));
