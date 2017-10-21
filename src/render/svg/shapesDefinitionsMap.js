@@ -21,6 +21,7 @@ import SwitchCase from './shapes/SwitchCase';
 import ContinueStatement from './shapes/ContinueStatement';
 import ObjectExpression from './shapes/ObjectExpression';
 import CallExpression from './shapes/CallExpression';
+import ObjectProperty from './shapes/ObjectProperty';
 
 export const getShapeForNode = node => {
     switch (node.type) {
@@ -82,6 +83,9 @@ export const getShapeForNode = node => {
 
         case TOKEN_TYPES.OBJECT_EXPRESSION:
             return ObjectExpression;
+
+        case TOKEN_TYPES.OBJECT_PROPERTY:
+            return ObjectProperty;
 
         case TOKEN_TYPES.CALL_EXPRESSION:
             return CallExpression;

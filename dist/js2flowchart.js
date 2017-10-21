@@ -37741,7 +37741,7 @@ var DefaultColors = exports.DefaultColors = {
     c14: '#81d4fa', //export fill color
     c15: '#ef9a9a', //throw fill color
     c16: '#FFE082', //try fill color
-    c17: '#e6ee9c', //object expression color
+    c17: '#9fa8da', //object expression color
     c18: '#666' //debug text color
 };
 
@@ -37952,7 +37952,11 @@ var buildTheme = exports.buildTheme = function buildTheme(color) {
 
         ObjectExpression: _extends({}, BaseShape, {
             fillColor: color.c17,
-            edgeOffset: 5
+            edgeOffset: 10
+        }),
+
+        ObjectProperty: _extends({}, BaseShape, {
+            fillColor: color.c17
         }),
 
         CallExpression: _extends({}, BaseShape, {
@@ -38477,6 +38481,10 @@ var _CallExpression = __webpack_require__(476);
 
 var _CallExpression2 = _interopRequireDefault(_CallExpression);
 
+var _ObjectProperty = __webpack_require__(480);
+
+var _ObjectProperty2 = _interopRequireDefault(_ObjectProperty);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
@@ -38539,6 +38547,9 @@ var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
 
         case _constants.TOKEN_TYPES.OBJECT_EXPRESSION:
             return _ObjectExpression2.default;
+
+        case _constants.TOKEN_TYPES.OBJECT_PROPERTY:
+            return _ObjectProperty2.default;
 
         case _constants.TOKEN_TYPES.CALL_EXPRESSION:
             return _CallExpression2.default;
@@ -39457,6 +39468,26 @@ var _VerticalEdgedRectangle = __webpack_require__(111);
 var ENTITY_FIELD_NAME = 'ObjectExpression';
 
 exports.default = (0, _BaseShape.delegateInit)(_VerticalEdgedRectangle.VerticalEdgedRectangle, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
+
+/***/ }),
+/* 480 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _BaseShape = __webpack_require__(2);
+
+var _Rectangle = __webpack_require__(34);
+
+var ENTITY_FIELD_NAME = 'ObjectProperty';
+
+exports.default = (0, _BaseShape.delegateInit)(_Rectangle.Rectangle, ENTITY_FIELD_NAME);
 module.exports = exports['default'];
 
 /***/ })

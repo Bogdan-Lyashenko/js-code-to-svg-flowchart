@@ -15,7 +15,7 @@ export const DefaultColors = {
     c14: '#81d4fa', //export fill color
     c15: '#ef9a9a', //throw fill color
     c16: '#FFE082', //try fill color
-    c17: '#e6ee9c', //object expression color
+    c17: '#9fa8da', //object expression color
     c18: '#666' //debug text color
 };
 
@@ -255,7 +255,12 @@ export const buildTheme = color => {
         ObjectExpression: {
             ...BaseShape,
             fillColor: color.c17,
-            edgeOffset: 5
+            edgeOffset: 10
+        },
+
+        ObjectProperty: {
+            ...BaseShape,
+            fillColor: color.c17
         },
 
         CallExpression: {
