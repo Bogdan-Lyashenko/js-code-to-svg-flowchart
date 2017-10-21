@@ -2,6 +2,7 @@ import {
     getDefaultTheme,
     getBlurredTheme,
     getBlackAndWhiteTheme,
+    getLightTheme,
     applyStyleToTheme,
     buildColorsBasedTheme
 } from './appearance/StyleThemeFactory';
@@ -123,6 +124,9 @@ export default (customStyleTheme = {}) => {
         },
         applyBlurredTheme() {
             this.applyTheme(getBlurredTheme());
+        },
+        applyLightTheme() {
+            this.applyTheme(getLightTheme());
         },
 
         applyColorBasedTheme(colors) {

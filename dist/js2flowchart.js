@@ -18010,6 +18010,9 @@ exports.default = function () {
         applyBlurredTheme: function applyBlurredTheme() {
             this.applyTheme((0, _StyleThemeFactory.getBlurredTheme)());
         },
+        applyLightTheme: function applyLightTheme() {
+            this.applyTheme((0, _StyleThemeFactory.getLightTheme)());
+        },
         applyColorBasedTheme: function applyColorBasedTheme(colors) {
             this.applyTheme((0, _StyleThemeFactory.buildColorsBasedTheme)(colors));
         }
@@ -37560,7 +37563,7 @@ var MODIFIER_PRESETS = exports.MODIFIER_PRESETS = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.buildColorsBasedTheme = exports.applyStyleToTheme = exports.getBlurredTheme = exports.getBlackAndWhiteTheme = exports.getDefaultTheme = exports.getTheme = exports.Themes = undefined;
+exports.buildColorsBasedTheme = exports.applyStyleToTheme = exports.getLightTheme = exports.getBlurredTheme = exports.getBlackAndWhiteTheme = exports.getDefaultTheme = exports.getTheme = exports.Themes = undefined;
 
 var _Themes;
 
@@ -37578,6 +37581,10 @@ var _Blurred = __webpack_require__(449);
 
 var _Blurred2 = _interopRequireDefault(_Blurred);
 
+var _LIGHT = __webpack_require__(481);
+
+var _LIGHT2 = _interopRequireDefault(_LIGHT);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -37585,10 +37592,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 var ThemeNamesMap = {
     DEFAULT: 'DEFAULT',
     BLACK_AND_WHITE: 'BLACK_AND_WHITE',
-    BLURRED: 'BLURRED'
+    BLURRED: 'BLURRED',
+    LIGHT: 'LIGHT'
 };
 
-var Themes = exports.Themes = (_Themes = {}, _defineProperty(_Themes, ThemeNamesMap.DEFAULT, _DefaultBaseTheme2.default), _defineProperty(_Themes, ThemeNamesMap.BLACK_AND_WHITE, _BlackAndWhite2.default), _defineProperty(_Themes, ThemeNamesMap.BLURRED, _Blurred2.default), _Themes);
+var Themes = exports.Themes = (_Themes = {}, _defineProperty(_Themes, ThemeNamesMap.DEFAULT, _DefaultBaseTheme2.default), _defineProperty(_Themes, ThemeNamesMap.BLACK_AND_WHITE, _BlackAndWhite2.default), _defineProperty(_Themes, ThemeNamesMap.BLURRED, _Blurred2.default), _defineProperty(_Themes, ThemeNamesMap.LIGHT, _LIGHT2.default), _Themes);
 
 var getTheme = exports.getTheme = function getTheme(themeName) {
     if (!Themes[themeName] === themeName === ThemeNamesMap.DEFAULT) {
@@ -37608,6 +37616,10 @@ var getBlackAndWhiteTheme = exports.getBlackAndWhiteTheme = function getBlackAnd
 
 var getBlurredTheme = exports.getBlurredTheme = function getBlurredTheme() {
     return getTheme(ThemeNamesMap.BLURRED);
+};
+
+var getLightTheme = exports.getLightTheme = function getLightTheme() {
+    return getTheme(ThemeNamesMap.LIGHT);
 };
 
 var applyStyleToTheme = exports.applyStyleToTheme = function applyStyleToTheme(theme, styles) {
@@ -39490,6 +39502,43 @@ var ENTITY_FIELD_NAME = 'ObjectProperty';
 
 exports.default = (0, _BaseShape.delegateInit)(_Rectangle.Rectangle, ENTITY_FIELD_NAME);
 module.exports = exports['default'];
+
+/***/ }),
+/* 481 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.Colors = undefined;
+
+var _DefaultBaseTheme = __webpack_require__(447);
+
+var Colors = exports.Colors = {
+    strokeColor: '#666',
+    defaultFillColor: '#fff',
+    textColor: '#37474f',
+    arrowFillColor: '#555',
+    rectangleFillColor: '#d1c4e9',
+    rectangleDotFillColor: '#ede7f6',
+    functionFillColor: '#c8e6c9',
+    rootCircleFillColor: '#fff9c4',
+    loopFillColor: '#bbdefb',
+    conditionFillColor: '#e1bee7',
+    destructedNodeFillColor: '#ffecb3',
+    classFillColor: '#b2dfdb',
+    debuggerFillColor: '#ffcdd2',
+    exportFillColor: '#b3e5fc',
+    throwFillColor: '#ffccbc',
+    tryFillColor: '#FFE082',
+    objectFillColor: '#c5cae9',
+    debugModeFillColor: '#666'
+};
+
+exports.default = (0, _DefaultBaseTheme.buildTheme)(Colors);
 
 /***/ })
 /******/ ]);

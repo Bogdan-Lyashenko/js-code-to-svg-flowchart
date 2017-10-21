@@ -1,19 +1,22 @@
 import { mergeObjectStructures } from 'shared/utils/composition';
 
-import DefaultBaseTheme, { buildTheme } from './themes/DefaultBaseTheme';
-import BlackAndWhiteTheme from './themes/BlackAndWhite';
+import DEFAULT, { buildTheme } from './themes/DefaultBaseTheme';
+import BLACK_AND_WHITE from './themes/BlackAndWhite';
 import BLURRED from './themes/Blurred';
+import LIGHT from './themes/LIGHT';
 
 const ThemeNamesMap = {
     DEFAULT: 'DEFAULT',
     BLACK_AND_WHITE: 'BLACK_AND_WHITE',
-    BLURRED: 'BLURRED'
+    BLURRED: 'BLURRED',
+    LIGHT: 'LIGHT'
 };
 
 export const Themes = {
-    [ThemeNamesMap.DEFAULT]: DefaultBaseTheme,
-    [ThemeNamesMap.BLACK_AND_WHITE]: BlackAndWhiteTheme,
-    [ThemeNamesMap.BLURRED]: BLURRED
+    [ThemeNamesMap.DEFAULT]: DEFAULT,
+    [ThemeNamesMap.BLACK_AND_WHITE]: BLACK_AND_WHITE,
+    [ThemeNamesMap.BLURRED]: BLURRED,
+    [ThemeNamesMap.LIGHT]: LIGHT
 };
 
 export const getTheme = themeName => {
@@ -21,7 +24,7 @@ export const getTheme = themeName => {
         return Themes.DEFAULT;
     }
 
-    return applyStyleToTheme(DefaultBaseTheme, Themes[themeName]);
+    return applyStyleToTheme(DEFAULT, Themes[themeName]);
 };
 
 export const getDefaultTheme = () => getTheme(ThemeNamesMap.DEFAULT);
@@ -29,6 +32,8 @@ export const getDefaultTheme = () => getTheme(ThemeNamesMap.DEFAULT);
 export const getBlackAndWhiteTheme = () => getTheme(ThemeNamesMap.BLACK_AND_WHITE);
 
 export const getBlurredTheme = () => getTheme(ThemeNamesMap.BLURRED);
+
+export const getLightTheme = () => getTheme(ThemeNamesMap.LIGHT);
 
 export const applyStyleToTheme = (theme, styles) => mergeObjectStructures(theme, styles);
 
