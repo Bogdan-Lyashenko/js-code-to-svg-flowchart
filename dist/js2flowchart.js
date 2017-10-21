@@ -16443,26 +16443,27 @@ var getVariableDeclarations = exports.getVariableDeclarations = function getVari
     }).join(', ');
 };
 
-var variableDeclaratorConverter = exports.variableDeclaratorConverter = function variableDeclaratorConverter(_ref2) {
-    var node = _ref2.node;
+var variableDeclaratorConverter = exports.variableDeclaratorConverter = function variableDeclaratorConverter(path) {
+    var node = path.node,
+        parentKind = path.parent.kind;
 
     if (isNodeContainsFunc(node.init)) {
-        return node.id.name + ' = ';
+        return parentKind + ' ' + node.id.name + ' = ';
     }
 
     if (node.init && [_constants.TOKEN_TYPES.CALL_EXPRESSION, _constants.TOKEN_TYPES.NEW_EXPRESSION].includes(node.init.type)) {
-        return node.id.name + ' = ' + callExpressionConverter({ node: node.init });
+        return parentKind + ' ' + node.id.name + ' = ' + callExpressionConverter({ node: node.init });
     }
 
     if (node.init && node.init.type === _constants.TOKEN_TYPES.OBJECT_EXPRESSION) {
-        return node.id.name + ' = ' + objectExpressionConverter();
+        return parentKind + ' ' + node.id.name + ' = ' + objectExpressionConverter();
     }
 
-    return (0, _babelGenerator2.default)(node).code;
+    return parentKind + ' ' + (0, _babelGenerator2.default)(node).code;
 };
 
-var assignmentExpressionConverter = exports.assignmentExpressionConverter = function assignmentExpressionConverter(_ref3) {
-    var node = _ref3.node;
+var assignmentExpressionConverter = exports.assignmentExpressionConverter = function assignmentExpressionConverter(_ref2) {
+    var node = _ref2.node;
 
     if (isNodeContainsFunc(node.right)) {
         return getLeftAssignmentName(node.left) + ' ' + node.operator + ' ';
@@ -16489,8 +16490,8 @@ var getLeftAssignmentName = function getLeftAssignmentName(node) {
     return (0, _babelGenerator2.default)(node).code;
 };
 
-var callExpressionConverter = exports.callExpressionConverter = function callExpressionConverter(_ref4) {
-    var node = _ref4.node;
+var callExpressionConverter = exports.callExpressionConverter = function callExpressionConverter(_ref3) {
+    var node = _ref3.node;
 
     var argumentsCode = '';
 
@@ -37725,32 +37726,32 @@ Object.defineProperty(exports, "__esModule", {
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var DefaultColors = exports.DefaultColors = {
-    c1: '#444', //stroke color
-    c2: '#fff', //default fill color
-    c3: '#222', //text color
-    c4: '#333', //arrow fill color
-    c5: '#b39ddb', //rectangle&other default fill color
-    c6: '#ede7f6', //rectangle dot fill color
-    c7: '#a5d6a7', //function fill color
-    c8: '#fff59d', //root circle fill color
-    c9: '#90CAF9', //loop fill color
-    c10: '#ce93d8', //conditional fill color
-    c11: '#ffcc80', //destructed node fill color
-    c12: '#80cbc4', //class fill color
-    c13: '#EF5350', //debugger fill color
-    c14: '#81d4fa', //export fill color
-    c15: '#ef9a9a', //throw fill color
-    c16: '#FFE082', //try fill color
-    c17: '#9fa8da', //object expression color
-    c18: '#666' //debug text color
+    strokeColor: '#444',
+    defaultFillColor: '#fff',
+    textColor: '#222',
+    arrowFillColor: '#333',
+    rectangleFillColor: '#b39ddb',
+    rectangleDotFillColor: '#ede7f6',
+    functionFillColor: '#a5d6a7',
+    rootCircleFillColor: '#fff59d',
+    loopFillColor: '#90CAF9',
+    conditionFillColor: '#ce93d8',
+    destructedNodeFillColor: '#ffcc80',
+    classFillColor: '#80cbc4',
+    debuggerFillColor: '#EF5350',
+    exportFillColor: '#81d4fa',
+    throwFillColor: '#ef9a9a',
+    tryFillColor: '#FFE082',
+    objectFillColor: '#9fa8da',
+    debugModeFillColor: '#666'
 };
 
 var buildTheme = exports.buildTheme = function buildTheme(color) {
     var BaseShape = {
-        strokeColor: color.c1,
+        strokeColor: color.strokeColor,
         strokeWidth: 1,
-        fillColor: color.c2,
-        textColor: color.c3,
+        fillColor: color.defaultFillColor,
+        textColor: color.textColor,
         fontFamily: 'monospace',
         fontSize: 13,
         lineHeight: 5, //depends on fontSize
@@ -37764,7 +37765,7 @@ var buildTheme = exports.buildTheme = function buildTheme(color) {
         complexTypeExtraSpace: 15,
 
         debugFontSize: 8,
-        debugTextColor: color.c18
+        debugTextColor: color.debugModeFillColor
     };
 
     return {
@@ -37775,10 +37776,10 @@ var buildTheme = exports.buildTheme = function buildTheme(color) {
                     x: 8,
                     y: 6
                 },
-                fillColor: color.c4
+                fillColor: color.arrowFillColor
             },
             line: {
-                strokeColor: color.c1,
+                strokeColor: color.strokeColor,
                 strokeWidth: 1,
                 curveTurnRadius: 4
             },
@@ -37788,28 +37789,28 @@ var buildTheme = exports.buildTheme = function buildTheme(color) {
         Shape: _extends({}, BaseShape),
 
         Rectangle: _extends({}, BaseShape, {
-            fillColor: color.c5,
+            fillColor: color.rectangleFillColor,
             dot: _extends({}, BaseShape, {
                 offset: 4,
                 radius: 2,
-                fillColor: color.c6
+                fillColor: color.rectangleDotFillColor
             }),
             roundBorder: 3
         }),
 
         VerticalEdgedRectangle: _extends({}, BaseShape, {
-            fillColor: color.c7,
+            fillColor: color.functionFillColor,
             edgeOffset: 10
         }),
 
         RootCircle: _extends({}, BaseShape, {
             radius: 15,
             padding: 3,
-            fillColor: color.c8
+            fillColor: color.rootCircleFillColor
         }),
 
         LoopRhombus: _extends({}, BaseShape, {
-            fillColor: color.c9,
+            fillColor: color.loopFillColor,
             thinPartOffset: 15,
             rhombusSize: 50,
             roundBorder: 3,
@@ -37820,7 +37821,7 @@ var buildTheme = exports.buildTheme = function buildTheme(color) {
         }),
 
         ConditionRhombus: _extends({}, BaseShape, {
-            fillColor: color.c10,
+            fillColor: color.conditionFillColor,
             thinPartOffset: 15,
             roundBorder: 3,
             childOffset: 20,
@@ -37845,76 +37846,76 @@ var buildTheme = exports.buildTheme = function buildTheme(color) {
 
         ReturnStatement: _extends({}, BaseShape, {
             roundBorder: 3,
-            fillColor: color.c5,
+            fillColor: color.rectangleFillColor,
             arrow: _extends({}, BaseShape, {
                 handlerLength: 5,
                 sizeX: 16,
                 sizeY: 22,
-                fillColor: color.c7
+                fillColor: color.functionFillColor
             })
         }),
 
         DestructedNode: _extends({}, BaseShape, {
-            fillColor: color.c11,
+            fillColor: color.destructedNodeFillColor,
             roundBorder: 2,
             suffix: _extends({}, BaseShape, {
                 roundBorder: 2,
-                fillColor: color.c11,
+                fillColor: color.destructedNodeFillColor,
                 width: 8,
                 space: 4
             })
         }),
 
         ClassDeclaration: _extends({}, BaseShape, {
-            fillColor: color.c12,
+            fillColor: color.classFillColor,
             edgeOffset: 10
         }),
 
         DebuggerStatement: _extends({}, BaseShape, {
-            fillColor: color.c13,
+            fillColor: color.debuggerFillColor,
             roundBorder: 2
         }),
 
         ExportDeclaration: _extends({}, BaseShape, {
             roundBorder: 3,
-            fillColor: color.c14,
+            fillColor: color.exportFillColor,
             arrow: _extends({}, BaseShape, {
                 handlerLength: 5,
                 sizeX: 20,
                 sizeY: 28,
-                fillColor: color.c2
+                fillColor: color.defaultFillColor
             })
         }),
 
         ImportDeclaration: _extends({}, BaseShape, {
-            fillColor: color.c2,
+            fillColor: color.defaultFillColor,
             edgeOffset: 5
         }),
 
         ImportSpecifier: _extends({}, BaseShape, {
-            fillColor: color.c14
+            fillColor: color.exportFillColor
         }),
 
         ThrowStatement: _extends({}, BaseShape, {
-            fillColor: color.c15
+            fillColor: color.throwFillColor
         }),
 
         TryStatement: _extends({}, BaseShape, {
-            fillColor: color.c16
+            fillColor: color.tryFillColor
         }),
 
         CatchClause: _extends({}, BaseShape, {
-            fillColor: color.c15,
+            fillColor: color.throwFillColor,
             arrow: _extends({}, BaseShape, {
                 handlerLength: 2,
                 sizeX: 16,
                 sizeY: 28,
-                fillColor: color.c15
+                fillColor: color.throwFillColor
             })
         }),
 
         SwitchStatement: _extends({}, BaseShape, {
-            fillColor: color.c10,
+            fillColor: color.conditionFillColor,
             thinPartOffset: 15,
             roundBorder: 3,
             childOffset: 20,
@@ -37927,40 +37928,40 @@ var buildTheme = exports.buildTheme = function buildTheme(color) {
         }),
 
         BreakStatement: _extends({}, BaseShape, {
-            fillColor: color.c5,
+            fillColor: color.rectangleFillColor,
             arrow: _extends({}, BaseShape, {
                 handlerLength: 5,
                 sizeX: 16,
                 sizeY: 28,
-                fillColor: color.c10
+                fillColor: color.conditionFillColor
             })
         }),
 
         SwitchCase: _extends({}, BaseShape, {
-            fillColor: color.c10
+            fillColor: color.conditionFillColor
         }),
 
         ContinueStatement: _extends({}, BaseShape, {
-            fillColor: color.c5,
+            fillColor: color.rectangleFillColor,
             arrow: _extends({}, BaseShape, {
                 handlerLength: 5,
                 sizeX: 16,
                 sizeY: 28,
-                fillColor: color.c9
+                fillColor: color.loopFillColor
             })
         }),
 
         ObjectExpression: _extends({}, BaseShape, {
-            fillColor: color.c17,
+            fillColor: color.objectFillColor,
             edgeOffset: 10
         }),
 
         ObjectProperty: _extends({}, BaseShape, {
-            fillColor: color.c17
+            fillColor: color.objectFillColor
         }),
 
         CallExpression: _extends({}, BaseShape, {
-            fillColor: color.c7
+            fillColor: color.functionFillColor
         })
     };
 };
@@ -37993,10 +37994,10 @@ var _DefaultBaseTheme = __webpack_require__(447);
 
 var Colors = exports.Colors = _extends({}, (0, _DefaultBaseTheme.getAlignedColors)(_DefaultBaseTheme.DefaultColors, '#A6A6A6'), {
 
-    c1: '#333',
-    c2: '#A6A6A6',
-    c3: '#333',
-    c4: '#333'
+    strokeColor: '#333',
+    defaultFillColor: '#A6A6A6',
+    textColor: '#333',
+    arrowFillColor: '#333'
 });
 
 exports.default = (0, _DefaultBaseTheme.buildTheme)(Colors);
@@ -38016,24 +38017,24 @@ exports.Colors = undefined;
 var _DefaultBaseTheme = __webpack_require__(447);
 
 var Colors = exports.Colors = {
-    c1: '#ccc', //stroke color
-    c2: '#fff', //default fill color
-    c3: '#ccc', //text color
-    c4: '#ccc', //arrow fill color
-    c5: '#ede7f6', //rectangle&other default fill color
-    c6: '#ede7f6', //rectangle dot fill color
-    c7: '#f1f8e9', //function fill color
-    c8: '#fffde7', //root circle fill color
-    c9: '#e3f2fd', //loop fill color
-    c10: '#f3e5f5', //conditional fill color
-    c11: '#fff8e1', //destructed node fill color
-    c12: '#e0f2f1', //class fill color
-    c13: '#ffebee', //debugger fill color
-    c14: '#e1f5fe', //export fill color
-    c15: '#fce4ec', //throw fill color
-    c16: '#fff8e1', //try fill color
-    c17: '#f9fbe7', //object expression
-    c18: '#666' //debug text color
+    strokeColor: '#ccc',
+    defaultFillColor: '#fff',
+    textColor: '#ccc',
+    arrowFillColor: '#ccc',
+    rectangleFillColor: '#ede7f6',
+    rectangleDotFillColor: '#ede7f6',
+    functionFillColor: '#f1f8e9',
+    rootCircleFillColor: '#fffde7',
+    loopFillColor: '#e3f2fd',
+    conditionFillColor: '#f3e5f5',
+    destructedNodeFillColor: '#fff8e1',
+    classFillColor: '#e0f2f1',
+    debuggerFillColor: '#ffebee',
+    exportFillColor: '#e1f5fe',
+    throwFillColor: '#fce4ec',
+    tryFillColor: '#fff8e1',
+    objectFillColor: '#f9fbe7',
+    debugModeFillColor: '#666'
 };
 
 exports.default = (0, _DefaultBaseTheme.buildTheme)(Colors);

@@ -130,23 +130,26 @@ export const debuggerConverter = path => {
 export const getVariableDeclarations = variables =>
     variables.map(v => variableDeclaratorConverter({ node: v })).join(', ');
 
-export const variableDeclaratorConverter = ({ node }) => {
+export const variableDeclaratorConverter = (path) => {
+    const node = path.node,
+        parentKind = path.parent.kind;
+
     if (isNodeContainsFunc(node.init)) {
-        return `${node.id.name} = `;
+        return `${parentKind} ${node.id.name} = `;
     }
 
     if (
         node.init &&
         [TOKEN_TYPES.CALL_EXPRESSION, TOKEN_TYPES.NEW_EXPRESSION].includes(node.init.type)
     ) {
-        return `${node.id.name} = ` + callExpressionConverter({ node: node.init });
+        return `${parentKind} ${node.id.name} = ` + callExpressionConverter({ node: node.init });
     }
 
     if (node.init && node.init.type === TOKEN_TYPES.OBJECT_EXPRESSION) {
-        return `${node.id.name} = ${objectExpressionConverter()}`;
+        return `${parentKind} ${node.id.name} = ${objectExpressionConverter()}`;
     }
 
-    return generate(node).code;
+    return parentKind + ' ' + generate(node).code;
 };
 
 export const assignmentExpressionConverter = ({ node }) => {
