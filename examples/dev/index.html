@@ -103,46 +103,122 @@
     `;
 
     const simpleStr = `
-
-
-// Note: This example requires that you consent to location sharing when
-// prompted by your browser. If you see the error "The Geolocation service
-// failed.", it means you probably did not give permission for the browser to
-// locate you.
-
-function initMap() {
-    var map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: -34.397, lng: 150.644},
-        zoom: 6
-    });
-    var infoWindow = new google.maps.InfoWindow({map: map});
-
-    // Try HTML5 geolocation.
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            var pos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
-
-            infoWindow.setPosition(pos);
-            infoWindow.setContent('Location found.');
-            map.setCenter(pos);
-        }, function() {
-            handleLocationError(true, infoWindow, map.getCenter());
-        });
-    } else {
-        // Browser doesn't support Geolocation
-        handleLocationError(false, infoWindow, map.getCenter());
+const STYLE = {
+    parallelogram: {
+        'stroke-width': '2px',
+        'stroke': '#4160ad',
+        'fill': 'none',
+    },
+    onClickRender: {
+        fill: '#d86161',
+        r: 11
+    },
+    centeredCircle: {
+        'fill': 'none',
+        'stroke': '#dbdb59',
+        'stroke-width': '2px',
     }
 }
 
-function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-    infoWindow.setPosition(pos);
-    infoWindow.setContent(browserHasGeolocation ?
-        'Error: The Geolocation service failed.' :
-        'Error: Your browser doesnt support geolocation.');
+// eslint-disable-next-line no-unused-vars
+class Drawer extends EventEmitter {
+    constructor(element, options) {
+        if (!element) throw new Error('Element is required')
+
+        super()
+        this.area = d3.select(element)
+        this.area.attr('viewBox', '0 0 element.clientWidth element.clientHeight')
+        this.onClickRenderer = options.onClickRenderer
+        this.renderers = options.renderers
+
+        this.init()
+        this.registerEventHandlers()
+    }
+
+    init() {
+        this.shapes = this.renderers.reduce(
+            (shapes, renderer) => Object.assign(shapes, {[renderer.type] : []}),
+            {}
+        )
+        this.emit('update', this.shapes)
+    }
+
+    registerEventHandlers() {
+        let self = this
+        this.area.on("click", function() {
+            let coords = d3.mouse(this)
+            self.onClick(coords)
+        })
+    }
+
+    clear() {
+        this.init()
+        this.render()
+    }
+
+    onClick(coords) {
+        let shape = new this.onClickRenderer(
+            {
+                x: coords[0],
+                y: coords[1],
+            },
+            {
+                isDraggable: true
+            },
+            STYLE.onClickRender
+        )
+        let type = shape.type
+
+        if (this.shapes[type].length >= 3) {
+            return
+        }
+
+        shape.on('update', (shape) => {
+            let parallelogram = this.shapes.parallelogram[0]
+            let centeredCircle = this.shapes.circle[3]
+
+            if (parallelogram) {
+                parallelogram.vertices = this.shapes[shape.type].slice(0, 3)
+                centeredCircle.r = Math.sqrt(parallelogram.area / Math.PI)
+                centeredCircle.x = parallelogram.center.x
+                centeredCircle.y = parallelogram.center.y
+            }
+            this.render()
+            this.emit('update', this.shapes, shape)
+        })
+
+        this.shapes[type].push(shape)
+        this.emit('update', this.shapes, shape)
+
+        if (this.shapes[type].length === 3) {
+            let parallelogram = new Parallelogram(
+                this.shapes[type],
+                STYLE.parallelogram
+            )
+            this.shapes.parallelogram.push(parallelogram)
+
+            this.shapes.circle.push(new Circle(
+                {
+                    x: parallelogram.center.x,
+                    y: parallelogram.center.y,
+                    r: Math.sqrt(parallelogram.area / Math.PI)
+                },
+                {},
+                STYLE.centeredCircle
+            ))
+            this.emit('update', this.shapes, shape)
+        }
+
+        this.render()
+    }
+
+    render() {
+        this.renderers.map((renderer) => {
+            renderer.render(this.area, this.shapes[renderer.type])
+        })
+    }
 }
+
 
     `;
 
@@ -164,40 +240,11 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
 
     const flowTree = flowTreeBuilder.build(`
 
-       console.log('test 0');
-
-                function traverseDoc(doc, onEnter, onExit, shouldTraverseConditionalGroups) {
-                  function traverseDocRec(doc) {
-                    let shouldRecurse = true;
-                    console.log('test 1')
-                    if (onEnter) {
-                      if (onEnter(doc) === false) {
-                        shouldRecurse = false;
-                      }
-                    }
-
-                    if (shouldRecurse) {
-                      if (doc.type === "concat" || doc.type === "fill") {
-                        for (let i = 0; i < doc.parts.length; i++) {
-                          traverseDocRec(doc.parts[i]);
-                        }
-                      }
-                    }
-
-                  }
-
-                }
-
+    this.emit('update', this.shapes)
     `);
 
     const shapesTree = svgRender.buildShapesTree(flowTree);
 
-    const shapesTreeEditor = createShapesTreeEditor(shapesTree);
-
-    shapesTreeEditor.focusShapeBranch([
-        (shape) => shape.getName().indexOf('function traverseDoc(doc, onEnter, onExit, shouldT')!==-1,
-        (shape) => shape.getName() === '(onEnter)'
-    ]);
 
     document.getElementById('svgImage').innerHTML = shapesTree.print();
 

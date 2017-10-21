@@ -17,7 +17,8 @@ export const Colors = {
     c14: '#e1f5fe', //export fill color
     c15: '#fce4ec', //throw fill color
     c16: '#fff8e1', //try fill color
-    c17: '#666' //debug text color
+    c17: '#f9fbe7', //object expression
+    c18: '#666' //debug text color
 };
 
 export default buildTheme(Colors);

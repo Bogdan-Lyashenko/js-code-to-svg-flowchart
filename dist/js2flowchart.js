@@ -1280,6 +1280,7 @@ var TOKEN_TYPES = exports.TOKEN_TYPES = {
     CONDITIONAL_EXPRESSION: 'ConditionalExpression',
     STRING_LITERAL: 'StringLiteral',
     NUMERIC_LITERAL: 'NumericLiteral',
+    THIS_EXPRESSION: 'ThisExpression',
 
     //ES Harmony features
     ARROW_FUNCTION_EXPRESSION: 'ArrowFunctionExpression',
@@ -16464,17 +16465,25 @@ var assignmentExpressionConverter = exports.assignmentExpressionConverter = func
     var node = _ref3.node;
 
     if (isNodeContainsFunc(node.right)) {
-        return node.left.name + ' ' + node.operator + ' ';
+        return getLeftAssignmentName(node.left) + ' ' + node.operator + ' ';
     }
 
     if (node.right.type === _constants.TOKEN_TYPES.OBJECT_EXPRESSION) {
-        return node.left.name + ' ' + node.operator + ' ' + objectExpressionConverter();
+        return getLeftAssignmentName(node.left) + ' ' + node.operator + ' ' + objectExpressionConverter();
     }
 
     if ([_constants.TOKEN_TYPES.CALL_EXPRESSION, _constants.TOKEN_TYPES.NEW_EXPRESSION].includes(node.right.type)) {
-        return node.left.name + ' ' + node.operator + ' ' + callExpressionConverter({
+        return getLeftAssignmentName(node.left) + ' ' + node.operator + ' ' + callExpressionConverter({
             node: node.right
         });
+    }
+
+    return (0, _babelGenerator2.default)(node).code;
+};
+
+var getLeftAssignmentName = function getLeftAssignmentName(node) {
+    if (node.name) {
+        return node.name;
     }
 
     return (0, _babelGenerator2.default)(node).code;
@@ -16504,7 +16513,7 @@ var getArgumentName = function getArgumentName(argument) {
     if (argument.type === _constants.TOKEN_TYPES.OBJECT_EXPRESSION) return objectExpressionConverter();
 
     if (argument.name) return argument.name;
-    if (argument.value) return argument.value;
+    if (argument.value) return argument.type === _constants.TOKEN_TYPES.STRING_LITERAL ? '\'' + argument.value + '\'' : argument.value;
 
     return (0, _babelGenerator2.default)(argument).code;
 };
@@ -37732,7 +37741,8 @@ var DefaultColors = exports.DefaultColors = {
     c14: '#81d4fa', //export fill color
     c15: '#ef9a9a', //throw fill color
     c16: '#FFE082', //try fill color
-    c17: '#666' //debug text color
+    c17: '#e6ee9c', //object expression color
+    c18: '#666' //debug text color
 };
 
 var buildTheme = exports.buildTheme = function buildTheme(color) {
@@ -37754,7 +37764,7 @@ var buildTheme = exports.buildTheme = function buildTheme(color) {
         complexTypeExtraSpace: 15,
 
         debugFontSize: 8,
-        debugTextColor: color.c17
+        debugTextColor: color.c18
     };
 
     return {
@@ -37938,6 +37948,11 @@ var buildTheme = exports.buildTheme = function buildTheme(color) {
                 sizeY: 28,
                 fillColor: color.c9
             })
+        }),
+
+        ObjectExpression: _extends({}, BaseShape, {
+            fillColor: color.c17,
+            edgeOffset: 5
         })
     };
 };
@@ -38009,7 +38024,8 @@ var Colors = exports.Colors = {
     c14: '#e1f5fe', //export fill color
     c15: '#fce4ec', //throw fill color
     c16: '#fff8e1', //try fill color
-    c17: '#666' //debug text color
+    c17: '#f9fbe7', //object expression
+    c18: '#666' //debug text color
 };
 
 exports.default = (0, _DefaultBaseTheme.buildTheme)(Colors);
@@ -38449,6 +38465,10 @@ var _ContinueStatement = __webpack_require__(473);
 
 var _ContinueStatement2 = _interopRequireDefault(_ContinueStatement);
 
+var _ObjectExpression = __webpack_require__(479);
+
+var _ObjectExpression2 = _interopRequireDefault(_ObjectExpression);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
@@ -38508,6 +38528,9 @@ var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
 
         case _constants.TOKEN_TYPES.CONTINUE:
             return _ContinueStatement2.default;
+
+        case _constants.TOKEN_TYPES.OBJECT_EXPRESSION:
+            return _ObjectExpression2.default;
 
         default:
             return _Rectangle2.default;
@@ -39384,6 +39407,26 @@ exports.default = {
     sourceType: 'module',
     plugins: ['objectRestSpread']
 };
+module.exports = exports['default'];
+
+/***/ }),
+/* 479 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _BaseShape = __webpack_require__(2);
+
+var _VerticalEdgedRectangle = __webpack_require__(111);
+
+var ENTITY_FIELD_NAME = 'ObjectExpression';
+
+exports.default = (0, _BaseShape.delegateInit)(_VerticalEdgedRectangle.VerticalEdgedRectangle, ENTITY_FIELD_NAME);
 module.exports = exports['default'];
 
 /***/ })

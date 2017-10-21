@@ -151,17 +151,27 @@ export const variableDeclaratorConverter = ({ node }) => {
 
 export const assignmentExpressionConverter = ({ node }) => {
     if (isNodeContainsFunc(node.right)) {
-        return `${node.left.name} ${node.operator} `;
+        return `${getLeftAssignmentName(node.left)} ${node.operator} `;
     }
 
     if (node.right.type === TOKEN_TYPES.OBJECT_EXPRESSION) {
-        return `${node.left.name} ${node.operator} ${objectExpressionConverter()}`;
+        return `${getLeftAssignmentName(
+            node.left
+        )} ${node.operator} ${objectExpressionConverter()}`;
     }
 
     if ([TOKEN_TYPES.CALL_EXPRESSION, TOKEN_TYPES.NEW_EXPRESSION].includes(node.right.type)) {
-        return `${node.left.name} ${node.operator} ${callExpressionConverter({
+        return `${getLeftAssignmentName(node.left)} ${node.operator} ${callExpressionConverter({
             node: node.right
         })}`;
+    }
+
+    return generate(node).code;
+};
+
+const getLeftAssignmentName = node => {
+    if (node.name) {
+        return node.name;
     }
 
     return generate(node).code;
@@ -192,7 +202,8 @@ const getArgumentName = argument => {
     if (argument.type === TOKEN_TYPES.OBJECT_EXPRESSION) return objectExpressionConverter();
 
     if (argument.name) return argument.name;
-    if (argument.value) return argument.value;
+    if (argument.value) return argument.type === TOKEN_TYPES.STRING_LITERAL
+        ? `'${argument.value}'` : argument.value;
 
     return generate(argument).code;
 };

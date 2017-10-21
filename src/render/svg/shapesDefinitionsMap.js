@@ -19,6 +19,7 @@ import SwitchStatement from './shapes/SwitchStatement';
 import BreakStatement from './shapes/BreakStatement';
 import SwitchCase from './shapes/SwitchCase';
 import ContinueStatement from './shapes/ContinueStatement';
+import ObjectExpression from './shapes/ObjectExpression';
 
 export const getShapeForNode = node => {
     switch (node.type) {
@@ -77,6 +78,9 @@ export const getShapeForNode = node => {
 
         case TOKEN_TYPES.CONTINUE:
             return ContinueStatement;
+
+        case TOKEN_TYPES.OBJECT_EXPRESSION:
+            return ObjectExpression;
 
         default:
             return Rectangle;

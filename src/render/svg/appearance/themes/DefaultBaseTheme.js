@@ -15,7 +15,8 @@ export const DefaultColors = {
     c14: '#81d4fa', //export fill color
     c15: '#ef9a9a', //throw fill color
     c16: '#FFE082', //try fill color
-    c17: '#666' //debug text color
+    c17: '#e6ee9c', //object expression color
+    c18: '#666' //debug text color
 };
 
 export const buildTheme = color => {
@@ -37,7 +38,7 @@ export const buildTheme = color => {
         complexTypeExtraSpace: 15,
 
         debugFontSize: 8,
-        debugTextColor: color.c17
+        debugTextColor: color.c18
     };
 
     return {
@@ -249,6 +250,12 @@ export const buildTheme = color => {
                 sizeY: 28,
                 fillColor: color.c9
             }
+        },
+
+        ObjectExpression: {
+            ...BaseShape,
+            fillColor: color.c17,
+            edgeOffset: 5
         }
     };
 };
