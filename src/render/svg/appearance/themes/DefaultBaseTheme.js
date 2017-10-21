@@ -3,11 +3,11 @@ export const DefaultColors = {
     defaultFillColor: '#fff',
     textColor: '#222',
     arrowFillColor: '#333',
-    rectangleFillColor: '#b39ddb',
+    rectangleFillColor: '#90caf9',
     rectangleDotFillColor: '#ede7f6',
     functionFillColor: '#a5d6a7',
     rootCircleFillColor: '#fff59d',
-    loopFillColor: '#90CAF9',
+    loopFillColor: '#b39ddb',
     conditionFillColor: '#ce93d8',
     destructedNodeFillColor: '#ffcc80',
     classFillColor: '#80cbc4',
@@ -16,6 +16,7 @@ export const DefaultColors = {
     throwFillColor: '#ef9a9a',
     tryFillColor: '#FFE082',
     objectFillColor: '#9fa8da',
+    callFillColor: '#C5E1A5',
     debugModeFillColor: '#666'
 };
 
@@ -260,12 +261,12 @@ export const buildTheme = color => {
 
         ObjectProperty: {
             ...BaseShape,
-            fillColor: color.objectFillColor
+            fillColor: color.rectangleFillColor
         },
 
         CallExpression: {
             ...BaseShape,
-            fillColor: color.functionFillColor
+            fillColor: color.callFillColor
         }
     };
 };

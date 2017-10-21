@@ -37742,11 +37742,11 @@ var DefaultColors = exports.DefaultColors = {
     defaultFillColor: '#fff',
     textColor: '#222',
     arrowFillColor: '#333',
-    rectangleFillColor: '#b39ddb',
+    rectangleFillColor: '#90caf9',
     rectangleDotFillColor: '#ede7f6',
     functionFillColor: '#a5d6a7',
     rootCircleFillColor: '#fff59d',
-    loopFillColor: '#90CAF9',
+    loopFillColor: '#b39ddb',
     conditionFillColor: '#ce93d8',
     destructedNodeFillColor: '#ffcc80',
     classFillColor: '#80cbc4',
@@ -37755,6 +37755,7 @@ var DefaultColors = exports.DefaultColors = {
     throwFillColor: '#ef9a9a',
     tryFillColor: '#FFE082',
     objectFillColor: '#9fa8da',
+    callFillColor: '#C5E1A5',
     debugModeFillColor: '#666'
 };
 
@@ -37969,11 +37970,11 @@ var buildTheme = exports.buildTheme = function buildTheme(color) {
         }),
 
         ObjectProperty: _extends({}, BaseShape, {
-            fillColor: color.objectFillColor
+            fillColor: color.rectangleFillColor
         }),
 
         CallExpression: _extends({}, BaseShape, {
-            fillColor: color.functionFillColor
+            fillColor: color.callFillColor
         })
     };
 };
@@ -38046,6 +38047,7 @@ var Colors = exports.Colors = {
     throwFillColor: '#fce4ec',
     tryFillColor: '#fff8e1',
     objectFillColor: '#f9fbe7',
+    callFillColor: '#f9fbe7',
     debugModeFillColor: '#666'
 };
 
@@ -39518,15 +39520,15 @@ exports.Colors = undefined;
 var _DefaultBaseTheme = __webpack_require__(447);
 
 var Colors = exports.Colors = {
-    strokeColor: '#666',
+    strokeColor: '#555',
     defaultFillColor: '#fff',
-    textColor: '#37474f',
-    arrowFillColor: '#555',
-    rectangleFillColor: '#d1c4e9',
+    textColor: '#333',
+    arrowFillColor: '#444',
+    rectangleFillColor: '#bbdefb',
     rectangleDotFillColor: '#ede7f6',
     functionFillColor: '#c8e6c9',
     rootCircleFillColor: '#fff9c4',
-    loopFillColor: '#bbdefb',
+    loopFillColor: '#d1c4e9',
     conditionFillColor: '#e1bee7',
     destructedNodeFillColor: '#ffecb3',
     classFillColor: '#b2dfdb',
@@ -39534,7 +39536,8 @@ var Colors = exports.Colors = {
     exportFillColor: '#b3e5fc',
     throwFillColor: '#ffccbc',
     tryFillColor: '#FFE082',
-    objectFillColor: '#c5cae9',
+    objectFillColor: '#d1c4e9',
+    callFillColor: '#dcedc8',
     debugModeFillColor: '#666'
 };
 

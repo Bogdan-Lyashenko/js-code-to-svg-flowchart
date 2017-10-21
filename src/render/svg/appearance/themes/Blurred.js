@@ -18,6 +18,7 @@ export const Colors = {
     throwFillColor: '#fce4ec',
     tryFillColor: '#fff8e1',
     objectFillColor: '#f9fbe7',
+    callFillColor: '#f9fbe7',
     debugModeFillColor: '#666'
 };
 
