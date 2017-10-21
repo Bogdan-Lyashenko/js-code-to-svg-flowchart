@@ -256,6 +256,11 @@ export const buildTheme = color => {
             ...BaseShape,
             fillColor: color.c17,
             edgeOffset: 5
+        },
+
+        CallExpression: {
+            ...BaseShape,
+            fillColor: color.c7
         }
     };
 };

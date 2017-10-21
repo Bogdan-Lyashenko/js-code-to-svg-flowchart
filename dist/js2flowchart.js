@@ -37953,6 +37953,10 @@ var buildTheme = exports.buildTheme = function buildTheme(color) {
         ObjectExpression: _extends({}, BaseShape, {
             fillColor: color.c17,
             edgeOffset: 5
+        }),
+
+        CallExpression: _extends({}, BaseShape, {
+            fillColor: color.c7
         })
     };
 };
@@ -38469,6 +38473,10 @@ var _ObjectExpression = __webpack_require__(479);
 
 var _ObjectExpression2 = _interopRequireDefault(_ObjectExpression);
 
+var _CallExpression = __webpack_require__(476);
+
+var _CallExpression2 = _interopRequireDefault(_CallExpression);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
@@ -38531,6 +38539,9 @@ var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
 
         case _constants.TOKEN_TYPES.OBJECT_EXPRESSION:
             return _ObjectExpression2.default;
+
+        case _constants.TOKEN_TYPES.CALL_EXPRESSION:
+            return _CallExpression2.default;
 
         default:
             return _Rectangle2.default;
@@ -39358,7 +39369,26 @@ exports.default = function (code) {
 };
 
 /***/ }),
-/* 476 */,
+/* 476 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _BaseShape = __webpack_require__(2);
+
+var _Rectangle = __webpack_require__(34);
+
+var ENTITY_FIELD_NAME = 'CallExpression';
+
+exports.default = (0, _BaseShape.delegateInit)(_Rectangle.Rectangle, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
+
+/***/ }),
 /* 477 */
 /***/ (function(module, exports, __webpack_require__) {
 

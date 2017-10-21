@@ -238,10 +238,7 @@ class Drawer extends EventEmitter {
     const flowTreeBuilder = createFlowTreeBuilder(),
         svgRender = createSVGRender();
 
-    const flowTree = flowTreeBuilder.build(`
-
-    this.emit('update', this.shapes)
-    `);
+    const flowTree = flowTreeBuilder.build(simpleStr);
 
     const shapesTree = svgRender.buildShapesTree(flowTree);
 
