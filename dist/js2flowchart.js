@@ -1258,6 +1258,10 @@ var TOKEN_TYPES = exports.TOKEN_TYPES = {
     CALL_EXPRESSION: 'CallExpression',
     NEW_EXPRESSION: 'NewExpression',
     LOOP: 'Loop',
+    FOR_IN_STATEMENT: 'ForInStatement',
+    FOR_STATEMENT: 'ForStatement',
+    WHILE_STATEMENT: 'WhileStatement',
+    DO_WHILE_STATEMENT: 'DoWhileStatement',
     CONTINUE: 'ContinueStatement',
     CONDITIONAL: 'Conditional',
     SWITCH_CASE: 'SwitchCase',
@@ -6554,7 +6558,7 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
     getName: _core.variableDeclaratorConverter,
     ignore: function ignore(path) {
         var statementParent = path.getStatementParent();
-        return (0, _core.isNodeContainsFunc)(path.node.init) || statementParent.isLoop();
+        return !path.node.init || (0, _core.isNodeContainsFunc)(path.node.init) || statementParent.isLoop();
     }
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION, {
     type: _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION,
@@ -38291,7 +38295,7 @@ var SVGBase = exports.SVGBase = function SVGBase() {
             var boundaries = (0, _geometry.calculateShapesBoundaries)(state.shapes.map(function (item) {
                 return item.getBoundaries();
             })),
-                padding = 20;
+                padding = 25;
 
             return {
                 w: Math.ceil(boundaries.max.x) + padding,
@@ -38734,15 +38738,23 @@ exports.LoopRhombus = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+var _LoopMarksMap;
+
 var _svgPrimitives = __webpack_require__(25);
 
 var _composition = __webpack_require__(10);
+
+var _constants = __webpack_require__(4);
 
 var _BaseShape = __webpack_require__(2);
 
 var _Rhombus = __webpack_require__(181);
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 var ENTITY_FIELD_NAME = 'LoopRhombus';
+
+var LoopMarksMap = (_LoopMarksMap = {}, _defineProperty(_LoopMarksMap, _constants.TOKEN_TYPES.FOR_OF_STATEMENT, 'for'), _defineProperty(_LoopMarksMap, _constants.TOKEN_TYPES.FOR_IN_STATEMENT, 'for'), _defineProperty(_LoopMarksMap, _constants.TOKEN_TYPES.FOR_STATEMENT, 'for'), _defineProperty(_LoopMarksMap, _constants.TOKEN_TYPES.WHILE_STATEMENT, 'while'), _defineProperty(_LoopMarksMap, _constants.TOKEN_TYPES.DO_WHILE_STATEMENT, 'while'), _LoopMarksMap);
 
 var calculateMidPoint = function calculateMidPoint(_ref) {
     var position = _ref.position,
@@ -38787,7 +38799,7 @@ var setupLoopRhombusBehavior = function setupLoopRhombusBehavior(state) {
                 x = _state$position.x,
                 y = _state$position.y,
                 R = state.dimensions.h,
-                text = state.prefixName || 'for';
+                text = state.prefixName || LoopMarksMap[state.node.subType] || 'for';
 
 
             return (0, _svgPrimitives.getText)(x + R / 2 - text.length * theme.symbolWidth / 2, y + R / 2 + theme.symbolHeight / 2, theme, text);

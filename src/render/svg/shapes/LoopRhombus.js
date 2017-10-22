@@ -1,5 +1,6 @@
 import { getRhombus, getRoundedRectangle, getText } from 'shared/utils/svgPrimitives';
 import { assignState } from 'shared/utils/composition';
+import { TOKEN_TYPES } from 'shared/constants';
 
 import {
     setupBasicBehaviour,
@@ -13,6 +14,14 @@ import {
 import { calculateDimensions, calculateFromPoint, calculateChildOffsetPoint } from './Rhombus';
 
 const ENTITY_FIELD_NAME = 'LoopRhombus';
+
+const LoopMarksMap = {
+    [TOKEN_TYPES.FOR_OF_STATEMENT]: 'for',
+    [TOKEN_TYPES.FOR_IN_STATEMENT]: 'for',
+    [TOKEN_TYPES.FOR_STATEMENT]: 'for',
+    [TOKEN_TYPES.WHILE_STATEMENT]: 'while',
+    [TOKEN_TYPES.DO_WHILE_STATEMENT]: 'while'
+};
 
 const calculateMidPoint = ({ position, dimensions }) => ({
     x: position.x + dimensions.h / 2,
@@ -48,7 +57,7 @@ const setupLoopRhombusBehavior = state => ({
         const theme = state.theme;
         const { x, y } = state.position,
             R = state.dimensions.h,
-            text = state.prefixName || 'for';
+            text = state.prefixName || LoopMarksMap[state.node.subType] || 'for';
 
         return getText(
             x + R / 2 - text.length * theme.symbolWidth / 2,

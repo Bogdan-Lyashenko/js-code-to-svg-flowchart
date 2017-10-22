@@ -31,7 +31,7 @@ export const SVGBase = () => {
             const boundaries = calculateShapesBoundaries(
                     state.shapes.map(item => item.getBoundaries())
                 ),
-                padding = 20;
+                padding = 25;
 
             return {
                 w: Math.ceil(boundaries.max.x) + padding,

@@ -1,0 +1,92 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <title>Live code editor</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.31.0/codemirror.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.31.0/theme/elegant.css">
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.31.0/codemirror.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.31.0/mode/javascript/javascript.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+
+        <style>
+
+            .container {
+                display: flex;
+                flex-direction: row;
+            }
+
+            .column {
+                flex: 1;
+                border-left: 1px solid #ccc;
+            }
+
+            #svgImage {
+                background: white;
+                margin: 0;
+                overflow: auto;
+            }
+
+            .CodeMirror {
+                height: 100%;
+                line-height: 1.5;
+            }
+
+            @media all and (max-width: 500px) {
+                .container {
+                    flex-direction: column;
+                }
+            }
+
+        </style>
+    </head>
+    <body>
+
+    <div class="container">
+        <div class="column">
+            <textarea id="codeEditor">
+ /**
+ * Binary searchr
+ * @param {Number} element
+ * @returns {number}
+ */
+function indexSearch(element) {
+    let list = this.list,
+        currentIndex,
+        currentElement,
+        minIndex = 0,
+        maxIndex = list.length - 1;
+
+    while (minIndex <= maxIndex) {
+        currentIndex = Math.floor(maxIndex + maxIndex) / 2;
+        currentElement = list[currentIndex];
+
+        if (currentElement === element) {
+            return currentIndex;
+        }
+
+        if (currentElement < element) {
+            minIndex = currentIndex + 1;
+        }
+
+        if (currentElement > element) {
+            maxIndex = currentIndex - 1;
+        }
+    }
+
+    return -1;
+}</textarea>
+        </div>
+        <div class="column">
+            <p id="svgImage"></p>
+        </div>
+    </div>
+
+    <script src="../dist/js2flowchart.js"></script>
+    <script src="index.js"></script>
+
+    </body>
+</html>

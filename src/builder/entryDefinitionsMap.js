@@ -86,7 +86,7 @@ export const DefinitionsMap = {
         getName: variableDeclaratorConverter,
         ignore: path => {
             const statementParent = path.getStatementParent();
-            return isNodeContainsFunc(path.node.init) || statementParent.isLoop();
+            return !path.node.init || isNodeContainsFunc(path.node.init) || statementParent.isLoop();
         }
     },
     [TOKEN_TYPES.ASSIGNMENT_EXPRESSION]: {
