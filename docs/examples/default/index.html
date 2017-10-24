@@ -15,58 +15,30 @@
         <script src="../../../dist/js2flowchart.js"></script>
         <script>
             var code = `
-                console.log('test 0');
+                function indexSearch(list, element) {
+                    let currentIndex,
+                        currentElement,
+                        minIndex = 0,
+                        maxIndex = list.length - 1;
 
-                function traverseDoc(doc, onEnter, onExit, shouldTraverseConditionalGroups) {
-                  function traverseDocRec(doc) {
-                    let shouldRecurse = true;
-                    console.log('test 1')
-                    if (onEnter) {
-                      if (onEnter(doc) === false) {
-                        shouldRecurse = false;
-                      }
+                    while (minIndex <= maxIndex) {
+                        currentIndex = Math.floor(maxIndex + maxIndex) / 2;
+                        currentElement = list[currentIndex];
+
+                        if (currentElement === element) {
+                            return currentIndex;
+                        }
+
+                        if (currentElement < element) {
+                            minIndex = currentIndex + 1;
+                        }
+
+                        if (currentElement > element) {
+                            maxIndex = currentIndex - 1;
+                        }
                     }
 
-                    if (shouldRecurse) {
-                      if (doc.type === "concat" || doc.type === "fill") {
-                        for (let i = 0; i < doc.parts.length; i++) {
-                          traverseDocRec(doc.parts[i]);
-                        }
-                      } else if (doc.type === "if-break") {
-                        if (doc.breakContents) {
-                          traverseDocRec(doc.breakContents);
-                        }
-                        if (doc.flatContents) {
-                          traverseDocRec(doc.flatContents);
-                          console.log('test 2')
-                        }
-                      } else if (doc.type === "group" && doc.expandedStates) {
-                        if (shouldTraverseConditionalGroups) {
-                          doc.expandedStates.forEach(traverseDocRec);
-                        } else {
-                          traverseDocRec(doc.contents);
-                        }
-                      } else if (doc.contents) {
-                        traverseDocRec(doc.contents);
-
-                        console.log('test 3')
-                      }
-                    }
-
-                    if (onExit) {
-                      onExit(doc);
-                    }
-                  }
-
-                  traverseDocRec(doc);
-                }
-
-                function doLogging() {
-                    const test = 'ignore';
-                }
-
-                function logout() {
-                    const test = 'ignore';
+                    return -1;
                 }
             `;
 

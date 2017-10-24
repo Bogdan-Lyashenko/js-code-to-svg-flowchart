@@ -2092,7 +2092,7 @@ var getRhombus = exports.getRhombus = function getRhombus(x, y, w, h, theme) {
 };
 
 var getRoundedRectangle = exports.getRoundedRectangle = function getRoundedRectangle(x, y, w, h, theme) {
-    return '\n        <rect x="' + x + '" y="' + y + '"\n            width="' + w + '" height=' + h + '\n            rx="' + theme.roundBorder + '" ry="' + theme.roundBorder + '"\n            style="' + extractStylePropsFromTheme(theme) + '" />';
+    return '\n        <rect x="' + x + '" y="' + y + '"\n            width="' + w + '" height="' + h + '"\n            rx="' + theme.roundBorder + '" ry="' + theme.roundBorder + '"\n            style="' + extractStylePropsFromTheme(theme) + '" />';
 };
 
 var getRectangle = exports.getRectangle = function getRectangle(x, y, w, h, theme) {
