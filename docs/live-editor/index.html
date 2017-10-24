@@ -53,9 +53,8 @@
  * @param {Number} element
  * @returns {number}
  */
-function indexSearch(element) {
-    let list = this.list,
-        currentIndex,
+function indexSearch(list, element) {
+    let currentIndex,
         currentElement,
         minIndex = 0,
         maxIndex = list.length - 1;
