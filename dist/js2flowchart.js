@@ -6540,6 +6540,10 @@ var singleTypeFilter = function singleTypeFilter(path) {
     var statementParent = path.getStatementParent(),
         parent = path.parent || {};
 
+    if ([_constants.TOKEN_KEYS.CONSEQUENT, _constants.TOKEN_KEYS.ALTERNATE].includes(path.key)) {
+        return false;
+    }
+
     return ['params'].includes(path.listKey) || statementParent.isReturnStatement() || (statementParent.isLoop() || statementParent.isConditional() || parent.type === _constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION) && ['test', 'left', 'right'].includes(path.parentKey) || [_constants.TOKEN_TYPES.CALL_EXPRESSION, _constants.TOKEN_TYPES.BINARY_EXPRESSION, _constants.TOKEN_TYPES.UPDATE_EXPRESSION, _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION, _constants.TOKEN_TYPES.VARIABLE_DECLARATOR, _constants.TOKEN_TYPES.MEMBER_EXPRESSION, _constants.TOKEN_TYPES.NEW_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION_DECLARATION, _constants.TOKEN_TYPES.FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION, _constants.TOKEN_TYPES.OBJECT_PROPERTY, _constants.TOKEN_TYPES.ARRAY_EXPRESSION, _constants.TOKEN_TYPES.UNARY_EXPRESSION, _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_DECLARATION, _constants.TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION, _constants.TOKEN_TYPES.EXPORT_NAMED_DECLARATION, _constants.TOKEN_TYPES.CLASS_DECLARATION, _constants.TOKEN_TYPES.CLASS_METHOD].includes(parent.type) && (!parent.body || parent.body.type !== path.node.type);
 };
 
@@ -16364,6 +16368,11 @@ var getFunctionParametersCode = exports.getFunctionParametersCode = function get
 };
 
 var returnConverter = exports.returnConverter = function returnConverter(path) {
+    var node = path.node;
+    if (node.argument && node.argument.type === _constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION) {
+        return 'return';
+    }
+
     return path.node.argument ? 'return ' + (0, _babelGenerator2.default)(path.node.argument).code : 'return';
 };
 /* end function */
@@ -16451,7 +16460,7 @@ var variableDeclaratorConverter = exports.variableDeclaratorConverter = function
     var node = path.node,
         parentKind = path.parent.kind;
 
-    if (isNodeContainsFunc(node.init)) {
+    if (isNodeContainsFunc(node.init) || node.init.type === _constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION) {
         return parentKind + ' ' + node.id.name + ' = ';
     }
 
@@ -16469,7 +16478,7 @@ var variableDeclaratorConverter = exports.variableDeclaratorConverter = function
 var assignmentExpressionConverter = exports.assignmentExpressionConverter = function assignmentExpressionConverter(_ref2) {
     var node = _ref2.node;
 
-    if (isNodeContainsFunc(node.right)) {
+    if (isNodeContainsFunc(node.right) || node.right.type === _constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION) {
         return getLeftAssignmentName(node.left) + ' ' + node.operator + ' ';
     }
 

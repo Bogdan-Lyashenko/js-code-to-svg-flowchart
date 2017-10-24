@@ -49,6 +49,11 @@ export const getFunctionParametersCode = params => {
 };
 
 export const returnConverter = path => {
+    const node = path.node;
+    if (node.argument && node.argument.type === TOKEN_TYPES.CONDITIONAL_EXPRESSION) {
+        return 'return'
+    }
+
     return path.node.argument ? `return ${generate(path.node.argument).code}` : 'return';
 };
 /* end function */
@@ -134,7 +139,7 @@ export const variableDeclaratorConverter = (path) => {
     const node = path.node,
         parentKind = path.parent.kind;
 
-    if (isNodeContainsFunc(node.init)) {
+    if (isNodeContainsFunc(node.init)  || node.init.type === TOKEN_TYPES.CONDITIONAL_EXPRESSION) {
         return `${parentKind} ${node.id.name} = `;
     }
 
@@ -153,7 +158,7 @@ export const variableDeclaratorConverter = (path) => {
 };
 
 export const assignmentExpressionConverter = ({ node }) => {
-    if (isNodeContainsFunc(node.right)) {
+    if (isNodeContainsFunc(node.right) || node.right.type === TOKEN_TYPES.CONDITIONAL_EXPRESSION) {
         return `${getLeftAssignmentName(node.left)} ${node.operator} `;
     }
 

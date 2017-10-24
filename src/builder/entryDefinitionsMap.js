@@ -1,4 +1,4 @@
-import { TOKEN_TYPES } from 'shared/constants';
+import { TOKEN_TYPES,  TOKEN_KEYS} from 'shared/constants';
 import {
     idleConverter,
     functionConverter,
@@ -33,6 +33,10 @@ import {
 const singleTypeFilter = path => {
     const statementParent = path.getStatementParent(),
         parent = path.parent || {};
+
+    if ([TOKEN_KEYS.CONSEQUENT, TOKEN_KEYS.ALTERNATE].includes(path.key)) {
+        return false;
+    }
 
     return (
         ['params'].includes(path.listKey) ||

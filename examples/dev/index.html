@@ -225,7 +225,9 @@ class Drawer extends EventEmitter {
     const t0 = performance.now();
     //===================================
     const code = `
-        jquery('#id').addClass().show();
+        function abc() {
+                return currentIndex > 0 ? 1 :2 ;
+        }
     `;
 
     const code2 = 'list.map((i)=>i+1).filter(a=> a > 0).forEach(o=>console.log(o))'
@@ -238,9 +240,9 @@ class Drawer extends EventEmitter {
     const flowTreeBuilder = createFlowTreeBuilder(),
         svgRender = createSVGRender();
 
-    svgRender.applyLightTheme();
+    //svgRender.applyLightTheme();
 
-    const flowTree = flowTreeBuilder.build(simpleStr);
+    const flowTree = flowTreeBuilder.build(code);
 
     const shapesTree = svgRender.buildShapesTree(flowTree);
 
