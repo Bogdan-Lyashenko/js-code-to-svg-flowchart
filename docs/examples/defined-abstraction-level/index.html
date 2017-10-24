@@ -10,14 +10,25 @@
     <p id="svgImage"></p>
 </div>
 
-<script src="../../dist/js2flowchart.js"></script>
+<script src="../../../dist/js2flowchart.js"></script>
 <script>
     const code = `
         const list = [1, 2, 3, 4];
 
-        function print1(list) { }
-        function print2(list) { }
-        function print3(list) { }
+        function print(list) {
+
+            const newListGetter = () => {
+                return newList;
+            };
+
+            newList.forEach(i => {
+                console.debug('iteration start');
+                console.log(i);
+                console.debug('iteration end');
+            });
+
+            return false;
+        }
 
         print(list);
     `;
@@ -26,13 +37,7 @@
         ABSTRACTION_LEVELS = JS2FlowChart.ABSTRACTION_LEVELS;
 
     const flowTreeBuilder = JS2FlowChart.createFlowTreeBuilder();
-    flowTreeBuilder.setAbstractionLevel({
-        custom: [{
-            type: ABSTRACTION_LEVELS.FUNCTION,
-            ignore: () => false,
-            getName: (path) => 'all functions will be like this'
-        }]
-    });
+    flowTreeBuilder.setAbstractionLevel(ABSTRACTION_LEVELS.FUNCTION_DEPENDENCIES);
 
     const svgRender = JS2FlowChart.createSVGRender();
     const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(code));

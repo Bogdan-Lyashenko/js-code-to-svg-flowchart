@@ -1,4 +1,4 @@
-importScripts('../dist/js2flowchart.js');
+importScripts('../../dist/js2flowchart.js');
 
 self.onmessage = function(message) {
     const code = message.data.code;

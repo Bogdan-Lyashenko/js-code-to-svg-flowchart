@@ -2,7 +2,8 @@
 <html class="no-js" lang="">
     <head>
         <meta charset="utf-8">
-        <title>Default example</title>
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title></title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
@@ -12,7 +13,7 @@
             <p id="svgImage"></p>
         </div>
 
-        <script src="../../dist/js2flowchart.js"></script>
+        <script src="../../../dist/js2flowchart.js"></script>
         <script>
             var code = `
                 console.log('test 0');
@@ -71,7 +72,15 @@
             `;
 
             const JS2FlowChart = window['js2flowchart'];
-            document.getElementById('svgImage').innerHTML = JS2FlowChart.convertCodeToSvg(code);
+
+            const flowTreeBuilder = JS2FlowChart.createFlowTreeBuilder();
+
+            const svgRender = JS2FlowChart.createSVGRender();
+            svgRender.applyBlurredTheme();
+
+            const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(code));
+
+            document.getElementById('svgImage').innerHTML = shapesTree.print();
         </script>
 
     </body>

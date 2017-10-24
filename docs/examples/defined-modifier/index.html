@@ -10,16 +10,27 @@
     <p id="svgImage"></p>
 </div>
 
-<script src="../../dist/js2flowchart.js"></script>
+<script src="../../../dist/js2flowchart.js"></script>
 <script>
     const code = `
         const list = [1, 2, 3, 4];
 
         function print(list) {
-            newList.forEach(i => {
-                if (i > 2) return;
-                console.log(i);
+            if (!list) {
+                throw new Error('List is null.');
+            }
+
+            const newList = list.map(i => {
+                return i + 1;
             });
+
+            newList.forEach(i => {
+                console.debug('iteration start');
+                console.log(i);
+                console.debug('iteration end');
+            });
+
+            return false;
         }
 
         print(list);
@@ -28,15 +39,11 @@
     const JS2FlowChart = window['js2flowchart'];
 
     const flowTreeBuilder = JS2FlowChart.createFlowTreeBuilder();
+
     const flowTree = flowTreeBuilder.build(code);
     const flowTreeModifier = JS2FlowChart.createFlowTreeModifier();
 
-    flowTreeModifier.registerNewModifier((node)=> node.name.includes('(i) =>'), {
-        body: [{
-            name: '...only log i when it is bigger than 2..',
-            type: JS2FlowChart.MODIFIED_TYPES.CUSTOM
-        }]
-    });
+    flowTreeModifier.setModifier(JS2FlowChart.MODIFIER_PRESETS.es5ArrayIterators);
     flowTreeModifier.applyToFlowTree(flowTree);
 
     const svgRender = JS2FlowChart.createSVGRender();
