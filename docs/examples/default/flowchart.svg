@@ -6,7 +6,7 @@
 
         <rect x="50" y="80"
               width="323" height="30"
-        style="fill:#a5d6a7; stroke:#444; stroke-width:1" />
+              style="fill:#a5d6a7; stroke:#444; stroke-width:1" />
 
 
         <line x1="60" y1="80" x2="60" y2="110"
@@ -53,7 +53,7 @@
 
 
     <rect x="117" y="260.5"
-          width="216" height="30"
+          width="239.39999999999998" height="30"
           rx="3" ry="3"
           style="fill:#b39ddb; stroke:#444; stroke-width:1" />
 
@@ -63,7 +63,7 @@
 
     <text x="162" y="280.5"
           font-family="monospace" font-size="13" fill="#222">
-        <tspan x="162" y="280.5">minIndex <= maxIndex</tspan>
+        <tspan x="162" y="280.5">minIndex &lt;= maxIndex</tspan>
     </text>
 
 
@@ -152,7 +152,7 @@
     </g><g>
 
     <rect x="167" y="547.5"
-          width="262.79999999999995" height="30"
+          width="286.2" height="30"
           rx="3" ry="3"
           style="fill:#ce93d8; stroke:#444; stroke-width:1" />
 
@@ -161,7 +161,7 @@
 
     <text x="212" y="567.5"
           font-family="monospace" font-size="13" fill="#222">
-        <tspan x="212" y="567.5">(currentElement < element)</tspan>
+        <tspan x="212" y="567.5">(currentElement &lt; element)</tspan>
     </text>
 
 
@@ -192,7 +192,7 @@
     </g><g>
 
     <rect x="167" y="667.5"
-          width="262.79999999999995" height="30"
+          width="286.2" height="30"
           rx="3" ry="3"
           style="fill:#ce93d8; stroke:#444; stroke-width:1" />
 
@@ -201,7 +201,7 @@
 
     <text x="212" y="687.5"
           font-family="monospace" font-size="13" fill="#222">
-        <tspan x="212" y="687.5">(currentElement > element)</tspan>
+        <tspan x="212" y="687.5">(currentElement &gt; element)</tspan>
     </text>
 
 
@@ -260,7 +260,7 @@
 
         <rect x="25" y="13.75"
               width="216.6" height="24"
-        style="fill:#fff59d; stroke:#444; stroke-width:1" />
+              style="fill:#fff59d; stroke:#444; stroke-width:1" />
 
         <circle cx="25" cy="25" r="15"
                 style="fill:#fff59d; stroke:#444; stroke-width:1" />

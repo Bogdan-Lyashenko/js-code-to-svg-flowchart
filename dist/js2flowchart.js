@@ -934,6 +934,10 @@ exports.calculateBoundaries = exports.calculateChildOffsetPoint = exports.calcul
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+var _xmlEscape = __webpack_require__(482);
+
+var _xmlEscape2 = _interopRequireDefault(_xmlEscape);
+
 var _composition = __webpack_require__(10);
 
 var _string = __webpack_require__(455);
@@ -943,6 +947,8 @@ var _flatten = __webpack_require__(456);
 var _geometry = __webpack_require__(46);
 
 var _TextContentConfigurator = __webpack_require__(457);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var delegateInit = exports.delegateInit = function delegateInit(shape, themeFieldName) {
     function init(node, position, theme) {
@@ -960,7 +966,9 @@ var getInitialState = exports.getInitialState = function getInitialState(node, _
     var x = _ref.x,
         y = _ref.y;
 
-    var nameParts = (0, _string.splitNameString)(node.name, _TextContentConfigurator.MAX_NAME_STR_LENGTH, (0, _TextContentConfigurator.getNameSplitterTokensIterator)()),
+    var name = (0, _xmlEscape2.default)(node.name);
+
+    var nameParts = (0, _string.splitNameString)(name, _TextContentConfigurator.MAX_NAME_STR_LENGTH, (0, _TextContentConfigurator.getNameSplitterTokensIterator)()),
         totalNamePartsNumber = nameParts.length,
         maxNamePartLength = (0, _string.getMaxStringLengthFromList)(nameParts);
 
@@ -972,7 +980,7 @@ var getInitialState = exports.getInitialState = function getInitialState(node, _
         theme: theme,
         originalTheme: theme,
         node: node,
-        name: node.name,
+        name: name,
         prefixName: node.prefixName,
         nameParts: nameParts,
         totalNamePartsNumber: totalNamePartsNumber,
@@ -39563,6 +39571,33 @@ var Colors = exports.Colors = {
 };
 
 exports.default = (0, _DefaultBaseTheme.buildTheme)(Colors);
+
+/***/ }),
+/* 482 */
+/***/ (function(module, exports) {
+
+
+
+var escape = module.exports = function escape(string, ignore) {
+  var pattern;
+
+  if (string === null || string === undefined) return;
+
+  ignore = (ignore || '').replace(/[^&"<>\']/g, '');
+  pattern = '([&"<>\'])'.replace(new RegExp('[' + ignore + ']', 'g'), '');
+
+  return string.replace(new RegExp(pattern, 'g'), function(str, item) {
+            return escape.map[item];
+          })
+}
+
+var map = escape.map = {
+    '>': '&gt;'
+  , '<': '&lt;'
+  , "'": '&apos;'
+  , '"': '&quot;'
+  , '&': '&amp;'
+}
 
 /***/ })
 /******/ ]);

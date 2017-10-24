@@ -1,3 +1,4 @@
+import escape from 'xml-escape';
 import { mergeObjectStructures } from 'shared/utils/composition';
 import {
     generateId,
@@ -25,8 +26,10 @@ export const delegateInit = (shape, themeFieldName) => {
 };
 
 export const getInitialState = (node, { x, y }, theme, type) => {
+    const name = escape(node.name);
+
     const nameParts = splitNameString(
-            node.name,
+            name,
             MAX_NAME_STR_LENGTH,
             getNameSplitterTokensIterator()
         ),
@@ -41,7 +44,7 @@ export const getInitialState = (node, { x, y }, theme, type) => {
         theme,
         originalTheme: theme,
         node,
-        name: node.name,
+        name,
         prefixName: node.prefixName,
         nameParts,
         totalNamePartsNumber,

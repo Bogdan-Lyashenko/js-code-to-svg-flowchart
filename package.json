@@ -4,8 +4,8 @@
   "author": "Bohdan Liashenko",
   "license": "MIT",
   "repository": {
-      "type" : "git",
-      "url" : "https://github.com/Bogdan-Lyashenko/js-code-to-svg-flowchart.git"
+    "type": "git",
+    "url": "https://github.com/Bogdan-Lyashenko/js-code-to-svg-flowchart.git"
   },
   "main": "./index.js",
   "scripts": {
@@ -42,6 +42,7 @@
     "deepmerge": "^1.5.1",
     "global": "^4.3.2",
     "npm-name-cli": "^1.2.0",
-    "remove": "^0.1.5"
+    "remove": "^0.1.5",
+    "xml-escape": "^1.1.0"
   }
 }
