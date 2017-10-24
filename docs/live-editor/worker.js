@@ -1,4 +1,4 @@
-importScripts('../../dist/js2flowchart.js');
+importScripts('https://raw.githubusercontent.com/Bogdan-Lyashenko/js-code-to-svg-flowchart/master/dist/js2flowchart.js');
 
 self.onmessage = function(message) {
     const code = message.data.code;
