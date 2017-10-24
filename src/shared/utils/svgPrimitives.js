@@ -55,7 +55,7 @@ export const getRoundedRectangle = (x, y, w, h, theme) => {
 export const getRectangle = (x, y, w, h, theme) => {
     return `
         <rect x="${x}" y="${y}"
-            width="${w}" height=${h}
+            width="${w}" height="${h}"
             style="${extractStylePropsFromTheme(theme)}" />`;
 };
 

@@ -1,9 +1,11 @@
-<svg width="582" height="828">
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="582" height="828">
 
     <g>
 
         <rect x="50" y="80"
-              width="323" height=30
+              width="323" height="30"
         style="fill:#a5d6a7; stroke:#444; stroke-width:1" />
 
 

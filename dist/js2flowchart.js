@@ -2096,7 +2096,7 @@ var getRoundedRectangle = exports.getRoundedRectangle = function getRoundedRecta
 };
 
 var getRectangle = exports.getRectangle = function getRectangle(x, y, w, h, theme) {
-    return '\n        <rect x="' + x + '" y="' + y + '"\n            width="' + w + '" height=' + h + '\n            style="' + extractStylePropsFromTheme(theme) + '" />';
+    return '\n        <rect x="' + x + '" y="' + y + '"\n            width="' + w + '" height="' + h + '"\n            style="' + extractStylePropsFromTheme(theme) + '" />';
 };
 
 var getLine = exports.getLine = function getLine(x1, y1, x2, y2, theme) {
@@ -38316,7 +38316,7 @@ var SVGBase = exports.SVGBase = function SVGBase() {
                 w = _calculateDimensions.w,
                 h = _calculateDimensions.h;
 
-            return '<svg width="' + w + '" height="' + h + '">\n                ' + this.printChildren(config) + '\n            </svg>';
+            return '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" \n                width="' + w + '" height="' + h + '">\n                ' + this.printChildren(config) + '\n            </svg>';
         }
     };
 };
