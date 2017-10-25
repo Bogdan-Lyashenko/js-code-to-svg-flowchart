@@ -970,7 +970,7 @@ var getInitialState = exports.getInitialState = function getInitialState(node, _
 
     var nameParts = (0, _string.splitNameString)(name, _TextContentConfigurator.MAX_NAME_STR_LENGTH, (0, _TextContentConfigurator.getNameSplitterTokensIterator)()),
         totalNamePartsNumber = nameParts.length,
-        maxNamePartLength = (0, _string.getMaxStringLengthFromList)(nameParts);
+        maxNamePartLength = node.name.length; //TODO: wrong length after escape getMaxStringLengthFromList(nameParts);
 
     return {
         id: (0, _string.generateId)(),
@@ -16531,7 +16531,8 @@ var getFunctionParametersCode = exports.getFunctionParametersCode = function get
 
 var returnConverter = exports.returnConverter = function returnConverter(path) {
     var node = path.node;
-    if (node.argument && node.argument.type === _constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION) {
+    if (node.argument && node.argument.type === _constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION || isFunctionType(node.argument.type)) {
+
         return 'return';
     }
 

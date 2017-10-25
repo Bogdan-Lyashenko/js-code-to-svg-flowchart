@@ -34,7 +34,7 @@ export const getInitialState = (node, { x, y }, theme, type) => {
             getNameSplitterTokensIterator()
         ),
         totalNamePartsNumber = nameParts.length,
-        maxNamePartLength = getMaxStringLengthFromList(nameParts);
+        maxNamePartLength = node.name.length;//TODO: wrong length after escape getMaxStringLengthFromList(nameParts);
 
     return {
         id: generateId(),

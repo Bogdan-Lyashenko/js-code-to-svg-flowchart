@@ -50,7 +50,9 @@ export const getFunctionParametersCode = params => {
 
 export const returnConverter = path => {
     const node = path.node;
-    if (node.argument && node.argument.type === TOKEN_TYPES.CONDITIONAL_EXPRESSION) {
+    if (node.argument && node.argument.type === TOKEN_TYPES.CONDITIONAL_EXPRESSION ||
+        isFunctionType(node.argument.type)) {
+
         return 'return'
     }
 
