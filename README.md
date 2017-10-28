@@ -37,9 +37,9 @@ function indexSearch(list, element) {
 ```
 pass it to ```js2flowchart.convertCodeToSvg``` method. Here what we get.
 
-[![](https://rawgit.com/Bogdan-Lyashenko/js-code-to-svg-flowchart/master/docs/examples/default/flowchart.svg)](https://rawgit.com/Bogdan-Lyashenko/js-code-to-svg-flowchart/master/docs/examples/default/flowchart.svg)
+<img src="/docs/examples/default/flowchart.png" width="400"/>
 
-### How to get started?
+### How to get started? l
 > yarn add js2flowchart
 
 ### API
