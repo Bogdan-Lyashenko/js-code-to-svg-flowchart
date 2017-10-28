@@ -37,9 +37,9 @@ function indexSearch(list, element) {
 ```
 pass it to ```js2flowchart.convertCodeToSvg``` method. Here what we get.
 
-<img src="/docs/examples/default/flowchart.png" width="400"/>
+<img src="/docs/examples/default/flowchart.png" width="600"/>
 
-### How to get started? l
+### How to get started? 
 > yarn add js2flowchart
 
 ### API
