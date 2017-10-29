@@ -2,11 +2,12 @@
 
 js2flowchart is a tool for creating SVG flowcharts from JavaScript code.
 
-## Demo
-Check live [code editor here](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/live-editor/index.html), paste your code and download SVG file of flowchart! 
+## [Demo](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/live-editor/index.html)
+Check out live [<b>code editor</b>](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/live-editor/index.html), paste your code and <b>download SVG file</b> of flowchart! 
 
-### Get SVG from JS code in one click
-Let's take simple code function for classic case Binary search
+### What does js2flowchart do?
+js2flowchart takes your JS code and returns SVG flowchart. 
+For example, here is simple code function for classic case Binary search
 
 ```javascript
 function indexSearch(list, element) {
