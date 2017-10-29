@@ -253,12 +253,6 @@ export const buildTheme = color => {
             }
         },
 
-        ObjectExpression: {
-            ...BaseShape,
-            fillColor: color.objectFillColor,
-            edgeOffset: 10
-        },
-
         ObjectProperty: {
             ...BaseShape,
             fillColor: color.rectangleFillColor

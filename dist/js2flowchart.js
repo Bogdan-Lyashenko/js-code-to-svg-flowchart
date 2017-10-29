@@ -4728,11 +4728,6 @@ var buildTheme = exports.buildTheme = function buildTheme(color) {
             })
         }),
 
-        ObjectExpression: _extends({}, BaseShape, {
-            fillColor: color.objectFillColor,
-            edgeOffset: 10
-        }),
-
         ObjectProperty: _extends({}, BaseShape, {
             fillColor: color.rectangleFillColor
         }),
@@ -38676,10 +38671,6 @@ var _ContinueStatement = __webpack_require__(477);
 
 var _ContinueStatement2 = _interopRequireDefault(_ContinueStatement);
 
-var _ObjectExpression = __webpack_require__(478);
-
-var _ObjectExpression2 = _interopRequireDefault(_ObjectExpression);
-
 var _CallExpression = __webpack_require__(479);
 
 var _CallExpression2 = _interopRequireDefault(_CallExpression);
@@ -39419,26 +39410,7 @@ exports.default = (0, _BaseShape.delegateInit)(_ReturnStatement.ReturnStatement,
 module.exports = exports['default'];
 
 /***/ }),
-/* 478 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _BaseShape = __webpack_require__(2);
-
-var _VerticalEdgedRectangle = __webpack_require__(72);
-
-var ENTITY_FIELD_NAME = 'ObjectExpression';
-
-exports.default = (0, _BaseShape.delegateInit)(_VerticalEdgedRectangle.VerticalEdgedRectangle, ENTITY_FIELD_NAME);
-module.exports = exports['default'];
-
-/***/ }),
+/* 478 */,
 /* 479 */
 /***/ (function(module, exports, __webpack_require__) {
 

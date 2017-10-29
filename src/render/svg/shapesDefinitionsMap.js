@@ -19,7 +19,6 @@ import SwitchStatement from './shapes/SwitchStatement';
 import BreakStatement from './shapes/BreakStatement';
 import SwitchCase from './shapes/SwitchCase';
 import ContinueStatement from './shapes/ContinueStatement';
-import ObjectExpression from './shapes/ObjectExpression';
 import CallExpression from './shapes/CallExpression';
 import ObjectProperty from './shapes/ObjectProperty';
 
