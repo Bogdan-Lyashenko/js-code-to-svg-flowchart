@@ -1,4 +1,4 @@
-Why? While I've been working on [Under-the-hood-ReactJS](https://github.com/Bogdan-Lyashenko/Under-the-hood-ReactJS) I spent enormous amount of time on painting itself. Each change in code or flowchart affects all entire flowchart, just redundant, repeated manual work. It took almost a month just to create [that](https://bogdan-lyashenko.github.io/Under-the-hood-ReactJS/stack/images/intro/all-page-stack-reconciler.svg), when original idea was not about improving my painting skills.
+> Why? While I've been working on [Under-the-hood-ReactJS](https://github.com/Bogdan-Lyashenko/Under-the-hood-ReactJS) I spent enormous amount of time on creating of scheme. Each change in code or flowchart affects all entire scheme, just redundant, repeated manual work. It took almost a month just to create [that](https://bogdan-lyashenko.github.io/Under-the-hood-ReactJS/stack/images/intro/all-page-stack-reconciler.svg).
 
 How we can automate *flowchart drawing from JS code*? Imagine a library which takes any JS code and returns you SVG flowchart, works on client and server. Allows you easily adjust styles scheme for your context. Demonstrate your code logic from different depth without manual code change by usage of different abstractions levels. Highlighting, blurring, hiding scheme nodes, destructing whole blocks, custom modifiers for your needs etc. See all details in [API section below](### API and examples).            
 
@@ -60,7 +60,7 @@ const code = `function indexSearch(list, element) {
     }
 
     return -1;
-}`
+}`;
 ```
 let's convert it to SVG. 
 ```javascript
