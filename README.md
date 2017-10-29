@@ -11,7 +11,7 @@ or have a look at online editor below.
 
 ## [Demo](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/live-editor/index.html)
 Check out live [<b>code editor</b>](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/live-editor/index.html), paste your code and <b>download SVG file</b> of flowchart!
-[<img src="/docs/live-editor/demo.gif" width="600">](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/live-editor/index.html) 
+[<img src="/docs/live-editor/demo.gif" width="700">](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/live-editor/index.html) 
 
 ### What does js2flowchart do?
 js2flowchart takes your JS code and returns SVG flowchart, works on client/server, support ES6.
