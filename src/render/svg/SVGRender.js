@@ -9,6 +9,7 @@ import {
 import { buildSVGObjectsTree } from './svgObjectsBuilder';
 import { traversal } from 'shared/utils/traversal';
 import { flatTree } from 'shared/utils/flatten';
+import { logError } from 'shared/utils/logger';
 
 export const ShapesTreeEditor = svgObjectsTree => {
     const updateShapeTheme = (shape, shapeStyles, connectionArrowStyles) => {
@@ -109,7 +110,16 @@ export default (customStyleTheme = {}) => {
 
     return {
         buildShapesTree(flowTree) {
-            return buildSVGObjectsTree(flowTree, theme);
+            let shapes = [];
+
+            try {
+                shapes = buildSVGObjectsTree(flowTree, theme);
+            } catch (e) {
+                logError('Error at buildShapesTree' + e.message, e.stack);
+                throw e;
+            }
+
+            return shapes;
         },
 
         applyTheme(newThemeStyles) {

@@ -14,6 +14,7 @@ import {
     expressionCallbacksModifier
 } from './modifiers/modifiersFactory';
 import { TOKEN_TYPES } from 'shared/constants';
+import { logError } from 'shared/utils/logger';
 
 const buildFlowTree = (astTree, astVisitorConfig) => {
     const treeNodes = [];
@@ -87,9 +88,15 @@ export default ({ astParser = {}, astVisitor = {} } = {}) => {
         },
 
         buildFlowTreeFromAst(ast) {
-            const flowTree = buildFlowTree(ast, astVisitorConfig);
+            let flowTree = [];
 
-            defaultModifier.applyToFlowTree(flowTree);
+            try {
+                flowTree = buildFlowTree(ast, astVisitorConfig);
+                defaultModifier.applyToFlowTree(flowTree);
+            } catch (e) {
+                logError('Error at buildFlowTreeFromAst' + e.message, e.stack);
+                throw e;
+            }
 
             return flowTree;
         }

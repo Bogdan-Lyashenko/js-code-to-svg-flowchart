@@ -3,23 +3,30 @@ import { mergeObjectStructures } from 'shared/utils/composition';
 
 import { TOKEN_KEYS } from 'shared/constants';
 import { setupPointer } from 'shared/utils/treeLevelsPointer';
+import { logError } from 'shared/utils/logger';
 import defaultAstConfig from './astParserConfig';
 
 import traverse from 'babel-traverse';
 
 export const parseCodeToAST = (code, config = {}) => {
-    const ast = babylon.parse(code, mergeObjectStructures(defaultAstConfig, config));
+    let ast = [];
+
+    try {
+        ast = babylon.parse(code, mergeObjectStructures(defaultAstConfig, config));
+    } catch (e) {
+        logError('Error at parseCodeToAST: ' + e.message, e.loc, e.stack);
+        throw e;
+    }
 
     //TODO: remove
     traverse(ast, {
         enter(path) {
             if (path.node.type === 'ObjectPattern') {
-                debugger;
+               // debugger;
             }
-            console.log(path.node.type, ' ==== ', path.node.name);
+            //console.log(path.node.type, ' ==== ', path.node.name);
         }
     });
-    console.log(ast);
 
     return ast;
 };

@@ -7345,6 +7345,8 @@ var _modifiersFactory = __webpack_require__(449);
 
 var _constants = __webpack_require__(4);
 
+var _logger = __webpack_require__(483);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -7414,9 +7416,15 @@ exports.default = function () {
             return (0, _astBuilder.parseCodeToAST)(code, astParserConfig);
         },
         buildFlowTreeFromAst: function buildFlowTreeFromAst(ast) {
-            var flowTree = buildFlowTree(ast, astVisitorConfig);
+            var flowTree = [];
 
-            defaultModifier.applyToFlowTree(flowTree);
+            try {
+                flowTree = buildFlowTree(ast, astVisitorConfig);
+                defaultModifier.applyToFlowTree(flowTree);
+            } catch (e) {
+                (0, _logger.logError)('Error at buildFlowTreeFromAst' + e.message, e.stack);
+                throw e;
+            }
 
             return flowTree;
         }
@@ -18024,6 +18032,8 @@ var _constants = __webpack_require__(4);
 
 var _treeLevelsPointer = __webpack_require__(179);
 
+var _logger = __webpack_require__(483);
+
 var _astParserConfig = __webpack_require__(445);
 
 var _astParserConfig2 = _interopRequireDefault(_astParserConfig);
@@ -18039,18 +18049,24 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 var parseCodeToAST = exports.parseCodeToAST = function parseCodeToAST(code) {
     var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-    var ast = babylon.parse(code, (0, _composition.mergeObjectStructures)(_astParserConfig2.default, config));
+    var ast = [];
+
+    try {
+        ast = babylon.parse(code, (0, _composition.mergeObjectStructures)(_astParserConfig2.default, config));
+    } catch (e) {
+        (0, _logger.logError)('Error at parseCodeToAST: ' + e.message, e.loc, e.stack);
+        throw e;
+    }
 
     //TODO: remove
     (0, _babelTraverse2.default)(ast, {
         enter: function enter(path) {
-            if (path.node.type === 'ObjectPattern') {
-                debugger;
-            }
-            console.log(path.node.type, ' ==== ', path.node.name);
+            if (path.node.type === 'ObjectPattern') {}
+            // debugger;
+
+            //console.log(path.node.type, ' ==== ', path.node.name);
         }
     });
-    console.log(ast);
 
     return ast;
 };
@@ -18237,6 +18253,8 @@ var _traversal = __webpack_require__(112);
 
 var _flatten = __webpack_require__(182);
 
+var _logger = __webpack_require__(483);
+
 var ShapesTreeEditor = exports.ShapesTreeEditor = function ShapesTreeEditor(svgObjectsTree) {
     var updateShapeTheme = function updateShapeTheme(shape, shapeStyles, connectionArrowStyles) {
         if (shapeStyles) {
@@ -18324,7 +18342,16 @@ exports.default = function () {
 
     return {
         buildShapesTree: function buildShapesTree(flowTree) {
-            return (0, _svgObjectsBuilder.buildSVGObjectsTree)(flowTree, theme);
+            var shapes = [];
+
+            try {
+                shapes = (0, _svgObjectsBuilder.buildSVGObjectsTree)(flowTree, theme);
+            } catch (e) {
+                (0, _logger.logError)('Error at buildShapesTree' + e.message, e.stack);
+                throw e;
+            }
+
+            return shapes;
         },
         applyTheme: function applyTheme(newThemeStyles) {
             theme = (0, _StyleThemeFactory.applyStyleToTheme)(theme, newThemeStyles);
@@ -39615,6 +39642,20 @@ exports.default = function (code) {
             });
         }
     };
+};
+
+/***/ }),
+/* 483 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var logError = exports.logError = function logError(message) {
+  return console.error(message);
 };
 
 /***/ })
