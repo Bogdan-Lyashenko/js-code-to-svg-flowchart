@@ -19,8 +19,13 @@
         window.saveAs(file, fileName);
     });
 
-    worker.onmessage = function(message) {
-        svgImage.innerHTML = message.data.svg;
+    worker.onmessage = function({data}) {
+        if (data.svg) {
+            svgImage.innerHTML = data.svg;
+            document.body.style.borderTop = 'none';
+        } else if (data.error) {
+            document.body.style.borderTop = '5px solid #F44336';
+        }
     };
 
     worker.postMessage({ code: codeEditor.getValue() });
