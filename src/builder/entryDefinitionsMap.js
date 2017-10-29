@@ -46,6 +46,7 @@ const singleTypeFilter = path => {
             parent.type === TOKEN_TYPES.CONDITIONAL_EXPRESSION) &&
             ['test', 'left', 'right'].includes(path.parentKey)) ||
         ([
+            TOKEN_TYPES.RETURN,
             TOKEN_TYPES.CALL_EXPRESSION,
             TOKEN_TYPES.BINARY_EXPRESSION,
             TOKEN_TYPES.UPDATE_EXPRESSION,
@@ -218,12 +219,18 @@ export const DefinitionsMap = {
     [TOKEN_TYPES.OBJECT_EXPRESSION]: {
         type: TOKEN_TYPES.OBJECT_EXPRESSION,
         getName: objectExpressionConverter,
-        ignore: path =>
-            [
+        ignore: path => {
+            const node = path.node;
+            if (node.properties && !node.properties.length) {
+                return true;
+            }
+
+            return [
                 TOKEN_TYPES.OBJECT_PROPERTY,
                 TOKEN_TYPES.ASSIGNMENT_EXPRESSION,
                 TOKEN_TYPES.VARIABLE_DECLARATOR
-            ].includes(path.parent.type),
+            ].includes(path.parent.type)
+        },
         body: true
     },
     [TOKEN_TYPES.OBJECT_PROPERTY]: {
@@ -234,12 +241,12 @@ export const DefinitionsMap = {
 
     //ES Harmony features
     [TOKEN_TYPES.IMPORT_DECLARATION]: {
-        type: TOKEN_TYPES.IMPORT_DECLARATION, //TODO: visual display in separate way libs (npm modules) and local dependencies
+        type: TOKEN_TYPES.IMPORT_DECLARATION,
         getName: importDeclarationConverter,
         body: true
     },
     [TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER]: {
-        type: TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER, //TODO: visual display it as dependencies to another module?
+        type: TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER,
         getName: idleConverter
     },
     [TOKEN_TYPES.IMPORT_SPECIFIER]: {
@@ -247,30 +254,25 @@ export const DefinitionsMap = {
         getName: idleConverter
     },
     [TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION]: {
-        type: TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION, //TODO: visual display as main result of module, => |a = 12| can be as big arrow shape at left side of main body
+        type: TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION,
         getName: exportDefaultDeclarationConverter,
         body: true
     },
     [TOKEN_TYPES.EXPORT_NAMED_DECLARATION]: {
-        type: TOKEN_TYPES.EXPORT_NAMED_DECLARATION, //TODO: visual ' => |a = 12| ' can be as big arrow shape at left side of main body
+        type: TOKEN_TYPES.EXPORT_NAMED_DECLARATION,
         getName: exportNamedDeclarationConverter,
         body: true
     },
     [TOKEN_TYPES.CLASS_DECLARATION]: {
-        type: TOKEN_TYPES.CLASS_DECLARATION, //TODO: visual something like function declaration but more visible (class is bigger than function)
-        getName: classDeclarationConverter, //if it has superClass -> render it with highlighting
+        type: TOKEN_TYPES.CLASS_DECLARATION,
+        getName: classDeclarationConverter,
+        body: true
+    },
+    [TOKEN_TYPES.OBJECT_PATTERN]: {
+        type: TOKEN_TYPES.OBJECT_PATTERN,
+        getName: ()=>'{bob}',
         body: true
     }
 };
 
 export const DefinitionsList = Object.values(DefinitionsMap);
-
-/*
-*
-*
-* TODO: start with visual for each new token
-*
-* TODO: fix visual displaying of recurrence function call (should be looped as a for-loop, but fromPoint of arrow is in the bottom of shape)
-*
-* TODO: finish declarations (add jsx and flow)
-* */

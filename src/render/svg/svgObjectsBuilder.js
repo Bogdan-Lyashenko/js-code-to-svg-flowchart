@@ -175,7 +175,7 @@ const buildConnectionConfig = (toShape, fromShape) => {
         noArrow: isNoArrow(toShape, fromShape)
     };
 
-    if (toShape.getNodeKey() === TOKEN_KEYS.ALTERNATE) {
+    if (toShape.getNodeKey() === TOKEN_KEYS.ALTERNATE && toShape.getNodeType() !== TOKEN_TYPES.OBJECT_PROPERTY) {
         const boundaryPoint = fromShape.getAlternativeBranchChildOffsetPoint();
 
         config.startPoint = fromShape.getAlternateFromPoint();

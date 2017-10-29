@@ -30,6 +30,7 @@ export const TOKEN_TYPES = {
     ARRAY_EXPRESSION: 'ArrayExpression',
     OBJECT_EXPRESSION: 'ObjectExpression',
     OBJECT_PROPERTY: 'ObjectProperty',
+    OBJECT_METHOD: 'ObjectMethod',
     BINARY_EXPRESSION: 'BinaryExpression',
     EXPRESSION_STATEMENT: 'ExpressionStatement',
     UNARY_EXPRESSION: 'UnaryExpression',
@@ -47,7 +48,10 @@ export const TOKEN_TYPES = {
     EXPORT_DEFAULT_DECLARATION: 'ExportDefaultDeclaration',
     CLASS_DECLARATION: 'ClassDeclaration',
     CLASS_METHOD: 'ClassMethod',
-    FOR_OF_STATEMENT: 'ForOfStatement'
+    FOR_OF_STATEMENT: 'ForOfStatement',
+    SPREAD_ELEMENT: 'SpreadElement',
+    REST_PROPERTY: 'RestProperty',
+    OBJECT_PATTERN: 'ObjectPattern'
 };
 
 export const TOKEN_KEYS = {

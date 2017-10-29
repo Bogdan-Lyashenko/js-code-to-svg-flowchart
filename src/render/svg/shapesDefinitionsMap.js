@@ -81,9 +81,6 @@ export const getShapeForNode = node => {
         case TOKEN_TYPES.CONTINUE:
             return ContinueStatement;
 
-        case TOKEN_TYPES.OBJECT_EXPRESSION:
-            return ObjectExpression;
-
         case TOKEN_TYPES.OBJECT_PROPERTY:
             return ObjectProperty;
 

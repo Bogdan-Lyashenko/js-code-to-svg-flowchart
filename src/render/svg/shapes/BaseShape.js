@@ -26,15 +26,13 @@ export const delegateInit = (shape, themeFieldName) => {
 };
 
 export const getInitialState = (node, { x, y }, theme, type) => {
-    const name = escape(node.name);
-
     const nameParts = splitNameString(
-            name,
+            node.name,
             MAX_NAME_STR_LENGTH,
             getNameSplitterTokensIterator()
         ),
         totalNamePartsNumber = nameParts.length,
-        maxNamePartLength = node.name.length;//TODO: wrong length after escape getMaxStringLengthFromList(nameParts);
+        maxNamePartLength = getMaxStringLengthFromList(nameParts);
 
     return {
         id: generateId(),
@@ -44,7 +42,7 @@ export const getInitialState = (node, { x, y }, theme, type) => {
         theme,
         originalTheme: theme,
         node,
-        name,
+        name: node.name,
         prefixName: node.prefixName,
         nameParts,
         totalNamePartsNumber,
@@ -150,12 +148,13 @@ export const setupSharedPrint = state => ({
             .map(
                 (part, i) =>
                     `<tspan x="${x + theme.horizontalPadding}" y="${y +
-                        2 * theme.verticalPadding * (i + 1)}">${part}</tspan>`
+                        2 * theme.verticalPadding * (i + 1)}">${escape(part)}</tspan>`
             )
             .join('');
 
         //TODO: move to svg primitives
-        return `${nameParts[0].length < state.name.length ? `<title>${state.name}</title>` : ''}
+        // 3 because of ellipsis 3 dots
+        return `${nameParts[0].length <= state.name.length + 3 ? `<title>${escape(state.name)}</title>` : ''}
             <text x="${x + theme.horizontalPadding}" y="${y + 2 * theme.verticalPadding}"
                 font-family="${theme.fontFamily}" font-size="${theme.fontSize}" fill="${theme.textColor}">
                 ${name}

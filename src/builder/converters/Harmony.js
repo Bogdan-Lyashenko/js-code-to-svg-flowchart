@@ -3,12 +3,26 @@ import { TOKEN_TYPES } from 'shared/constants';
 
 export const importDeclarationConverter = ({ node }) => 'import from' + generate(node.source).code;
 
-export const exportNamedDeclarationConverter = ({ node }) => `export ${getExportedTokenName(node)}`;
+export const exportNamedDeclarationConverter = ({ node }) => `export${getExportedTokenName(node)}`;
 
 export const exportDefaultDeclarationConverter = ({ node }) =>
     `export default ${getExportedTokenName(node)}`;
 
-const getExportedTokenName = ({ declaration }) => {
+const getExportedTokenName = (path) => {
+    const {declaration, specifiers} = path;
+
+    if (declaration) {
+        return ' ' + getExportDeclarations(declaration);
+    }
+
+    if (specifiers) {
+        return '';
+    }
+
+    return generate(specifiers).code;
+};
+
+const getExportDeclarations = (declaration) => {
     if (
         [TOKEN_TYPES.FUNCTION_DECLARATION, TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION].indexOf(
             declaration.type

@@ -30,6 +30,11 @@ Main features:
 - <b>defined styles themes supports</b> choose one you like
 - <b>custom themes support</b> create your own one which fits your context colors better
 - <b>custom colors and styles support</b> provides handy API to change specific styles without boilerplate    
+
+Use cases:
+- explain/document your code by flowcharts
+- lear other's code by visual understanding 
+- create flowcharts for any process simply described by valid JS syntax
  
 ### API and examples
 
@@ -64,13 +69,38 @@ const code = `function indexSearch(list, element) {
     return -1;
 }`;
 ```
-let's convert it to SVG. 
+let's convert it to SVG: 
 ```javascript
 const svg = js2flowchart.convertCodeToSvg(code);
 ```
-Here what we get, easy enought.
+Result:
 
 <img src="/docs/examples/default/flowchart.png" width="600"/>
+
+If you need to modify default behavior you can split ```js2flowchart.convertCodeToSvg``` into two building block: 
+- flow tree building
+- shapes printing
+
+```javascript
+const {convertFlowTreeToSvg, convertCodeToFlowTree} = js2flowchart;
+
+const flowTree = convertCodeToFlowTree(code);
+
+const svg = convertFlowTreeToSvg(flowTree);//XML string
+```
+
+or when you need full control create main instances manually:
+```javascript
+const {createFlowTreeBuilder, createSVGRender} = js2flowchart;
+
+const flowTreeBuilder = createFlowTreeBuilder(),
+    svgRender = createSVGRender();
+
+const flowTree = flowTreeBuilder.build(code),
+    shapesTree = svgRender.buildShapesTree(flowTree);
+
+const svg = shapesTree.print();//XML string
+```  
 
 ### Under the hood
 Main stages:

@@ -10,14 +10,16 @@ import traverse from 'babel-traverse';
 export const parseCodeToAST = (code, config = {}) => {
     const ast = babylon.parse(code, mergeObjectStructures(defaultAstConfig, config));
 
+    //TODO: remove
     traverse(ast, {
         enter(path) {
-            if (path.node.type === 'UnaryExpression') {
-                //debugger;
+            if (path.node.type === 'ObjectPattern') {
+                debugger;
             }
-            //console.log(path.node.type, ' ==== ', path.node.name);
+            console.log(path.node.type, ' ==== ', path.node.name);
         }
     });
+    console.log(ast);
 
     return ast;
 };

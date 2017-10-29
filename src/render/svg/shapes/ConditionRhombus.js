@@ -1,4 +1,4 @@
-import { TOKEN_KEYS } from 'shared/constants';
+import { TOKEN_KEYS, TOKEN_TYPES } from 'shared/constants';
 import { getRhombus, getRoundedRectangle, getText } from 'shared/utils/svgPrimitives';
 import { assignState } from 'shared/utils/composition';
 
@@ -71,10 +71,10 @@ export const setupConditionRhombusBehavior = state => ({
         const theme = state.theme;
         const { x, y } = state.position,
             R = state.dimensions.h,
-            w = state.dimensions.w;
+            w = state.dimensions.w,
+            node = state.node;
 
-        //TODO: move to theme config
-        const text = 'if',
+        const text = node.subType === TOKEN_TYPES.CONDITIONAL_EXPRESSION ? '?' : 'if',
             positive = '+',
             alternative = '-';
 

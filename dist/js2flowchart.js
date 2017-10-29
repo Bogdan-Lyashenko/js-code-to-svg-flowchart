@@ -966,11 +966,9 @@ var getInitialState = exports.getInitialState = function getInitialState(node, _
     var x = _ref.x,
         y = _ref.y;
 
-    var name = (0, _xmlEscape2.default)(node.name);
-
-    var nameParts = (0, _string.splitNameString)(name, _TextContentConfigurator.MAX_NAME_STR_LENGTH, (0, _TextContentConfigurator.getNameSplitterTokensIterator)()),
+    var nameParts = (0, _string.splitNameString)(node.name, _TextContentConfigurator.MAX_NAME_STR_LENGTH, (0, _TextContentConfigurator.getNameSplitterTokensIterator)()),
         totalNamePartsNumber = nameParts.length,
-        maxNamePartLength = node.name.length; //TODO: wrong length after escape getMaxStringLengthFromList(nameParts);
+        maxNamePartLength = (0, _string.getMaxStringLengthFromList)(nameParts);
 
     return {
         id: (0, _string.generateId)(),
@@ -980,7 +978,7 @@ var getInitialState = exports.getInitialState = function getInitialState(node, _
         theme: theme,
         originalTheme: theme,
         node: node,
-        name: name,
+        name: node.name,
         prefixName: node.prefixName,
         nameParts: nameParts,
         totalNamePartsNumber: totalNamePartsNumber,
@@ -1078,11 +1076,12 @@ var setupSharedPrint = exports.setupSharedPrint = function setupSharedPrint(stat
                 y = _ref2.y;
 
             var name = nameParts.map(function (part, i) {
-                return '<tspan x="' + (x + theme.horizontalPadding) + '" y="' + (y + 2 * theme.verticalPadding * (i + 1)) + '">' + part + '</tspan>';
+                return '<tspan x="' + (x + theme.horizontalPadding) + '" y="' + (y + 2 * theme.verticalPadding * (i + 1)) + '">' + (0, _xmlEscape2.default)(part) + '</tspan>';
             }).join('');
 
             //TODO: move to svg primitives
-            return (nameParts[0].length < state.name.length ? '<title>' + state.name + '</title>' : '') + '\n            <text x="' + (x + theme.horizontalPadding) + '" y="' + (y + 2 * theme.verticalPadding) + '"\n                font-family="' + theme.fontFamily + '" font-size="' + theme.fontSize + '" fill="' + theme.textColor + '">\n                ' + name + '\n            </text>';
+            // 3 because of ellipsis 3 dots
+            return (nameParts[0].length <= state.name.length + 3 ? '<title>' + (0, _xmlEscape2.default)(state.name) + '</title>' : '') + '\n            <text x="' + (x + theme.horizontalPadding) + '" y="' + (y + 2 * theme.verticalPadding) + '"\n                font-family="' + theme.fontFamily + '" font-size="' + theme.fontSize + '" fill="' + theme.textColor + '">\n                ' + name + '\n            </text>';
         },
         printDebugInfo: function printDebugInfo() {
             var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
@@ -1286,6 +1285,7 @@ var TOKEN_TYPES = exports.TOKEN_TYPES = {
     ARRAY_EXPRESSION: 'ArrayExpression',
     OBJECT_EXPRESSION: 'ObjectExpression',
     OBJECT_PROPERTY: 'ObjectProperty',
+    OBJECT_METHOD: 'ObjectMethod',
     BINARY_EXPRESSION: 'BinaryExpression',
     EXPRESSION_STATEMENT: 'ExpressionStatement',
     UNARY_EXPRESSION: 'UnaryExpression',
@@ -1303,7 +1303,10 @@ var TOKEN_TYPES = exports.TOKEN_TYPES = {
     EXPORT_DEFAULT_DECLARATION: 'ExportDefaultDeclaration',
     CLASS_DECLARATION: 'ClassDeclaration',
     CLASS_METHOD: 'ClassMethod',
-    FOR_OF_STATEMENT: 'ForOfStatement'
+    FOR_OF_STATEMENT: 'ForOfStatement',
+    SPREAD_ELEMENT: 'SpreadElement',
+    REST_PROPERTY: 'RestProperty',
+    OBJECT_PATTERN: 'ObjectPattern'
 };
 
 var TOKEN_KEYS = exports.TOKEN_KEYS = {
@@ -4258,7 +4261,7 @@ var singleTypeFilter = function singleTypeFilter(path) {
         return false;
     }
 
-    return ['params'].includes(path.listKey) || statementParent.isReturnStatement() || (statementParent.isLoop() || statementParent.isConditional() || parent.type === _constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION) && ['test', 'left', 'right'].includes(path.parentKey) || [_constants.TOKEN_TYPES.CALL_EXPRESSION, _constants.TOKEN_TYPES.BINARY_EXPRESSION, _constants.TOKEN_TYPES.UPDATE_EXPRESSION, _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION, _constants.TOKEN_TYPES.VARIABLE_DECLARATOR, _constants.TOKEN_TYPES.MEMBER_EXPRESSION, _constants.TOKEN_TYPES.NEW_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION_DECLARATION, _constants.TOKEN_TYPES.FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION, _constants.TOKEN_TYPES.OBJECT_PROPERTY, _constants.TOKEN_TYPES.ARRAY_EXPRESSION, _constants.TOKEN_TYPES.UNARY_EXPRESSION, _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_DECLARATION, _constants.TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION, _constants.TOKEN_TYPES.EXPORT_NAMED_DECLARATION, _constants.TOKEN_TYPES.CLASS_DECLARATION, _constants.TOKEN_TYPES.CLASS_METHOD].includes(parent.type) && (!parent.body || parent.body.type !== path.node.type);
+    return ['params'].includes(path.listKey) || statementParent.isReturnStatement() || (statementParent.isLoop() || statementParent.isConditional() || parent.type === _constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION) && ['test', 'left', 'right'].includes(path.parentKey) || [_constants.TOKEN_TYPES.RETURN, _constants.TOKEN_TYPES.CALL_EXPRESSION, _constants.TOKEN_TYPES.BINARY_EXPRESSION, _constants.TOKEN_TYPES.UPDATE_EXPRESSION, _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION, _constants.TOKEN_TYPES.VARIABLE_DECLARATOR, _constants.TOKEN_TYPES.MEMBER_EXPRESSION, _constants.TOKEN_TYPES.NEW_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION_DECLARATION, _constants.TOKEN_TYPES.FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION, _constants.TOKEN_TYPES.OBJECT_PROPERTY, _constants.TOKEN_TYPES.ARRAY_EXPRESSION, _constants.TOKEN_TYPES.UNARY_EXPRESSION, _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_DECLARATION, _constants.TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION, _constants.TOKEN_TYPES.EXPORT_NAMED_DECLARATION, _constants.TOKEN_TYPES.CLASS_DECLARATION, _constants.TOKEN_TYPES.CLASS_METHOD].includes(parent.type) && (!parent.body || parent.body.type !== path.node.type);
 };
 
 var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.FUNCTION, {
@@ -4377,6 +4380,11 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
     type: _constants.TOKEN_TYPES.OBJECT_EXPRESSION,
     getName: _core.objectExpressionConverter,
     ignore: function ignore(path) {
+        var node = path.node;
+        if (node.properties && !node.properties.length) {
+            return true;
+        }
+
         return [_constants.TOKEN_TYPES.OBJECT_PROPERTY, _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION, _constants.TOKEN_TYPES.VARIABLE_DECLARATOR].includes(path.parent.type);
     },
     body: true
@@ -4385,40 +4393,36 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
     getName: _core.objectPropertyConverter,
     body: true
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.IMPORT_DECLARATION, {
-    type: _constants.TOKEN_TYPES.IMPORT_DECLARATION, //TODO: visual display in separate way libs (npm modules) and local dependencies
+    type: _constants.TOKEN_TYPES.IMPORT_DECLARATION,
     getName: _Harmony.importDeclarationConverter,
     body: true
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER, {
-    type: _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER, //TODO: visual display it as dependencies to another module?
+    type: _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER,
     getName: _core.idleConverter
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.IMPORT_SPECIFIER, {
     type: _constants.TOKEN_TYPES.IMPORT_SPECIFIER,
     getName: _core.idleConverter
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION, {
-    type: _constants.TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION, //TODO: visual display as main result of module, => |a = 12| can be as big arrow shape at left side of main body
+    type: _constants.TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION,
     getName: _Harmony.exportDefaultDeclarationConverter,
     body: true
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.EXPORT_NAMED_DECLARATION, {
-    type: _constants.TOKEN_TYPES.EXPORT_NAMED_DECLARATION, //TODO: visual ' => |a = 12| ' can be as big arrow shape at left side of main body
+    type: _constants.TOKEN_TYPES.EXPORT_NAMED_DECLARATION,
     getName: _Harmony.exportNamedDeclarationConverter,
     body: true
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.CLASS_DECLARATION, {
-    type: _constants.TOKEN_TYPES.CLASS_DECLARATION, //TODO: visual something like function declaration but more visible (class is bigger than function)
-    getName: _Harmony.classDeclarationConverter, //if it has superClass -> render it with highlighting
+    type: _constants.TOKEN_TYPES.CLASS_DECLARATION,
+    getName: _Harmony.classDeclarationConverter,
+    body: true
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.OBJECT_PATTERN, {
+    type: _constants.TOKEN_TYPES.OBJECT_PATTERN,
+    getName: function getName() {
+        return '{bob}';
+    },
     body: true
 }), _DefinitionsMap);
 
 var DefinitionsList = exports.DefinitionsList = Object.values(DefinitionsMap);
-
-/*
-*
-*
-* TODO: start with visual for each new token
-*
-* TODO: fix visual displaying of recurrence function call (should be looped as a for-loop, but fromPoint of arrow is in the bottom of shape)
-*
-* TODO: finish declarations (add jsx and flow)
-* */
 
 /***/ }),
 /* 69 */
@@ -16503,7 +16507,7 @@ var functionConverter = exports.functionConverter = function functionConverter(p
         name = getAnonymousFunctionName(path) + 'function ' + node.id.name + paramsCode;
     } else if (node.type === _constants.TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION) {
         name = getAnonymousFunctionName(path) + paramsCode + ' =>';
-    } else if (node.type === _constants.TOKEN_TYPES.CLASS_METHOD) {
+    } else if (node.type === _constants.TOKEN_TYPES.CLASS_METHOD || node.type === _constants.TOKEN_TYPES.OBJECT_METHOD) {
         name = node.kind === _constants.CLASS_FUNCTION_KINDS.CONSTRUCTOR ? 'constructor' + paramsCode : node.key.name + paramsCode;
     } else {
         name = getAnonymousFunctionName(path) + 'function' + paramsCode;
@@ -16531,7 +16535,7 @@ var getFunctionParametersCode = exports.getFunctionParametersCode = function get
 
 var returnConverter = exports.returnConverter = function returnConverter(path) {
     var node = path.node;
-    if (node.argument && node.argument.type === _constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION || isFunctionType(node.argument.type)) {
+    if (node.argument && [_constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION, _constants.TOKEN_TYPES.OBJECT_EXPRESSION].includes(node.argument.type) || isFunctionType(node.argument.type)) {
 
         return 'return';
     }
@@ -18037,14 +18041,16 @@ var parseCodeToAST = exports.parseCodeToAST = function parseCodeToAST(code) {
 
     var ast = babylon.parse(code, (0, _composition.mergeObjectStructures)(_astParserConfig2.default, config));
 
+    //TODO: remove
     (0, _babelTraverse2.default)(ast, {
         enter: function enter(path) {
-            if (path.node.type === 'UnaryExpression') {}
-            //debugger;
-
-            //console.log(path.node.type, ' ==== ', path.node.name);
+            if (path.node.type === 'ObjectPattern') {
+                debugger;
+            }
+            console.log(path.node.type, ' ==== ', path.node.name);
         }
     });
+    console.log(ast);
 
     return ast;
 };
@@ -18469,11 +18475,11 @@ var setupConditionRhombusBehavior = exports.setupConditionRhombusBehavior = func
                 x = _state$position.x,
                 y = _state$position.y,
                 R = state.dimensions.h,
-                w = state.dimensions.w;
+                w = state.dimensions.w,
+                node = state.node;
 
-            //TODO: move to theme config
 
-            var text = 'if',
+            var text = node.subType === _constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION ? '?' : 'if',
                 positive = '+',
                 alternative = '-';
 
@@ -37559,7 +37565,7 @@ var importDeclarationConverter = exports.importDeclarationConverter = function i
 
 var exportNamedDeclarationConverter = exports.exportNamedDeclarationConverter = function exportNamedDeclarationConverter(_ref2) {
     var node = _ref2.node;
-    return 'export ' + getExportedTokenName(node);
+    return 'export' + getExportedTokenName(node);
 };
 
 var exportDefaultDeclarationConverter = exports.exportDefaultDeclarationConverter = function exportDefaultDeclarationConverter(_ref3) {
@@ -37567,9 +37573,23 @@ var exportDefaultDeclarationConverter = exports.exportDefaultDeclarationConverte
     return 'export default ' + getExportedTokenName(node);
 };
 
-var getExportedTokenName = function getExportedTokenName(_ref4) {
-    var declaration = _ref4.declaration;
+var getExportedTokenName = function getExportedTokenName(path) {
+    var declaration = path.declaration,
+        specifiers = path.specifiers;
 
+
+    if (declaration) {
+        return ' ' + getExportDeclarations(declaration);
+    }
+
+    if (specifiers) {
+        return '';
+    }
+
+    return (0, _babelGenerator2.default)(specifiers).code;
+};
+
+var getExportDeclarations = function getExportDeclarations(declaration) {
     if ([_constants.TOKEN_TYPES.FUNCTION_DECLARATION, _constants.TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION].indexOf(declaration.type) !== -1) {
         return declaration.id ? declaration.id.name : 'function';
     }
@@ -37583,8 +37603,8 @@ var getExportedTokenName = function getExportedTokenName(_ref4) {
     }
 };
 
-var classDeclarationConverter = exports.classDeclarationConverter = function classDeclarationConverter(_ref5) {
-    var node = _ref5.node;
+var classDeclarationConverter = exports.classDeclarationConverter = function classDeclarationConverter(_ref4) {
+    var node = _ref4.node;
 
     return 'class ' + (0, _babelGenerator2.default)(node.id).code + ' ' + (node.superClass ? ' extends ' + node.superClass.name : '');
 };
@@ -38344,7 +38364,7 @@ var buildConnectionConfig = function buildConnectionConfig(toShape, fromShape) {
         noArrow: isNoArrow(toShape, fromShape)
     };
 
-    if (toShape.getNodeKey() === _constants.TOKEN_KEYS.ALTERNATE) {
+    if (toShape.getNodeKey() === _constants.TOKEN_KEYS.ALTERNATE && toShape.getNodeType() !== _constants.TOKEN_TYPES.OBJECT_PROPERTY) {
         var boundaryPoint = fromShape.getAlternativeBranchChildOffsetPoint();
 
         config.startPoint = fromShape.getAlternateFromPoint();
@@ -38700,9 +38720,6 @@ var getShapeForNode = exports.getShapeForNode = function getShapeForNode(node) {
 
         case _constants.TOKEN_TYPES.CONTINUE:
             return _ContinueStatement2.default;
-
-        case _constants.TOKEN_TYPES.OBJECT_EXPRESSION:
-            return _ObjectExpression2.default;
 
         case _constants.TOKEN_TYPES.OBJECT_PROPERTY:
             return _ObjectProperty2.default;

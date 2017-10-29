@@ -16,7 +16,7 @@ export const functionConverter = path => {
         name = getAnonymousFunctionName(path) + 'function ' + node.id.name + paramsCode;
     } else if (node.type === TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION) {
         name = getAnonymousFunctionName(path) + paramsCode + ' =>';
-    } else if (node.type === TOKEN_TYPES.CLASS_METHOD) {
+    } else if (node.type === TOKEN_TYPES.CLASS_METHOD || node.type === TOKEN_TYPES.OBJECT_METHOD) {
         name =
             node.kind === CLASS_FUNCTION_KINDS.CONSTRUCTOR
                 ? 'constructor' + paramsCode
@@ -50,7 +50,8 @@ export const getFunctionParametersCode = params => {
 
 export const returnConverter = path => {
     const node = path.node;
-    if (node.argument && node.argument.type === TOKEN_TYPES.CONDITIONAL_EXPRESSION ||
+    if (node.argument &&
+        [TOKEN_TYPES.CONDITIONAL_EXPRESSION, TOKEN_TYPES.OBJECT_EXPRESSION].includes(node.argument.type)||
         isFunctionType(node.argument.type)) {
 
         return 'return'

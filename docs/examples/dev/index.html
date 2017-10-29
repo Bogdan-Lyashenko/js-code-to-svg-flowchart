@@ -103,121 +103,105 @@
     `;
 
     const simpleStr = `
-const STYLE = {
-    parallelogram: {
-        'stroke-width': '2px',
-        'stroke': '#4160ad',
-        'fill': 'none',
-    },
-    onClickRender: {
-        fill: '#d86161',
-        r: 11
-    },
-    centeredCircle: {
-        'fill': 'none',
-        'stroke': '#dbdb59',
-        'stroke-width': '2px',
-    }
-}
+import traverse from 'babel-traverse';
 
-// eslint-disable-next-line no-unused-vars
-class Drawer extends EventEmitter {
-    constructor(element, options) {
-        if (!element) throw new Error('Element is required')
+import { DefinitionsList } from './entryDefinitionsMap';
+import { parseCodeToAST, buildVisitor } from './astBuilder';
+import {
+    ABSTRACTION_LEVELS,
+    rebuildConfigForAbstractionLevel
+} from './abstractionLevelsConfigurator';
+import FlowTreeModifier from './FlowTreeModifier';
+import {
+    DEFINED_MODIFIERS,
+    MODIFIER_PRESETS,
+    destructionModifier,
+    expressionCallbacksModifier
+} from './modifiers/modifiersFactory';
+import { TOKEN_TYPES } from 'shared/constants';
 
-        super()
-        this.area = d3.select(element)
-        this.area.attr('viewBox', '0 0 element.clientWidth element.clientHeight')
-        this.onClickRenderer = options.onClickRenderer
-        this.renderers = options.renderers
+const buildFlowTree = (astTree, astVisitorConfig) => {
+    const treeNodes = [];
 
-        this.init()
-        this.registerEventHandlers()
-    }
+    traverse(astTree, buildVisitor(astVisitorConfig, treeNodes));
 
-    init() {
-        this.shapes = this.renderers.reduce(
-            (shapes, renderer) => Object.assign(shapes, {[renderer.type] : []}),
-            {}
-        )
-        this.emit('update', this.shapes)
-    }
+    const root = (treeNodes.length && treeNodes[0]) || {};
+    return root.type === TOKEN_TYPES.PROGRAM
+        ? root
+        : { name: 'Root', type: TOKEN_TYPES.PROGRAM, body: treeNodes };
+};
 
-    registerEventHandlers() {
-        let self = this
-        this.area.on("click", function() {
-            let coords = d3.mouse(this)
-            self.onClick(coords)
-        })
-    }
+//TODO: seems redundant abstraction, refactor
+export const createFlowTreeModifier = () => {
+    const modifiers = FlowTreeModifier();
 
-    clear() {
-        this.init()
-        this.render()
-    }
+    return {
+        setModifier(modifier) {
+            modifiers.addModifier(modifier);
+        },
 
-    onClick(coords) {
-        let shape = new this.onClickRenderer(
-            {
-                x: coords[0],
-                y: coords[1],
-            },
-            {
-                isDraggable: true
-            },
-            STYLE.onClickRender
-        )
-        let type = shape.type
+        registerNewModifier(test, updates) {
+            modifiers.create(test, updates);
+        },
 
-        if (this.shapes[type].length >= 3) {
-            return
+        destructNodeTree(test, newNameFn) {
+            this.setModifier(destructionModifier(test, newNameFn));
+        },
+
+        applyToFlowTree(flowTree) {
+            modifiers.applyTo(flowTree);
+            return flowTree;
         }
+    };
+};
 
-        shape.on('update', (shape) => {
-            let parallelogram = this.shapes.parallelogram[0]
-            let centeredCircle = this.shapes.circle[3]
+export default ({ astParser = {}, astVisitor = {} } = {}) => {
+    const astParserConfig = {
+        ...astParser
+    };
 
-            if (parallelogram) {
-                parallelogram.vertices = this.shapes[shape.type].slice(0, 3)
-                centeredCircle.r = Math.sqrt(parallelogram.area / Math.PI)
-                centeredCircle.x = parallelogram.center.x
-                centeredCircle.y = parallelogram.center.y
-            }
-            this.render()
-            this.emit('update', this.shapes, shape)
-        })
+    const astVisitorConfig = {
+        definitionsMap: [...DefinitionsList],
+        globalIgnore: null,
+        ...astVisitor
+    };
 
-        this.shapes[type].push(shape)
-        this.emit('update', this.shapes, shape)
+    const defaultModifier = createFlowTreeModifier();
+    defaultModifier.setModifier(expressionCallbacksModifier());
 
-        if (this.shapes[type].length === 3) {
-            let parallelogram = new Parallelogram(
-                this.shapes[type],
-                STYLE.parallelogram
-            )
-            this.shapes.parallelogram.push(parallelogram)
+    return {
+        setAbstractionLevel(level) {
+            astVisitorConfig.definitionsMap = rebuildConfigForAbstractionLevel(level);
+        },
 
-            this.shapes.circle.push(new Circle(
-                {
-                    x: parallelogram.center.x,
-                    y: parallelogram.center.y,
-                    r: Math.sqrt(parallelogram.area / Math.PI)
-                },
-                {},
-                STYLE.centeredCircle
-            ))
-            this.emit('update', this.shapes, shape)
+        resetAbstractionLevelToNormal() {
+            astVisitorConfig.definitionsMap = [...DefinitionsList];
+        },
+
+        setIgnoreFilter(fn) {
+            astVisitorConfig.globalIgnore = fn;
+        },
+
+        build(code) {
+            const ast = this.buildAst(code);
+            return this.buildFlowTreeFromAst(ast);
+        },
+
+        buildAst(code) {
+            return parseCodeToAST(code, astParserConfig);
+        },
+
+        buildFlowTreeFromAst(ast) {
+            const flowTree = buildFlowTree(ast, astVisitorConfig);
+
+            defaultModifier.applyToFlowTree(flowTree);
+
+            return flowTree;
         }
+    };
+};
 
-        this.render()
-    }
-
-    render() {
-        this.renderers.map((renderer) => {
-            renderer.render(this.area, this.shapes[renderer.type])
-        })
-    }
-}
+export { DEFINED_MODIFIERS, MODIFIER_PRESETS, ABSTRACTION_LEVELS };
 
 
     `;
@@ -229,21 +213,26 @@ class Drawer extends EventEmitter {
         const a1 = function() {return aparam => (bparam) => ap + bp};
     `;
 
-    const code2 = 'list.map((i)=>i+1).filter(a=> a > 0).forEach(o=>console.log(o))'
+    const code2 = 'list.map((i)=>i+1).filter(a=> a > 0).forEach(o=>console.log(o))';//ADD to DEMO
 
-    const JS2FlowChart = window['js2flowchart'];
+    const code3 = `
+
+var a= ({ astParser = {}}) => {
+
+
+
+};
+    `
 
     //API
-    const {createFlowTreeBuilder, createSVGRender, createShapesTreeEditor} = JS2FlowChart;
+    const {createFlowTreeBuilder, createSVGRender} = window.js2flowchart;
 
     const flowTreeBuilder = createFlowTreeBuilder(),
         svgRender = createSVGRender();
 
-    //svgRender.applyLightTheme();
-
-    const flowTree = flowTreeBuilder.build(code);
-
-    const shapesTree = svgRender.buildShapesTree(flowTree);
+    const flowTree = flowTreeBuilder.build(code3);
+    console.log(flowTree)
+        const shapesTree = svgRender.buildShapesTree(flowTree);
 
 
     document.getElementById('svgImage').innerHTML = shapesTree.print();
