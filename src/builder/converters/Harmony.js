@@ -8,8 +8,8 @@ export const exportNamedDeclarationConverter = ({ node }) => `export${getExporte
 export const exportDefaultDeclarationConverter = ({ node }) =>
     `export default ${getExportedTokenName(node)}`;
 
-const getExportedTokenName = (path) => {
-    const {declaration, specifiers} = path;
+const getExportedTokenName = path => {
+    const { declaration, specifiers } = path;
 
     if (declaration) {
         return ' ' + getExportDeclarations(declaration);
@@ -22,7 +22,7 @@ const getExportedTokenName = (path) => {
     return generate(specifiers).code;
 };
 
-const getExportDeclarations = (declaration) => {
+const getExportDeclarations = declaration => {
     if (
         [TOKEN_TYPES.FUNCTION_DECLARATION, TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION].indexOf(
             declaration.type

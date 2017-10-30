@@ -1,1 +1,1 @@
-export const logError = (message) => console.error(message);
+export const logError = message => console.error(message);

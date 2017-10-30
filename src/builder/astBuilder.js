@@ -22,7 +22,7 @@ export const parseCodeToAST = (code, config = {}) => {
     traverse(ast, {
         enter(path) {
             if (path.node.type === 'ObjectPattern') {
-               // debugger;
+                // debugger;
             }
             //console.log(path.node.type, ' ==== ', path.node.name);
         }

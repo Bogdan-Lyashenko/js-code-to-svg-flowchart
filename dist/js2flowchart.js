@@ -4299,7 +4299,7 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
         var statementParent = path.getStatementParent(),
             parent = path.parent || {};
 
-        return statementParent.isVariableDeclaration() || parent.type === _constants.TOKEN_TYPES.CALL_EXPRESSION || parent.type === _constants.TOKEN_TYPES.NEW_EXPRESSION || parent.type === _constants.TOKEN_TYPES.UNARY_EXPRESSION || parent.type === _constants.TOKEN_TYPES.BINARY_EXPRESSION || statementParent.isConditional() && parent.test && parent.test.type === _constants.TOKEN_TYPES.CALL_EXPRESSION || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION //TODO: BUG, fix line: list = list.filter(i => i % 2)
+        return statementParent.isVariableDeclaration() || [_constants.TOKEN_TYPES.RETURN, _constants.TOKEN_TYPES.CALL_EXPRESSION, _constants.TOKEN_TYPES.NEW_EXPRESSION, _constants.TOKEN_TYPES.UNARY_EXPRESSION, _constants.TOKEN_TYPES.BINARY_EXPRESSION].includes(parent.type) || statementParent.isConditional() && parent.test && parent.test.type === _constants.TOKEN_TYPES.CALL_EXPRESSION || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION //TODO: BUG, fix line: list = list.filter(i => i % 2)
         ;
     }
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.UPDATE_EXPRESSION, {
@@ -16558,7 +16558,6 @@ var getFunctionParametersCode = exports.getFunctionParametersCode = function get
 var returnConverter = exports.returnConverter = function returnConverter(path) {
     var node = path.node;
     if (node.argument && [_constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION, _constants.TOKEN_TYPES.OBJECT_EXPRESSION].includes(node.argument.type) || isFunctionType(node.argument.type)) {
-
         return 'return';
     }
 

@@ -5,7 +5,7 @@ export const idleConverter = path => {
     return generate(path.node).code;
 };
 
-export const identifierConverter = (path) => {
+export const identifierConverter = path => {
     if (path.parent.type === TOKEN_TYPES.SPREAD_PROPERTY) {
         return '...' + idleConverter(path);
     }
@@ -53,22 +53,27 @@ export const getAnonymousFunctionName = path => {
 };
 
 export const getFunctionParametersCode = params => {
-    return `(${params.map(p => {
-        if (p.name) {
-            return p.name;
-        }
-        
-        return generate(p).code;
-    }).join(', ')})`;
+    return `(${params
+        .map(p => {
+            if (p.name) {
+                return p.name;
+            }
+
+            return generate(p).code;
+        })
+        .join(', ')})`;
 };
 
 export const returnConverter = path => {
     const node = path.node;
-    if (node.argument &&
-        [TOKEN_TYPES.CONDITIONAL_EXPRESSION, TOKEN_TYPES.OBJECT_EXPRESSION].includes(node.argument.type)||
-        isFunctionType(node.argument.type)) {
-
-        return 'return'
+    if (
+        (node.argument &&
+            [TOKEN_TYPES.CONDITIONAL_EXPRESSION, TOKEN_TYPES.OBJECT_EXPRESSION].includes(
+                node.argument.type
+            )) ||
+        isFunctionType(node.argument.type)
+    ) {
+        return 'return';
     }
 
     return path.node.argument ? `return ${generate(path.node.argument).code}` : 'return';
@@ -152,11 +157,11 @@ export const debuggerConverter = path => {
 export const getVariableDeclarations = variables =>
     variables.map(v => variableDeclaratorConverter({ node: v })).join(', ');
 
-export const variableDeclaratorConverter = (path) => {
+export const variableDeclaratorConverter = path => {
     const node = path.node,
         parentKind = path.parent.kind;
 
-    if (isNodeContainsFunc(node.init)  || node.init.type === TOKEN_TYPES.CONDITIONAL_EXPRESSION) {
+    if (isNodeContainsFunc(node.init) || node.init.type === TOKEN_TYPES.CONDITIONAL_EXPRESSION) {
         return `${parentKind} ${node.id.name} = `;
     }
 
@@ -231,8 +236,10 @@ const getArgumentName = argument => {
     if (argument.type === TOKEN_TYPES.OBJECT_EXPRESSION) return objectExpressionConverter();
 
     if (argument.name) return argument.name;
-    if (argument.value) return argument.type === TOKEN_TYPES.STRING_LITERAL
-        ? `'${argument.value}'` : argument.value;
+    if (argument.value)
+        return argument.type === TOKEN_TYPES.STRING_LITERAL
+            ? `'${argument.value}'`
+            : argument.value;
 
     return generate(argument).code;
 };

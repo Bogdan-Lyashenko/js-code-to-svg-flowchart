@@ -147,9 +147,7 @@ const isNoArrow = (toShape, fromShape) => {
             TOKEN_TYPES.IMPORT_SPECIFIER,
             TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER,
             TOKEN_TYPES.OBJECT_PROPERTY
-        ].includes(
-            toShape.getNodeType()
-        )
+        ].includes(toShape.getNodeType())
     ) {
         return true;
     }
@@ -179,7 +177,10 @@ const buildConnectionConfig = (toShape, fromShape) => {
         noArrow: isNoArrow(toShape, fromShape)
     };
 
-    if (toShape.getNodeKey() === TOKEN_KEYS.ALTERNATE && toShape.getNodeType() !== TOKEN_TYPES.OBJECT_PROPERTY) {
+    if (
+        toShape.getNodeKey() === TOKEN_KEYS.ALTERNATE &&
+        toShape.getNodeType() !== TOKEN_TYPES.OBJECT_PROPERTY
+    ) {
         const boundaryPoint = fromShape.getAlternativeBranchChildOffsetPoint();
 
         config.startPoint = fromShape.getAlternateFromPoint();

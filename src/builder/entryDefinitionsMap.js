@@ -1,4 +1,4 @@
-import { TOKEN_TYPES,  TOKEN_KEYS} from 'shared/constants';
+import { TOKEN_TYPES, TOKEN_KEYS } from 'shared/constants';
 import {
     idleConverter,
     identifierConverter,
@@ -96,7 +96,9 @@ export const DefinitionsMap = {
         getName: variableDeclaratorConverter,
         ignore: path => {
             const statementParent = path.getStatementParent();
-            return !path.node.init || isNodeContainsFunc(path.node.init) || statementParent.isLoop();
+            return (
+                !path.node.init || isNodeContainsFunc(path.node.init) || statementParent.isLoop()
+            );
         }
     },
     [TOKEN_TYPES.ASSIGNMENT_EXPRESSION]: {
@@ -117,10 +119,13 @@ export const DefinitionsMap = {
 
             return (
                 statementParent.isVariableDeclaration() ||
-                parent.type === TOKEN_TYPES.CALL_EXPRESSION ||
-                parent.type === TOKEN_TYPES.NEW_EXPRESSION ||
-                parent.type === TOKEN_TYPES.UNARY_EXPRESSION ||
-                parent.type === TOKEN_TYPES.BINARY_EXPRESSION ||
+                [
+                    TOKEN_TYPES.RETURN,
+                    TOKEN_TYPES.CALL_EXPRESSION,
+                    TOKEN_TYPES.NEW_EXPRESSION,
+                    TOKEN_TYPES.UNARY_EXPRESSION,
+                    TOKEN_TYPES.BINARY_EXPRESSION
+                ].includes(parent.type) ||
                 (statementParent.isConditional() &&
                     parent.test &&
                     parent.test.type === TOKEN_TYPES.CALL_EXPRESSION) ||
@@ -234,14 +239,14 @@ export const DefinitionsMap = {
                 TOKEN_TYPES.OBJECT_PROPERTY,
                 TOKEN_TYPES.ASSIGNMENT_EXPRESSION,
                 TOKEN_TYPES.VARIABLE_DECLARATOR
-            ].includes(path.parent.type)
+            ].includes(path.parent.type);
         },
         body: true
     },
     [TOKEN_TYPES.OBJECT_PROPERTY]: {
         type: TOKEN_TYPES.OBJECT_PROPERTY,
         getName: objectPropertyConverter,
-        ignore: (path) => {
+        ignore: path => {
             const parentPath = path.parentPath;
             return ['params', 'left'].includes(parentPath.parentKey);
         },
@@ -280,12 +285,13 @@ export const DefinitionsMap = {
     [TOKEN_TYPES.OBJECT_PATTERN]: {
         type: TOKEN_TYPES.OBJECT_PATTERN,
         getName: objectPatternConverter,
-        ignore: (path)=> {
-          return path.listKey === 'params' ||
-              [
-                  TOKEN_TYPES.VARIABLE_DECLARATOR,
-                  TOKEN_TYPES.ASSIGNMENT_PATTERN
-              ].includes(path.parent.type);
+        ignore: path => {
+            return (
+                path.listKey === 'params' ||
+                [TOKEN_TYPES.VARIABLE_DECLARATOR, TOKEN_TYPES.ASSIGNMENT_PATTERN].includes(
+                    path.parent.type
+                )
+            );
         },
         body: true
     }

@@ -154,7 +154,9 @@ export const setupSharedPrint = state => ({
 
         //TODO: move to svg primitives
         // 3 because of ellipsis 3 dots
-        return `${nameParts[0].length <= state.name.length + 3 ? `<title>${escape(state.name)}</title>` : ''}
+        return `${nameParts[0].length <= state.name.length + 3
+            ? `<title>${escape(state.name)}</title>`
+            : ''}
             <text x="${x + theme.horizontalPadding}" y="${y + 2 * theme.verticalPadding}"
                 font-family="${theme.fontFamily}" font-size="${theme.fontSize}" fill="${theme.textColor}">
                 ${name}
