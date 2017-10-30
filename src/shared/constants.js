@@ -50,6 +50,7 @@ export const TOKEN_TYPES = {
     CLASS_METHOD: 'ClassMethod',
     FOR_OF_STATEMENT: 'ForOfStatement',
     SPREAD_ELEMENT: 'SpreadElement',
+    SPREAD_PROPERTY: 'SpreadProperty',
     REST_PROPERTY: 'RestProperty',
     OBJECT_PATTERN: 'ObjectPattern',
     ASSIGNMENT_PATTERN: 'AssignmentPattern'

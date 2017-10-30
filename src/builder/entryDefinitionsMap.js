@@ -1,6 +1,7 @@
 import { TOKEN_TYPES,  TOKEN_KEYS} from 'shared/constants';
 import {
     idleConverter,
+    identifierConverter,
     functionConverter,
     isNodeContainsFunc,
     returnConverter,
@@ -61,6 +62,8 @@ const singleTypeFilter = path => {
             TOKEN_TYPES.FUNCTION,
             TOKEN_TYPES.OBJECT_PROPERTY,
             TOKEN_TYPES.ASSIGNMENT_PATTERN,
+            TOKEN_TYPES.REST_PROPERTY,
+            TOKEN_TYPES.SPREAD_ELEMENT,
             TOKEN_TYPES.ARRAY_EXPRESSION,
             TOKEN_TYPES.UNARY_EXPRESSION,
             TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER,
@@ -205,7 +208,7 @@ export const DefinitionsMap = {
     },
     [TOKEN_TYPES.IDENTIFIER]: {
         type: TOKEN_TYPES.IDENTIFIER,
-        getName: idleConverter,
+        getName: identifierConverter,
         ignore: singleTypeFilter
     },
     [TOKEN_TYPES.STRING_LITERAL]: {

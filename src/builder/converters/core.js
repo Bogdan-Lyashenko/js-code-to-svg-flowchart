@@ -5,6 +5,14 @@ export const idleConverter = path => {
     return generate(path.node).code;
 };
 
+export const identifierConverter = (path) => {
+    if (path.parent.type === TOKEN_TYPES.SPREAD_PROPERTY) {
+        return '...' + idleConverter(path);
+    }
+
+    return idleConverter(path);
+};
+
 /* function */
 export const functionConverter = path => {
     const node = path.node,

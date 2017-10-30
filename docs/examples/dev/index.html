@@ -216,7 +216,8 @@ export { DEFINED_MODIFIERS, MODIFIER_PRESETS, ABSTRACTION_LEVELS };
     const code2 = 'list.map((i)=>i+1).filter(a=> a > 0).forEach(o=>console.log(o))';//ADD to DEMO
 
     const code3 = `
-var a = ({ astParser = {}} = {}) => {
+var a = () => {
+        const lo = {...def}
     }
 
     `
@@ -227,7 +228,7 @@ var a = ({ astParser = {}} = {}) => {
     const flowTreeBuilder = createFlowTreeBuilder(),
         svgRender = createSVGRender();
 
-    const flowTree = flowTreeBuilder.build(code3);
+    const flowTree = flowTreeBuilder.build(simpleStr);
     console.log(flowTree)
         const shapesTree = svgRender.buildShapesTree(flowTree);
 
