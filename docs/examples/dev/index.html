@@ -210,7 +210,7 @@ export { DEFINED_MODIFIERS, MODIFIER_PRESETS, ABSTRACTION_LEVELS };
     //===================================
     //TODO: check ap+bp is not rendered
     const code = `
-        const a1 = function() {return aparam => (bparam) => ap + bp};
+        const a1 = function() {return (bparam) => {bp};};
     `;
 
     const code2 = 'list.map((i)=>i+1).filter(a=> a > 0).forEach(o=>console.log(o))';//ADD to DEMO
@@ -228,7 +228,7 @@ var a = () => {
     const flowTreeBuilder = createFlowTreeBuilder(),
         svgRender = createSVGRender();
 
-    const flowTree = flowTreeBuilder.build(simpleStr);
+    const flowTree = flowTreeBuilder.build(code);
     console.log(flowTree)
         const shapesTree = svgRender.buildShapesTree(flowTree);
 

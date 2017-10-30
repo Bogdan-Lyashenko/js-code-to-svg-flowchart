@@ -42,7 +42,7 @@ const singleTypeFilter = path => {
 
     return (
         ['params'].includes(path.listKey) ||
-        statementParent.isReturnStatement() ||
+        (statementParent.isReturnStatement() && path.key !== 'body') ||
         ((statementParent.isLoop() ||
             statementParent.isConditional() ||
             parent.type === TOKEN_TYPES.CONDITIONAL_EXPRESSION) &&
