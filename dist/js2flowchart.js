@@ -16557,7 +16557,7 @@ var getFunctionParametersCode = exports.getFunctionParametersCode = function get
 
 var returnConverter = exports.returnConverter = function returnConverter(path) {
     var node = path.node;
-    if (node.argument && [_constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION, _constants.TOKEN_TYPES.OBJECT_EXPRESSION].includes(node.argument.type) || isFunctionType(node.argument.type)) {
+    if (node.argument && ([_constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION, _constants.TOKEN_TYPES.OBJECT_EXPRESSION].includes(node.argument.type) || isFunctionType(node.argument.type))) {
         return 'return';
     }
 
@@ -39650,10 +39650,10 @@ exports.default = function (code) {
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 var logError = exports.logError = function logError(message) {
-  return console.error(message);
+    console.error(message);
 };
 
 /***/ })

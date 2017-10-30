@@ -67,11 +67,11 @@ export const getFunctionParametersCode = params => {
 export const returnConverter = path => {
     const node = path.node;
     if (
-        (node.argument &&
+        node.argument && (
             [TOKEN_TYPES.CONDITIONAL_EXPRESSION, TOKEN_TYPES.OBJECT_EXPRESSION].includes(
                 node.argument.type
-            )) ||
-        isFunctionType(node.argument.type)
+            ) ||
+        isFunctionType(node.argument.type))
     ) {
         return 'return';
     }
