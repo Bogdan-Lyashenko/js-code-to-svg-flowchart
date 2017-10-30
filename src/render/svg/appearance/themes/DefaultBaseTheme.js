@@ -260,6 +260,12 @@ export const buildTheme = color => {
 
         CallExpression: {
             ...BaseShape,
+            dot: {
+                ...BaseShape,
+                offset: 4,
+                radius: 2,
+                fillColor: color.rectangleDotFillColor
+            },
             fillColor: color.callFillColor
         }
     };

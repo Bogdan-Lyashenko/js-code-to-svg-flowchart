@@ -4740,6 +4740,11 @@ var buildTheme = exports.buildTheme = function buildTheme(color) {
         }),
 
         CallExpression: _extends({}, BaseShape, {
+            dot: _extends({}, BaseShape, {
+                offset: 4,
+                radius: 2,
+                fillColor: color.rectangleDotFillColor
+            }),
             fillColor: color.callFillColor
         })
     };
