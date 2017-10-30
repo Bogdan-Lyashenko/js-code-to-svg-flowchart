@@ -27,7 +27,8 @@ import {
     importDeclarationConverter,
     exportNamedDeclarationConverter,
     exportDefaultDeclarationConverter,
-    classDeclarationConverter
+    classDeclarationConverter,
+    objectPatternConverter
 } from './converters/Harmony';
 
 const singleTypeFilter = path => {
@@ -59,6 +60,7 @@ const singleTypeFilter = path => {
             TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION,
             TOKEN_TYPES.FUNCTION,
             TOKEN_TYPES.OBJECT_PROPERTY,
+            TOKEN_TYPES.ASSIGNMENT_PATTERN,
             TOKEN_TYPES.ARRAY_EXPRESSION,
             TOKEN_TYPES.UNARY_EXPRESSION,
             TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER,
@@ -142,7 +144,7 @@ export const DefinitionsMap = {
         body: true
     },
     [TOKEN_TYPES.CONTINUE]: {
-        type: TOKEN_TYPES.CONTINUE, //TODO: visual (breaks flow because of iteration skip)
+        type: TOKEN_TYPES.CONTINUE,
         getName: continueConverter,
         body: true
     },
@@ -152,27 +154,27 @@ export const DefinitionsMap = {
         body: true
     },
     [TOKEN_TYPES.SWITCH_STATEMENT]: {
-        type: TOKEN_TYPES.SWITCH_STATEMENT, //TODO: visual
+        type: TOKEN_TYPES.SWITCH_STATEMENT,
         getName: switchStatementConverter,
         body: true
     },
     [TOKEN_TYPES.SWITCH_CASE]: {
-        type: TOKEN_TYPES.SWITCH_CASE, //TODO: visual
+        type: TOKEN_TYPES.SWITCH_CASE,
         getName: caseConverter,
         body: true
     },
     [TOKEN_TYPES.BREAK]: {
-        type: TOKEN_TYPES.BREAK, //TODO: visual
+        type: TOKEN_TYPES.BREAK,
         getName: breakConverter,
         body: true
     },
     [TOKEN_TYPES.TRY_STATEMENT]: {
-        type: TOKEN_TYPES.TRY_STATEMENT, //TODO: visual
+        type: TOKEN_TYPES.TRY_STATEMENT,
         getName: tryConverter,
         body: true
     },
     [TOKEN_TYPES.CATCH_CLAUSE]: {
-        type: TOKEN_TYPES.CATCH_CLAUSE, //TODO: visual
+        type: TOKEN_TYPES.CATCH_CLAUSE,
         getName: catchConverter,
         body: true
     },
@@ -236,6 +238,10 @@ export const DefinitionsMap = {
     [TOKEN_TYPES.OBJECT_PROPERTY]: {
         type: TOKEN_TYPES.OBJECT_PROPERTY,
         getName: objectPropertyConverter,
+        ignore: (path) => {
+            const parentPath = path.parentPath;
+            return ['params', 'left'].includes(parentPath.parentKey);
+        },
         body: true
     },
 
@@ -270,7 +276,14 @@ export const DefinitionsMap = {
     },
     [TOKEN_TYPES.OBJECT_PATTERN]: {
         type: TOKEN_TYPES.OBJECT_PATTERN,
-        getName: ()=>'{bob}',
+        getName: objectPatternConverter,
+        ignore: (path)=> {
+          return path.listKey === 'params' ||
+              [
+                  TOKEN_TYPES.VARIABLE_DECLARATOR,
+                  TOKEN_TYPES.ASSIGNMENT_PATTERN
+              ].includes(path.parent.type);
+        },
         body: true
     }
 };

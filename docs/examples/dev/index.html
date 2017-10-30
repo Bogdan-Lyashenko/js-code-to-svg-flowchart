@@ -216,14 +216,11 @@ export { DEFINED_MODIFIERS, MODIFIER_PRESETS, ABSTRACTION_LEVELS };
     const code2 = 'list.map((i)=>i+1).filter(a=> a > 0).forEach(o=>console.log(o))';//ADD to DEMO
 
     const code3 = `
+var a = ({ astParser = {}} = {}) => {
+    }
 
-var a= ({ astParser = {}}) => {
-
-
-
-};
     `
-
+//TODO: const { astParser } = log;
     //API
     const {createFlowTreeBuilder, createSVGRender} = window.js2flowchart;
 

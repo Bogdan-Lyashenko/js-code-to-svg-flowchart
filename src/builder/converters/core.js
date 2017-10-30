@@ -45,7 +45,13 @@ export const getAnonymousFunctionName = path => {
 };
 
 export const getFunctionParametersCode = params => {
-    return `(${params.map(p => p.name).join(', ')})`;
+    return `(${params.map(p => {
+        if (p.name) {
+            return p.name;
+        }
+        
+        return generate(p).code;
+    }).join(', ')})`;
 };
 
 export const returnConverter = path => {
@@ -155,6 +161,10 @@ export const variableDeclaratorConverter = (path) => {
 
     if (node.init && node.init.type === TOKEN_TYPES.OBJECT_EXPRESSION) {
         return `${parentKind} ${node.id.name} = ${objectExpressionConverter()}`;
+    }
+
+    if (node.id && node.id.type === TOKEN_TYPES.OBJECT_PATTERN) {
+        return `${parentKind} {...} = ${node.init.name}`;
     }
 
     return parentKind + ' ' + generate(node).code;

@@ -51,7 +51,8 @@ export const TOKEN_TYPES = {
     FOR_OF_STATEMENT: 'ForOfStatement',
     SPREAD_ELEMENT: 'SpreadElement',
     REST_PROPERTY: 'RestProperty',
-    OBJECT_PATTERN: 'ObjectPattern'
+    OBJECT_PATTERN: 'ObjectPattern',
+    ASSIGNMENT_PATTERN: 'AssignmentPattern'
 };
 
 export const TOKEN_KEYS = {

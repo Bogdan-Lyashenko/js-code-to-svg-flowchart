@@ -1306,7 +1306,8 @@ var TOKEN_TYPES = exports.TOKEN_TYPES = {
     FOR_OF_STATEMENT: 'ForOfStatement',
     SPREAD_ELEMENT: 'SpreadElement',
     REST_PROPERTY: 'RestProperty',
-    OBJECT_PATTERN: 'ObjectPattern'
+    OBJECT_PATTERN: 'ObjectPattern',
+    ASSIGNMENT_PATTERN: 'AssignmentPattern'
 };
 
 var TOKEN_KEYS = exports.TOKEN_KEYS = {
@@ -4261,7 +4262,7 @@ var singleTypeFilter = function singleTypeFilter(path) {
         return false;
     }
 
-    return ['params'].includes(path.listKey) || statementParent.isReturnStatement() || (statementParent.isLoop() || statementParent.isConditional() || parent.type === _constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION) && ['test', 'left', 'right'].includes(path.parentKey) || [_constants.TOKEN_TYPES.RETURN, _constants.TOKEN_TYPES.CALL_EXPRESSION, _constants.TOKEN_TYPES.BINARY_EXPRESSION, _constants.TOKEN_TYPES.UPDATE_EXPRESSION, _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION, _constants.TOKEN_TYPES.VARIABLE_DECLARATOR, _constants.TOKEN_TYPES.MEMBER_EXPRESSION, _constants.TOKEN_TYPES.NEW_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION_DECLARATION, _constants.TOKEN_TYPES.FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION, _constants.TOKEN_TYPES.OBJECT_PROPERTY, _constants.TOKEN_TYPES.ARRAY_EXPRESSION, _constants.TOKEN_TYPES.UNARY_EXPRESSION, _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_DECLARATION, _constants.TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION, _constants.TOKEN_TYPES.EXPORT_NAMED_DECLARATION, _constants.TOKEN_TYPES.CLASS_DECLARATION, _constants.TOKEN_TYPES.CLASS_METHOD].includes(parent.type) && (!parent.body || parent.body.type !== path.node.type);
+    return ['params'].includes(path.listKey) || statementParent.isReturnStatement() || (statementParent.isLoop() || statementParent.isConditional() || parent.type === _constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION) && ['test', 'left', 'right'].includes(path.parentKey) || [_constants.TOKEN_TYPES.RETURN, _constants.TOKEN_TYPES.CALL_EXPRESSION, _constants.TOKEN_TYPES.BINARY_EXPRESSION, _constants.TOKEN_TYPES.UPDATE_EXPRESSION, _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION, _constants.TOKEN_TYPES.VARIABLE_DECLARATOR, _constants.TOKEN_TYPES.MEMBER_EXPRESSION, _constants.TOKEN_TYPES.NEW_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION_DECLARATION, _constants.TOKEN_TYPES.FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION, _constants.TOKEN_TYPES.OBJECT_PROPERTY, _constants.TOKEN_TYPES.ASSIGNMENT_PATTERN, _constants.TOKEN_TYPES.ARRAY_EXPRESSION, _constants.TOKEN_TYPES.UNARY_EXPRESSION, _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_DECLARATION, _constants.TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION, _constants.TOKEN_TYPES.EXPORT_NAMED_DECLARATION, _constants.TOKEN_TYPES.CLASS_DECLARATION, _constants.TOKEN_TYPES.CLASS_METHOD].includes(parent.type) && (!parent.body || parent.body.type !== path.node.type);
 };
 
 var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.FUNCTION, {
@@ -4317,7 +4318,7 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
     getName: _core.loopConverter,
     body: true
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.CONTINUE, {
-    type: _constants.TOKEN_TYPES.CONTINUE, //TODO: visual (breaks flow because of iteration skip)
+    type: _constants.TOKEN_TYPES.CONTINUE,
     getName: _core.continueConverter,
     body: true
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.CONDITIONAL, {
@@ -4325,23 +4326,23 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
     getName: _core.conditionalConverter,
     body: true
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.SWITCH_STATEMENT, {
-    type: _constants.TOKEN_TYPES.SWITCH_STATEMENT, //TODO: visual
+    type: _constants.TOKEN_TYPES.SWITCH_STATEMENT,
     getName: _core.switchStatementConverter,
     body: true
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.SWITCH_CASE, {
-    type: _constants.TOKEN_TYPES.SWITCH_CASE, //TODO: visual
+    type: _constants.TOKEN_TYPES.SWITCH_CASE,
     getName: _core.caseConverter,
     body: true
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.BREAK, {
-    type: _constants.TOKEN_TYPES.BREAK, //TODO: visual
+    type: _constants.TOKEN_TYPES.BREAK,
     getName: _core.breakConverter,
     body: true
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.TRY_STATEMENT, {
-    type: _constants.TOKEN_TYPES.TRY_STATEMENT, //TODO: visual
+    type: _constants.TOKEN_TYPES.TRY_STATEMENT,
     getName: _core.tryConverter,
     body: true
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.CATCH_CLAUSE, {
-    type: _constants.TOKEN_TYPES.CATCH_CLAUSE, //TODO: visual
+    type: _constants.TOKEN_TYPES.CATCH_CLAUSE,
     getName: _core.catchConverter,
     body: true
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.WITH_STATEMENT, {
@@ -4391,6 +4392,10 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.OBJECT_PROPERTY, {
     type: _constants.TOKEN_TYPES.OBJECT_PROPERTY,
     getName: _core.objectPropertyConverter,
+    ignore: function ignore(path) {
+        var parentPath = path.parentPath;
+        return ['params', 'left'].includes(parentPath.parentKey);
+    },
     body: true
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.IMPORT_DECLARATION, {
     type: _constants.TOKEN_TYPES.IMPORT_DECLARATION,
@@ -4416,8 +4421,9 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
     body: true
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.OBJECT_PATTERN, {
     type: _constants.TOKEN_TYPES.OBJECT_PATTERN,
-    getName: function getName() {
-        return '{bob}';
+    getName: _Harmony.objectPatternConverter,
+    ignore: function ignore(path) {
+        return path.listKey === 'params' || [_constants.TOKEN_TYPES.VARIABLE_DECLARATOR, _constants.TOKEN_TYPES.ASSIGNMENT_PATTERN].includes(path.parent.type);
     },
     body: true
 }), _DefinitionsMap);
@@ -16532,7 +16538,11 @@ var getAnonymousFunctionName = exports.getAnonymousFunctionName = function getAn
 
 var getFunctionParametersCode = exports.getFunctionParametersCode = function getFunctionParametersCode(params) {
     return '(' + params.map(function (p) {
-        return p.name;
+        if (p.name) {
+            return p.name;
+        }
+
+        return (0, _babelGenerator2.default)(p).code;
     }).join(', ') + ')';
 };
 
@@ -16640,6 +16650,10 @@ var variableDeclaratorConverter = exports.variableDeclaratorConverter = function
 
     if (node.init && node.init.type === _constants.TOKEN_TYPES.OBJECT_EXPRESSION) {
         return parentKind + ' ' + node.id.name + ' = ' + objectExpressionConverter();
+    }
+
+    if (node.id && node.id.type === _constants.TOKEN_TYPES.OBJECT_PATTERN) {
+        return parentKind + ' {...} = ' + node.init.name;
     }
 
     return parentKind + ' ' + (0, _babelGenerator2.default)(node).code;
@@ -37570,7 +37584,7 @@ function JSXEmptyExpression() {}
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.classDeclarationConverter = exports.exportDefaultDeclarationConverter = exports.exportNamedDeclarationConverter = exports.importDeclarationConverter = undefined;
+exports.objectPatternConverter = exports.classDeclarationConverter = exports.exportDefaultDeclarationConverter = exports.exportNamedDeclarationConverter = exports.importDeclarationConverter = undefined;
 
 var _babelGenerator = __webpack_require__(166);
 
@@ -37629,6 +37643,10 @@ var classDeclarationConverter = exports.classDeclarationConverter = function cla
     var node = _ref4.node;
 
     return 'class ' + (0, _babelGenerator2.default)(node.id).code + ' ' + (node.superClass ? ' extends ' + node.superClass.name : '');
+};
+
+var objectPatternConverter = exports.objectPatternConverter = function objectPatternConverter() {
+    return '{...}';
 };
 
 /***/ }),
@@ -38370,7 +38388,7 @@ var buildConnections = exports.buildConnections = function buildConnections(shap
 };
 
 var isNoArrow = function isNoArrow(toShape, fromShape) {
-    if ([_constants.TOKEN_TYPES.IMPORT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER].includes(toShape.getNodeType())) {
+    if ([_constants.TOKEN_TYPES.IMPORT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER, _constants.TOKEN_TYPES.OBJECT_PROPERTY].includes(toShape.getNodeType())) {
         return true;
     }
 

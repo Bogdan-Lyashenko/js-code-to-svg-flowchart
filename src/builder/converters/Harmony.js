@@ -45,3 +45,5 @@ export const classDeclarationConverter = ({ node }) => {
         ? ` extends ${node.superClass.name}`
         : ''}`;
 };
+
+export const objectPatternConverter = () => '{...}';

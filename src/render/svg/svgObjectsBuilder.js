@@ -143,7 +143,11 @@ export const buildConnections = (shapesTree, styleTheme) => {
 
 const isNoArrow = (toShape, fromShape) => {
     if (
-        [TOKEN_TYPES.IMPORT_SPECIFIER, TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER].includes(
+        [
+            TOKEN_TYPES.IMPORT_SPECIFIER,
+            TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER,
+            TOKEN_TYPES.OBJECT_PROPERTY
+        ].includes(
             toShape.getNodeType()
         )
     ) {
