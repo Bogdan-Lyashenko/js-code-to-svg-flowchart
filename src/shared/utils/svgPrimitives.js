@@ -38,42 +38,36 @@ export const extractStyleAttrsFromTheme = theme => {
 };
 
 export const getRhombus = (x, y, w, h, theme) => {
-    return `
-        <polygon points="${x},${y + h / 2} ${x + w / 2},${y} ${x + w},${y + h / 2} ${x +
+    return `<polygon points="${x},${y + h / 2} ${x + w / 2},${y} ${x + w},${y + h / 2} ${x +
         w / 2},${y + h}"
             style="${extractStylePropsFromTheme(theme)}" />`;
 };
 
 export const getRoundedRectangle = (x, y, w, h, theme) => {
-    return `
-        <rect x="${x}" y="${y}"
+    return `<rect x="${x}" y="${y}"
             width="${w}" height="${h}"
             rx="${theme.roundBorder}" ry="${theme.roundBorder}"
             style="${extractStylePropsFromTheme(theme)}" />`;
 };
 
 export const getRectangle = (x, y, w, h, theme) => {
-    return `
-        <rect x="${x}" y="${y}"
+    return `<rect x="${x}" y="${y}"
             width="${w}" height="${h}"
             style="${extractStylePropsFromTheme(theme)}" />`;
 };
 
 export const getLine = (x1, y1, x2, y2, theme) => {
-    return `
-         <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"
+    return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"
                 style="${extractStylePropsFromTheme(theme)}" />`;
 };
 
 export const getCircle = (x, y, r, theme) => {
-    return `
-       <circle cx="${x}" cy="${y}" r="${r}"
+    return `<circle cx="${x}" cy="${y}" r="${r}"
         style="${extractStylePropsFromTheme(theme)}" />`;
 };
 
 export const getText = (x, y, theme, text) => {
-    return `
-        <text x="${x}" y="${y}"
+    return `<text x="${x}" y="${y}"
         font-family="${theme.fontFamily}" font-size="${theme.fontSize}" fill="${theme.textColor}">${text}</text>`;
 };
 
@@ -87,8 +81,7 @@ export const getClosedPath = (points, theme) => {
         .join(' ');
 
     return `<path d="${pointStr} Z" 
-        ${extractStyleAttrsFromTheme(theme)}
-        />`;
+        ${extractStyleAttrsFromTheme(theme)} />`;
 };
 
 export const getCurvedPath = (points, theme) => {

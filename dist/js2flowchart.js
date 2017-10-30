@@ -2101,27 +2101,27 @@ var extractStyleAttrsFromTheme = exports.extractStyleAttrsFromTheme = function e
 };
 
 var getRhombus = exports.getRhombus = function getRhombus(x, y, w, h, theme) {
-    return '\n        <polygon points="' + x + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + y + ' ' + (x + w) + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + (y + h) + '"\n            style="' + extractStylePropsFromTheme(theme) + '" />';
+    return '<polygon points="' + x + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + y + ' ' + (x + w) + ',' + (y + h / 2) + ' ' + (x + w / 2) + ',' + (y + h) + '"\n            style="' + extractStylePropsFromTheme(theme) + '" />';
 };
 
 var getRoundedRectangle = exports.getRoundedRectangle = function getRoundedRectangle(x, y, w, h, theme) {
-    return '\n        <rect x="' + x + '" y="' + y + '"\n            width="' + w + '" height="' + h + '"\n            rx="' + theme.roundBorder + '" ry="' + theme.roundBorder + '"\n            style="' + extractStylePropsFromTheme(theme) + '" />';
+    return '<rect x="' + x + '" y="' + y + '"\n            width="' + w + '" height="' + h + '"\n            rx="' + theme.roundBorder + '" ry="' + theme.roundBorder + '"\n            style="' + extractStylePropsFromTheme(theme) + '" />';
 };
 
 var getRectangle = exports.getRectangle = function getRectangle(x, y, w, h, theme) {
-    return '\n        <rect x="' + x + '" y="' + y + '"\n            width="' + w + '" height="' + h + '"\n            style="' + extractStylePropsFromTheme(theme) + '" />';
+    return '<rect x="' + x + '" y="' + y + '"\n            width="' + w + '" height="' + h + '"\n            style="' + extractStylePropsFromTheme(theme) + '" />';
 };
 
 var getLine = exports.getLine = function getLine(x1, y1, x2, y2, theme) {
-    return '\n         <line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '"\n                style="' + extractStylePropsFromTheme(theme) + '" />';
+    return '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '"\n                style="' + extractStylePropsFromTheme(theme) + '" />';
 };
 
 var getCircle = exports.getCircle = function getCircle(x, y, r, theme) {
-    return '\n       <circle cx="' + x + '" cy="' + y + '" r="' + r + '"\n        style="' + extractStylePropsFromTheme(theme) + '" />';
+    return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '"\n        style="' + extractStylePropsFromTheme(theme) + '" />';
 };
 
 var getText = exports.getText = function getText(x, y, theme, text) {
-    return '\n        <text x="' + x + '" y="' + y + '"\n        font-family="' + theme.fontFamily + '" font-size="' + theme.fontSize + '" fill="' + theme.textColor + '">' + text + '</text>';
+    return '<text x="' + x + '" y="' + y + '"\n        font-family="' + theme.fontFamily + '" font-size="' + theme.fontSize + '" fill="' + theme.textColor + '">' + text + '</text>';
 };
 
 var getClosedPath = exports.getClosedPath = function getClosedPath(points, theme) {
@@ -2131,7 +2131,7 @@ var getClosedPath = exports.getClosedPath = function getClosedPath(points, theme
         return 'L' + point.x + ', ' + point.y;
     }).join(' ');
 
-    return '<path d="' + pointStr + ' Z" \n        ' + extractStyleAttrsFromTheme(theme) + '\n        />';
+    return '<path d="' + pointStr + ' Z" \n        ' + extractStyleAttrsFromTheme(theme) + ' />';
 };
 
 var getCurvedPath = exports.getCurvedPath = function getCurvedPath(points, theme) {
@@ -18527,7 +18527,7 @@ var setupConditionRhombusBehavior = exports.setupConditionRhombusBehavior = func
                 positive = '+',
                 alternative = '-';
 
-            return '\n            ' + (0, _svgPrimitives.getText)(x + R / 2 - text.length * theme.symbolWidth / 2, y + R / 2 + theme.symbolHeight / 2, theme, text) + '\n            \n            ' + (0, _svgPrimitives.getText)(x + R / 2 + theme.symbolWidth, y + R + theme.symbolWidth / 4, theme, positive) + '\n            \n            ' + (this.checkIfChildExist(_constants.TOKEN_KEYS.ALTERNATE) ? (0, _svgPrimitives.getText)(x + w + theme.symbolWidth / 2, y + R / 2 - theme.symbolWidth / 4, theme, alternative) : '') + '\n        ';
+            return (0, _svgPrimitives.getText)(x + R / 2 - text.length * theme.symbolWidth / 2, y + R / 2 + theme.symbolHeight / 2, theme, text) + ' ' + (0, _svgPrimitives.getText)(x + R / 2 + theme.symbolWidth, y + R + theme.symbolWidth / 4, theme, positive) + ' ' + (this.checkIfChildExist(_constants.TOKEN_KEYS.ALTERNATE) ? (0, _svgPrimitives.getText)(x + w + theme.symbolWidth / 2, y + R / 2 - theme.symbolWidth / 4, theme, alternative) : '');
         },
         print: function print(config) {
             var theme = state.theme,
