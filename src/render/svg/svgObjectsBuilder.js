@@ -179,7 +179,7 @@ const buildConnectionConfig = (toShape, fromShape) => {
 
     if (
         toShape.getNodeKey() === TOKEN_KEYS.ALTERNATE &&
-        toShape.getNodeType() !== TOKEN_TYPES.OBJECT_PROPERTY
+        fromShape.getAlternativeBranchChildOffsetPoint
     ) {
         const boundaryPoint = fromShape.getAlternativeBranchChildOffsetPoint();
 

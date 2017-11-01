@@ -1293,6 +1293,7 @@ var TOKEN_TYPES = exports.TOKEN_TYPES = {
     STRING_LITERAL: 'StringLiteral',
     NUMERIC_LITERAL: 'NumericLiteral',
     THIS_EXPRESSION: 'ThisExpression',
+    LOGICAL_EXPRESSION: 'LogicalExpression',
 
     //ES Harmony features
     ARROW_FUNCTION_EXPRESSION: 'ArrowFunctionExpression',
@@ -4263,7 +4264,7 @@ var singleTypeFilter = function singleTypeFilter(path) {
         return false;
     }
 
-    return ['params'].includes(path.listKey) || statementParent.isReturnStatement() && path.key !== 'body' || (statementParent.isLoop() || statementParent.isConditional() || parent.type === _constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION) && ['test', 'left', 'right'].includes(path.parentKey) || [_constants.TOKEN_TYPES.RETURN, _constants.TOKEN_TYPES.CALL_EXPRESSION, _constants.TOKEN_TYPES.BINARY_EXPRESSION, _constants.TOKEN_TYPES.UPDATE_EXPRESSION, _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION, _constants.TOKEN_TYPES.VARIABLE_DECLARATOR, _constants.TOKEN_TYPES.MEMBER_EXPRESSION, _constants.TOKEN_TYPES.NEW_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION_DECLARATION, _constants.TOKEN_TYPES.FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION, _constants.TOKEN_TYPES.OBJECT_PROPERTY, _constants.TOKEN_TYPES.ASSIGNMENT_PATTERN, _constants.TOKEN_TYPES.REST_PROPERTY, _constants.TOKEN_TYPES.SPREAD_ELEMENT, _constants.TOKEN_TYPES.ARRAY_EXPRESSION, _constants.TOKEN_TYPES.UNARY_EXPRESSION, _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_DECLARATION, _constants.TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION, _constants.TOKEN_TYPES.EXPORT_NAMED_DECLARATION, _constants.TOKEN_TYPES.CLASS_DECLARATION, _constants.TOKEN_TYPES.CLASS_METHOD].includes(parent.type) && (!parent.body || parent.body.type !== path.node.type);
+    return ['params'].includes(path.listKey) || statementParent.isReturnStatement() && path.key !== 'body' || (statementParent.isLoop() || statementParent.isConditional() || parent.type === _constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION) && ['test', 'left', 'right'].includes(path.parentKey) || [_constants.TOKEN_TYPES.RETURN, _constants.TOKEN_TYPES.CALL_EXPRESSION, _constants.TOKEN_TYPES.BINARY_EXPRESSION, _constants.TOKEN_TYPES.UPDATE_EXPRESSION, _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION, _constants.TOKEN_TYPES.LOGICAL_EXPRESSION, _constants.TOKEN_TYPES.VARIABLE_DECLARATOR, _constants.TOKEN_TYPES.MEMBER_EXPRESSION, _constants.TOKEN_TYPES.NEW_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION_DECLARATION, _constants.TOKEN_TYPES.FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION, _constants.TOKEN_TYPES.OBJECT_PROPERTY, _constants.TOKEN_TYPES.ASSIGNMENT_PATTERN, _constants.TOKEN_TYPES.REST_PROPERTY, _constants.TOKEN_TYPES.SPREAD_ELEMENT, _constants.TOKEN_TYPES.ARRAY_EXPRESSION, _constants.TOKEN_TYPES.UNARY_EXPRESSION, _constants.TOKEN_TYPES.IMPORT_DEFAULT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_SPECIFIER, _constants.TOKEN_TYPES.IMPORT_DECLARATION, _constants.TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION, _constants.TOKEN_TYPES.EXPORT_NAMED_DECLARATION, _constants.TOKEN_TYPES.CLASS_DECLARATION, _constants.TOKEN_TYPES.CLASS_METHOD].includes(parent.type) && (!parent.body || parent.body.type !== path.node.type);
 };
 
 var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.FUNCTION, {
@@ -38417,7 +38418,7 @@ var buildConnectionConfig = function buildConnectionConfig(toShape, fromShape) {
         noArrow: isNoArrow(toShape, fromShape)
     };
 
-    if (toShape.getNodeKey() === _constants.TOKEN_KEYS.ALTERNATE && toShape.getNodeType() !== _constants.TOKEN_TYPES.OBJECT_PROPERTY) {
+    if (toShape.getNodeKey() === _constants.TOKEN_KEYS.ALTERNATE && fromShape.getAlternativeBranchChildOffsetPoint) {
         var boundaryPoint = fromShape.getAlternativeBranchChildOffsetPoint();
 
         config.startPoint = fromShape.getAlternateFromPoint();

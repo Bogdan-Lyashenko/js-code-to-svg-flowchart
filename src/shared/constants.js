@@ -38,6 +38,7 @@ export const TOKEN_TYPES = {
     STRING_LITERAL: 'StringLiteral',
     NUMERIC_LITERAL: 'NumericLiteral',
     THIS_EXPRESSION: 'ThisExpression',
+    LOGICAL_EXPRESSION: 'LogicalExpression',
 
     //ES Harmony features
     ARROW_FUNCTION_EXPRESSION: 'ArrowFunctionExpression',
