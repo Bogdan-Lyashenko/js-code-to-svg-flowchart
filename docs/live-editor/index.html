@@ -15,6 +15,10 @@
 
 
         <style>
+            body {
+                padding: 0;
+                margin: 0;
+            }
 
             .container {
                 display: flex;
@@ -65,6 +69,8 @@
     </head>
     <body>
 
+
+    <button id="downloadFile">DOWNLOAD SVG FILE</button>
     <div class="container">
         <div class="column">
             <textarea id="codeEditor">
@@ -100,7 +106,7 @@ function indexSearch(list, element) {
     return -1;
 }</textarea>
         </div>
-        <button id="downloadFile">DOWNLOAD SVG FILE</button>
+
         <div class="column">
             <p id="svgImage"></p>
         </div>
