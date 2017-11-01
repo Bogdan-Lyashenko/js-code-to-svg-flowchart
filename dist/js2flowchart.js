@@ -16547,7 +16547,11 @@ var getAnonymousFunctionName = exports.getAnonymousFunctionName = function getAn
         return '';
     }
 
-    var parentId = parent.id || parent.left;
+    if (parent.left) {
+        return (0, _babelGenerator2.default)(parent.left).code + ' = ';
+    }
+
+    var parentId = parent.id;
     return parentId ? parentId.name + ' = ' : '';
 };
 

@@ -48,7 +48,11 @@ export const getAnonymousFunctionName = path => {
         return '';
     }
 
-    const parentId = parent.id || parent.left;
+    if (parent.left) {
+        return generate(parent.left).code + ' = ';
+    }
+
+    const parentId = parent.id;
     return parentId ? parentId.name + ' = ' : '';
 };
 

@@ -409,19 +409,9 @@ const buildConnectionConfig = (toShape, fromShape) => {
     const code2 = 'list.map((i)=>i+1).filter(a=> a > 0).forEach(o=>console.log(o))';//ADD to DEMO
 
     const code3 = `
-    const _hideMessage = function (settings) {
-			settings = settings || {};
-				var container = settings.container || this.messageContainer;
-				if (container) {
-					if (settings.skipAnim) {
-
-					} else {
-						container.slide('vertical', 'out', $.proxy(function () {
-							container.html('');
-						}, this));
-					}
-				}
-		}
+   stream.oninactive = function() {
+    console.log('Stream inactive');
+  };
 
 
     `
