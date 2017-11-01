@@ -4,10 +4,10 @@ How we can automate *flowchart drawing from JS code*? Imagine a library which ta
 
 # js2flowchart.js
 
-js2flowchart is a tool for creating SVG flowcharts from JavaScript code. To get started install 
+js2flowchart is a tool for creating SVG flowcharts from JavaScript code. To get started install package from NPM
 > yarn add js2flowchart
 
-or have a look at online editor below.
+or try it right away at [codepen sample](https://codepen.io/Bogdan-Lyashenko/pen/XzmzNv), or play with the demo below.
 
 ## [Demo](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/live-editor/index.html)
 Check out live [<b>code editor</b>](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/live-editor/index.html), paste your code and <b>download SVG file</b> of flowchart!
