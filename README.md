@@ -281,7 +281,7 @@ const slideNames = [
 
 Result (one of slides):
 
-<img src="/docs/examples/one-module-presentation/page-flowchart.png" width="350"/>
+<img src="/docs/examples/one-module-presentation/page-flowchart.png" width="320"/>
 
 You can switch slides by prev-back buttons.
 
