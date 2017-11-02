@@ -90,7 +90,7 @@ const svg = js2flowchart.convertCodeToSvg(code);
 ```
 Result:
 
-<img src="/docs/examples/default/flowchart.png" width="500"/>
+<img src="/docs/examples/default/flowchart.png" width="550"/>
 
 If you need to modify default behavior you can split ```js2flowchart.convertCodeToSvg``` into two building block: 
 - flow tree building
@@ -168,7 +168,7 @@ we need to instantiate ```flowTreeBuilder``` and assign abstraction level on it.
  
 Result:
 
-<img src="/docs/examples/defined-abstraction-level/flowchart.png" width="400"/>
+<img src="/docs/examples/defined-abstraction-level/flowchart.png" width="300"/>
 
 See the example running [here](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/defined-abstraction-level/index.html) or check out complete source code [of it](/docs/examples/defined-abstraction-level/index.html).
 
