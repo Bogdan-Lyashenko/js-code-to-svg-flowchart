@@ -16,7 +16,7 @@ Check out live [**code editor**](https://bogdan-lyashenko.github.io/js-code-to-s
 
 Presentation mode:
 
-[<img src="/docs/examples/one-module-presentation/slides.gif" width="700">](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/one-module-presentation/index.html) 
+[<img src="/docs/examples/one-module-presentation/slides.gif" width="420">](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/one-module-presentation/index.html) 
 
 ### What does js2flowchart do?
 js2flowchart takes your JS code and returns SVG flowchart, works on client/server, support ES6.
