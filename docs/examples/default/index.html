@@ -42,8 +42,11 @@
                 }
             `;
 
-            const JS2FlowChart = window['js2flowchart'];
-            document.getElementById('svgImage').innerHTML = JS2FlowChart.convertCodeToSvg(code);
+            const {
+                convertCodeToSvg
+            } = window['js2flowchart'];
+
+            document.getElementById('svgImage').innerHTML = convertCodeToSvg(code);
         </script>
 
     </body>

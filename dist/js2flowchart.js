@@ -37666,6 +37666,10 @@ var getExportDeclarations = function getExportDeclarations(declaration) {
     if (declaration.type === _constants.TOKEN_TYPES.IDENTIFIER) {
         return declaration.name;
     }
+
+    if (declaration.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION) {
+        return declaration.left.name;
+    }
 };
 
 var classDeclarationConverter = exports.classDeclarationConverter = function classDeclarationConverter(_ref4) {

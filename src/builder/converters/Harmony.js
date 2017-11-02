@@ -38,6 +38,10 @@ const getExportDeclarations = declaration => {
     if (declaration.type === TOKEN_TYPES.IDENTIFIER) {
         return declaration.name;
     }
+
+    if (declaration.type === TOKEN_TYPES.ASSIGNMENT_EXPRESSION) {
+        return declaration.left.name;
+    }
 };
 
 export const classDeclarationConverter = ({ node }) => {

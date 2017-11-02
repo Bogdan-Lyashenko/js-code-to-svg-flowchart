@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Defined abstraction level</title>
 </head>
 <body>
 
@@ -13,36 +13,39 @@
 <script src="../../../dist/js2flowchart.js"></script>
 <script>
     const code = `
-        const list = [1, 2, 3, 4];
+        import {format, trim} from 'formattier';
+        import {log} from 'logger';
 
-        function print(list) {
+        const data = [];
 
-            const newListGetter = () => {
-                return newList;
-            };
-
-            newList.forEach(i => {
-                console.debug('iteration start');
+        export default print = (list) => {
+            list.forEach(i => {
                 console.log(i);
-                console.debug('iteration end');
             });
-
-            return false;
         }
 
-        print(list);
+        export const formatString = (str) => formatter(str);
+        export const MAX_STR_LENGTH = 15;
     `;
 
-    const JS2FlowChart = window['js2flowchart'],
-        ABSTRACTION_LEVELS = JS2FlowChart.ABSTRACTION_LEVELS;
+    const {
+        ABSTRACTION_LEVELS,
+        createFlowTreeBuilder,
+        convertFlowTreeToSvg
+    } = window.js2flowchart;
 
-    const flowTreeBuilder = JS2FlowChart.createFlowTreeBuilder();
-    flowTreeBuilder.setAbstractionLevel(ABSTRACTION_LEVELS.FUNCTION_DEPENDENCIES);
+    const flowTreeBuilder = createFlowTreeBuilder();
 
-    const svgRender = JS2FlowChart.createSVGRender();
-    const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(code));
+    //you can pass one level or multiple levels in [] as well
+    flowTreeBuilder.setAbstractionLevel([
+        ABSTRACTION_LEVELS.IMPORT,
+        ABSTRACTION_LEVELS.EXPORT
+    ]);
 
-    document.getElementById('svgImage').innerHTML = shapesTree.print();
+    const flowTree = flowTreeBuilder.build(code),
+        svg = convertFlowTreeToSvg(flowTree);
+
+    document.getElementById('svgImage').innerHTML = svg;
 
 </script>
 </body>
