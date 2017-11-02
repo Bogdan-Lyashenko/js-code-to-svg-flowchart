@@ -86,8 +86,8 @@ export const DefinitionsMap = {
         body: true
     },
     [TOKEN_TYPES.RETURN]: {
-        type: TOKEN_TYPES.RETURN, //TODO: visual
-        getName: returnConverter, //TODO: fix return function, duplicates 'return log(list);'
+        type: TOKEN_TYPES.RETURN,
+        getName: returnConverter,
 
         body: true
     },

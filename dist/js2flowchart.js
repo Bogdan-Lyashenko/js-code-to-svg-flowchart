@@ -4272,8 +4272,8 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
     getName: _core.functionConverter,
     body: true
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.RETURN, {
-    type: _constants.TOKEN_TYPES.RETURN, //TODO: visual
-    getName: _core.returnConverter, //TODO: fix return function, duplicates 'return log(list);'
+    type: _constants.TOKEN_TYPES.RETURN,
+    getName: _core.returnConverter,
 
     body: true
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.VARIABLE_DECLARATOR, {

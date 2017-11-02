@@ -172,6 +172,46 @@ Result:
 
 See the example running [here](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/defined-abstraction-level/index.html) or check out complete source code [of it](/docs/examples/defined-abstraction-level/index.html).
 
+**Custom abstraction level (label:advanced)**
+
+What if you want your 'own' level? To the same API endpoint ```flowTreeBuilder.setAbstractionLevel``` you can provide configuration object.
+For example, have a look at the code of [function dependencies](/src/builder/abstraction-levels/functionDependencies.js) abstraction level.  
+Check out the export of it
+```javascript
+export const getFunctionDependenciesLevel = () => ({
+    defined: [TOKEN_TYPES.CALL_EXPRESSION],
+    custom: [
+        getCustomFunctionDeclaration(),
+        getCustomAssignmentExpression(),
+        getCustomVariableDeclarator()
+    ]
+});
+```
+It's a format of data you need to pass:
+
+```javascript
+flowTreeBuilder.setAbstractionLevel({
+    defined: [TOKEN_TYPES.CALL_EXPRESSION],
+    custom: [
+        getCustomFunctionDeclaration(),
+        getCustomAssignmentExpression(),
+        getCustomVariableDeclarator()
+    ]
+})
+
+````
+And what is behind of ```getCustomAssignmentExpression``` for example?
+There is a token parsing config. 
+```javascript
+{
+    type: 'TokenType', /*see types in TOKEN_TYPES map*/
+    getName: (path) => {/*extract name from token*/},
+    ignore: (path) => {/*return true if want to omit entry*/}
+    body: true /* should it contain nested blocks? */
+}
+```
+Check out more token parsing configs from [source code (entryDefinitionsMap.js)](/src/builder/entryDefinitionsMap.js)
+
 ### Under the hood
 Main stages:
 - get AST from code, [Babylon](https://github.com/babel/babylon) parser is used (develops by Babel team)
