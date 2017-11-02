@@ -14,6 +14,10 @@ Check out live [**code editor**](https://bogdan-lyashenko.github.io/js-code-to-s
 
 [<img src="/docs/live-editor/demo.gif" width="700">](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/live-editor/index.html) 
 
+Presentation mode:
+
+[<img src="/docs/examples/one-module-presentation/slides.gif" width="700">](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/one-module-presentation/index.html) 
+
 ### What does js2flowchart do?
 js2flowchart takes your JS code and returns SVG flowchart, works on client/server, support ES6.
 
@@ -211,6 +215,77 @@ There is a token parsing config.
 }
 ```
 Check out more token parsing configs from [source code (entryDefinitionsMap.js)](/src/builder/entryDefinitionsMap.js)
+
+
+#### Presentation generator
+
+When you learn other's code it's good to go trough it by different abstractions levels. 
+Take a look what module exports, which function and classes contains etc.
+There is a sub-module ```createPresentationGenerator``` to generate list of SVGs in order to different abstractions levels.
+
+Let's take the next code for example:
+```javascript
+const code = `
+    import {format} from './util/string';
+    
+    function formatName(name) {
+        if (!name) return 'no-name';
+    
+        return format(name);
+    }
+    
+    class Animal {
+        constructor(breed) {
+            this.breed = breed;
+        }
+    
+        getBreed() {
+            return this.breed;
+        }
+    
+        setName(name) {
+            if (this.nameExist()) {
+                return;
+            }
+    
+            this.name = name;
+        }
+    }
+    
+    class Man extends Animal {
+       sayName() {
+            console.log('name', this.name);
+       }
+    }
+    
+    export default Man;
+`;
+```
+pass it to
+```javascript
+const { createPresentationGenerator } = js2flowchart;
+
+const presentationGenerator = createPresentationGenerator(code);
+const slides = presentationGenerator.buildSlides();//array of SVGs 
+```
+add names for slides (like in example):
+```javascript
+const slideNames = [
+    'See exports: what module provides?',
+    '..and imports: what it depends on?',
+    'Classes and functions',
+    '...and dependencies between functions',
+    'See all details'
+];
+```
+
+Result (one of slides):
+
+<img src="/docs/examples/one-module-presentation/page-flowchart.png" width="350"/>
+
+You can switch slides by prev-back buttons.
+
+See the example running [here](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/one-module-presentation/index.html) or check out complete source code [of it](/docs/examples/one-module-presentation/index.html).
 
 ### Under the hood
 Main stages:

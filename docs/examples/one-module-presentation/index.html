@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Presentation</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.2.4/tiny-slider.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.2.4/min/tiny-slider.js"></script>
     <style>
@@ -26,58 +26,42 @@
 <script src="../../../dist/js2flowchart.js"></script>
 <script>
     const code = `
-        import doSomething, {special} from 'lib-for-something';
-        import fileReader from './src/file';
+        import {format} from './util/string';
 
-        function helperFunction(stuff){
-            doHelp(stuff);
+        function formatName(name) {
+            if (!name) return 'no-name';
+
+            return format(name);
         }
 
-        class Animal extends Zero {
-            constructor(b) {
-                this.s = 12;
+        class Animal {
+            constructor(breed) {
+                this.breed = breed;
             }
 
-            getA(){
-                helperFunction('help');
-                return this.a;
+            getBreed() {
+                return this.breed;
             }
 
             setName(name) {
-                if (!callCheck()) {
-                    name = this.getAa();
+                if (this.nameExist()) {
+                    return;
                 }
+
                 this.name = name;
             }
         }
 
-        class Man {
-            constructor(n) {
-                this.name = n;
-            }
-
-            sayName(log) {
-                log('call..')
-                return this.name
-            }
-        }
-
-        const print = (text, options) => {
-            if (text) {
-                console.log(text);
-            }
+        class Man extends Animal {
+           sayName() {
+                console.log('name', this.name);
+           }
         }
 
         export default Man;
-
-        export const options = {
-            doItNow: ()=> {},
-            andDoThen: ()=> {}
-        }
     `;
 
-    //API
-    const {createPresentationGenerator} = window['js2flowchart'];
+    const {createPresentationGenerator} = window.js2flowchart;
 
     const presentationGenerator = createPresentationGenerator(code);
     const slides = presentationGenerator.buildSlides();
