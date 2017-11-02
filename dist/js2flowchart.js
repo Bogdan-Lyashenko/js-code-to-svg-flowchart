@@ -18247,6 +18247,17 @@ var getCustomFunctionDeclaration = exports.getCustomFunctionDeclaration = functi
     var functionDeclaration = _entryDefinitionsMap.DefinitionsMap[_constants.TOKEN_TYPES.FUNCTION];
 
     return _extends({}, functionDeclaration, {
+        getName: function getName(path) {
+            var nameConfig = functionDeclaration.getName(path);
+
+            if (path.parent.type === _constants.TOKEN_TYPES.OBJECT_PROPERTY && path.parent.key) {
+                nameConfig = _extends({}, nameConfig, {
+                    name: path.parent.key.name + ': ' + nameConfig.name
+                });
+            }
+
+            return nameConfig;
+        },
         ignore: function ignore(path) {
             return functionDeclaration.ignore && functionDeclaration.ignore(path) || path.parent.type === _constants.TOKEN_TYPES.CALL_EXPRESSION;
         }

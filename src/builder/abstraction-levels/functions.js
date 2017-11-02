@@ -6,6 +6,18 @@ export const getCustomFunctionDeclaration = () => {
 
     return {
         ...functionDeclaration,
+        getName: (path) => {
+            let nameConfig = functionDeclaration.getName(path);
+
+            if (path.parent.type === TOKEN_TYPES.OBJECT_PROPERTY && path.parent.key) {
+                nameConfig = {
+                    ...nameConfig,
+                    name: path.parent.key.name + ': ' + nameConfig.name
+                };
+            }
+
+            return nameConfig;
+        },
         ignore: path =>
             (functionDeclaration.ignore && functionDeclaration.ignore(path)) ||
             path.parent.type === TOKEN_TYPES.CALL_EXPRESSION
