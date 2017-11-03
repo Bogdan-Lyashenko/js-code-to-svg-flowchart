@@ -11,6 +11,8 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.31.0/codemirror.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.31.0/mode/javascript/javascript.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+        <script src="https://cdn.rawgit.com/eligrey/FileSaver.js/e9d941381475b5df8b7d7691013401e171014e89/FileSaver.min.js"></script>
+
 
         <style>
 
@@ -28,6 +30,23 @@
                 background: white;
                 margin: 0;
                 overflow: auto;
+            }
+
+            #downloadFile {
+                position: fixed;
+                right: 20px;
+                top: 15px;
+                padding: 5px 10px;
+                background: white;
+                border: 1px solid #2288ff;
+                outline: none;
+                font-weight: bold;
+                color: #2288ff;
+                font-family: sans-serif;
+                cursor: pointer;
+            }
+            #downloadFile:hover {
+                background: #d8efff;
             }
 
             .CodeMirror {
@@ -80,6 +99,7 @@ function indexSearch(list, element) {
     return -1;
 }</textarea>
         </div>
+        <button id="downloadFile">DOWNLOAD SVG FILE</button>
         <div class="column">
             <p id="svgImage"></p>
         </div>
