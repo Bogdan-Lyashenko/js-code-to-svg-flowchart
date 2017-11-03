@@ -281,7 +281,7 @@ Result (one of slides):
 
 You can switch slides by prev-next buttons.
 
-[<img src="/docs/examples/one-module-presentation/slides.gif" width="420">](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/one-module-presentation/index.html) 
+[<img src="/docs/examples/one-module-presentation/slides.gif" width="500">](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/one-module-presentation/index.html) 
 
 See the example running [here](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/one-module-presentation/index.html) or check out complete source code [of it](/docs/examples/one-module-presentation/index.html).
 
