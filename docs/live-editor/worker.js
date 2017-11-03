@@ -9,6 +9,7 @@ self.onmessage = function(message) {
         svg = js2flowchart.convertCodeToSvg(code);
     } catch (e) {
         shouldUpdate = false;
+        console.log(e);
     } finally {
         shouldUpdate && self.postMessage({
             svg
