@@ -5,48 +5,49 @@
     <title>Defined abstraction level</title>
 </head>
 <body>
+    <iframe style="position: fixed; right: 0" src="https://ghbtns.com/github-btn.html?user=Bogdan-Lyashenko&repo=js-code-to-svg-flowchart&type=star&count=true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
 
-<div>
-    <p id="svgImage"></p>
-</div>
+    <div>
+        <p id="svgImage"></p>
+    </div>
 
-<script src="../../../dist/js2flowchart.js"></script>
-<script>
-    const code = `
-        import {format, trim} from 'formattier';
-        import {log} from 'logger';
+    <script src="../../../dist/js2flowchart.js"></script>
+    <script>
+        const code = `
+            import {format, trim} from 'formattier';
+            import {log} from 'logger';
 
-        const data = [];
+            const data = [];
 
-        export default print = (list) => {
-            list.forEach(i => {
-                console.log(i);
-            });
-        }
+            export default print = (list) => {
+                list.forEach(i => {
+                    console.log(i);
+                });
+            }
 
-        export const formatString = (str) => formatter(str);
-        export const MAX_STR_LENGTH = 15;
-    `;
+            export const formatString = (str) => formatter(str);
+            export const MAX_STR_LENGTH = 15;
+        `;
 
-    const {
-        ABSTRACTION_LEVELS,
-        createFlowTreeBuilder,
-        convertFlowTreeToSvg
-    } = window.js2flowchart;
+        const {
+            ABSTRACTION_LEVELS,
+            createFlowTreeBuilder,
+            convertFlowTreeToSvg
+        } = window.js2flowchart;
 
-    const flowTreeBuilder = createFlowTreeBuilder();
+        const flowTreeBuilder = createFlowTreeBuilder();
 
-    //you can pass one level or multiple levels in [] as well
-    flowTreeBuilder.setAbstractionLevel([
-        ABSTRACTION_LEVELS.IMPORT,
-        ABSTRACTION_LEVELS.EXPORT
-    ]);
+        //you can pass one level or multiple levels in [] as well
+        flowTreeBuilder.setAbstractionLevel([
+            ABSTRACTION_LEVELS.IMPORT,
+            ABSTRACTION_LEVELS.EXPORT
+        ]);
 
-    const flowTree = flowTreeBuilder.build(code),
-        svg = convertFlowTreeToSvg(flowTree);
+        const flowTree = flowTreeBuilder.build(code),
+            svg = convertFlowTreeToSvg(flowTree);
 
-    document.getElementById('svgImage').innerHTML = svg;
+        document.getElementById('svgImage').innerHTML = svg;
 
-</script>
+    </script>
 </body>
 </html>
