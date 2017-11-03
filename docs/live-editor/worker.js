@@ -10,15 +10,9 @@ self.onmessage = function(message) {
     } catch (e) {
         shouldUpdate = false;
     } finally {
-        let dataToSend = {};
-
-        if (shouldUpdate) {
-            dataToSend = {...dataToSend, svg};
-        } else {
-            dataToSend = {...dataToSend, error: true};
-        }
-
-        self.postMessage(dataToSend);
+        shouldUpdate && self.postMessage({
+            svg
+        });
     }
 
 };
