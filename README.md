@@ -90,7 +90,7 @@ const svg = js2flowchart.convertCodeToSvg(code);
 ```
 Result:
 
-<img src="/docs/examples/default/flowchart.png" width="550"/>
+![](/docs/examples/default/flowchart-image.png)
 
 If you need to modify default behavior you can split ```js2flowchart.convertCodeToSvg``` into two building block: 
 - flow tree building
@@ -168,7 +168,7 @@ we need to instantiate ```flowTreeBuilder``` and assign abstraction level on it.
  
 Result:
 
-<img src="/docs/examples/defined-abstraction-level/flowchart.png" width="300"/>
+![](/docs/examples/defined-abstraction-level/flowchart-image.png)
 
 See the example running [here](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/defined-abstraction-level/index.html) or check out complete source code [of it](/docs/examples/defined-abstraction-level/index.html).
 
@@ -277,9 +277,9 @@ const slideNames = [
 
 Result (one of slides):
 
-<img src="/docs/examples/one-module-presentation/page-flowchart.png" width="320"/>
+![](/docs/examples/one-module-presentation/flowchart-image.png)
 
-You can switch slides by prev-back buttons.
+You can switch slides by prev-next buttons.
 
 [<img src="/docs/examples/one-module-presentation/slides.gif" width="420">](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/one-module-presentation/index.html) 
 
