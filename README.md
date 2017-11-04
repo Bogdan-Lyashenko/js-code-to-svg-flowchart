@@ -267,16 +267,6 @@ const { createPresentationGenerator } = js2flowchart;
 const presentationGenerator = createPresentationGenerator(code);
 const slides = presentationGenerator.buildSlides();//array of SVGs 
 ```
-add names for slides (like in example):
-```javascript
-const slideNames = [
-    'See exports: what module provides?',
-    '..and imports: what it depends on?',
-    'Classes and functions',
-    '...and dependencies between functions',
-    'See all details'
-];
-```
 
 Result (one of slides):
 
