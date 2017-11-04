@@ -73,7 +73,9 @@ const singleTypeFilter = path => {
             TOKEN_TYPES.EXPORT_DEFAULT_DECLARATION,
             TOKEN_TYPES.EXPORT_NAMED_DECLARATION,
             TOKEN_TYPES.CLASS_DECLARATION,
-            TOKEN_TYPES.CLASS_METHOD
+            TOKEN_TYPES.CLASS_METHOD,
+            TOKEN_TYPES.SWITCH_STATEMENT,
+            TOKEN_TYPES.SWITCH_CASE
         ].includes(parent.type) &&
             (!parent.body || parent.body.type !== path.node.type))
     );

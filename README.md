@@ -288,6 +288,100 @@ You can switch slides by prev-next buttons.
 
 See the example running [here](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/one-module-presentation/index.html) or check out complete source code [of it](/docs/examples/one-module-presentation/index.html).
 
+
+#### Defined colors theme
+
+You can apply different themes to your ```svgRender``` instance. Simply calling e.g. ```svgRender.applyLightTheme()``` to apply light scheme. 
+
+There are next predefined color schemes:
+- DEFAULT: ```applyDefaultTheme```
+- BLACK_AND_WHITE: ```applyBlackAndWhiteTheme```
+- BLURRED: ```applyBlurredTheme```
+- LIGHT: ```applyLightTheme```
+
+Let's simple code sample of ```switch``` statement from Mozzila Web Docs.
+```javascript
+const code = `
+    function switchSampleFromMDN() {
+        const foo = 0;
+
+        switch (foo) {
+          case -1:
+            console.log('negative 1');
+            break;
+          case 0:
+            console.log(0);
+          case 1:
+            console.log(1);
+            return 1;
+          default:
+            console.log('default');
+        }
+    }
+`;
+```
+and apply scheme to render.
+ 
+```javascript
+const {createSVGRender, convertCodeToFlowTree} = window.js2flowchart;
+
+const flowTree = convertCodeToFlowTree(code),
+    svgRender = createSVGRender();
+
+//applying another theme for render
+svgRender.applyLightTheme();
+
+const svg = svgRender.buildShapesTree(flowTree).print();
+```
+ 
+Result:
+
+![](/docs/examples/defined-color-theme/flowchart-image.png)
+
+See the example running [here](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/defined-color-theme/index.html) or check out complete source code [of it](/docs/examples/defined-color-theme/index.html).
+
+#### Custom colors theme
+
+Well, but what if you would like to have different colors? Sure, below is an example of Light theme colors but created manually.
+```javascript
+svgRender.applyColorBasedTheme({
+   strokeColor: '#555',
+   defaultFillColor: '#fff',
+   textColor: '#333',
+   arrowFillColor: '#444',
+   rectangleFillColor: '#bbdefb',
+   rectangleDotFillColor: '#ede7f6',
+   functionFillColor: '#c8e6c9',
+   rootCircleFillColor: '#fff9c4',
+   loopFillColor: '#d1c4e9',
+   conditionFillColor: '#e1bee7',
+   destructedNodeFillColor: '#ffecb3',
+   classFillColor: '#b2dfdb',
+   debuggerFillColor: '#ffcdd2',
+   exportFillColor: '#b3e5fc',
+   throwFillColor: '#ffccbc',
+   tryFillColor: '#FFE082',
+   objectFillColor: '#d1c4e9',
+   callFillColor: '#dcedc8',
+   debugModeFillColor: '#666'
+});
+``` 
+
+#### Custom styles
+
+What if you need different styles, not only colors? Here it's ```svgRender.applyTheme({})```. Yuo can apply styles above of current theme, overriding only that behaviour you need.
+Let's take an example with Return statement.
+```javascript
+svgRender.applyTheme({
+    ReturnStatement: {
+        fillColor: 'red',
+        roundBorder: 10
+    }
+});
+``` 
+
+Please check definition of [```DefaultBaseTheme```](/src/render/svg/appearance/themes/DefaultBaseTheme.js) to see all possible shapes names and properties. 
+
 ### Under the hood
 Main stages:
 - get AST from code, [Babylon](https://github.com/babel/babylon) parser is used (develops by Babel team)

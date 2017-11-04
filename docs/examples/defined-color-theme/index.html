@@ -1,0 +1,51 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <iframe style="position: fixed; right: 0" src="https://ghbtns.com/github-btn.html?user=Bogdan-Lyashenko&repo=js-code-to-svg-flowchart&type=star&count=true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
+        <div>
+            <p id="svgImage"></p>
+        </div>
+
+        <script src="../../../dist/js2flowchart.js"></script>
+        <script>
+            const code = `
+                function switchSampleFromMDN() {
+                    const foo = 0;
+
+                    switch (foo) {
+                      case -1:
+                        console.log('negative 1');
+                        break;
+                      case 0:
+                        console.log(0);
+                      case 1:
+                        console.log(1);
+                        return 1;
+                      default:
+                        console.log('default');
+                    }
+                }
+            `;
+
+            const {createSVGRender, convertCodeToFlowTree} = window.js2flowchart;
+
+            const flowTree = convertCodeToFlowTree(code),
+                svgRender = createSVGRender();
+
+            //applying another theme for render
+            svgRender.applyLightTheme();
+
+            const svg = svgRender.buildShapesTree(flowTree).print();
+
+            document.getElementById('svgImage').innerHTML = svg;
+        </script>
+
+    </body>
+</html>
