@@ -24,18 +24,21 @@
         }
     `;
 
-    const JS2FlowChart = window['js2flowchart'],
-        flowTreeBuilder = JS2FlowChart.createFlowTreeBuilder(),
-        svgRender = JS2FlowChart.createSVGRender();
+    const {convertCodeToFlowTree, createSVGRender, createShapesTreeEditor} = window.js2flowchart;
 
-    const shapesTree = svgRender.buildShapesTree(flowTreeBuilder.build(code));
-    const shapesTreeEditor = JS2FlowChart.createShapesTreeEditor(shapesTree);//copy shapes tree if don't want to mutate them
+    const svgRender = createSVGRender();
 
-    shapesTreeEditor.applyShapeStyles(shape => shape.getNodePathId() === 'NODE-ID:|THIS.NAME=NAME|TSRGTCCP', {
-        fillColor: '#ffab91'
+    const shapesTree = svgRender.buildShapesTree(convertCodeToFlowTree(code));
+    const shapesTreeEditor = createShapesTreeEditor(shapesTree);
+
+    shapesTreeEditor.applyShapeStyles(
+        shape => shape.getNodePathId() === 'NODE-ID:|THIS.NAME=N|TCCP-', {
+        fillColor: '#90caf9'
     });
 
-    document.getElementById('svgImage').innerHTML = shapesTreeEditor.print({debug: true});
+    const svg = shapesTreeEditor.print({debug: true});
+
+    document.getElementById('svgImage').innerHTML = svg;
 </script>
 </body>
 </html>

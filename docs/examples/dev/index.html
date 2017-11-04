@@ -12,203 +12,7 @@
 
 <script src="../../../dist/js2flowchart.js"></script>
 <script>
-    const simpleStrSwitch = `
-        function Test(a) {
-            var b;
 
-            switch (a) {
-                case 1:
-                    b = 0;
-                    break;
-                case 2:
-                    b = 2;
-                    return;
-                default:
-                    b = 3;
-                    break;
-            }
-
-            return a + 2;
-        }
-    `;
-
-    const simpleStrTry = `
-        function Test() {
-            try {
-                abcdMethod();
-            } catch(e) {
-                console.log('error ' + e.message);
-            }
-
-            return a - 1;
-        }
-    `;
-
-    const simpleStrContinue = `
-        function Test() {
-            for (; i < obj.length; i++) {
-                c = 12;
-                if (c == 2) {
-                    continue;
-                }
-
-                b = 12;
-            }
-        }
-    `;
-
-    const simpleStrModules = `
-        import { assignState, mergeObjectStructures } from 'shared/utils/composition';
-        import { getCurvedPath, getClosedPath } from 'shared/utils/svgPrimitives';
-
-        function o(i, p) {};
-
-        export default o;
-
-        export const aM = function(b) {
-           let clickFn = 12;
-           b = 12;
-           c = 12;
-        }
-
-        export const BOB = 12;
-    `;
-
-    const simpleStrClass = `
-        class Animal extends Zero {
-            constructor(b) {
-            debugger;
-                this.s = 12;
-            }
-
-            getA(){
-                return this.a;
-            }
-
-            setName(name) {
-                this.name = name;
-                debugger;
-            }
-        }
-
-        class Man {
-            constructor(n) {
-                this.name = n;
-            }
-
-            sayName() {
-                return this.name
-            }
-        }
-    `;
-
-    const simpleStr = `
-import traverse from 'babel-traverse';
-
-import { DefinitionsList } from './entryDefinitionsMap';
-import { parseCodeToAST, buildVisitor } from './astBuilder';
-import {
-    ABSTRACTION_LEVELS,
-    rebuildConfigForAbstractionLevel
-} from './abstractionLevelsConfigurator';
-import FlowTreeModifier from './FlowTreeModifier';
-import {
-    DEFINED_MODIFIERS,
-    MODIFIER_PRESETS,
-    destructionModifier,
-    expressionCallbacksModifier
-} from './modifiers/modifiersFactory';
-import { TOKEN_TYPES } from 'shared/constants';
-
-const buildFlowTree = (astTree, astVisitorConfig) => {
-    const treeNodes = [];
-
-    traverse(astTree, buildVisitor(astVisitorConfig, treeNodes));
-
-    const root = (treeNodes.length && treeNodes[0]) || {};
-    return root.type === TOKEN_TYPES.PROGRAM
-        ? root
-        : { name: 'Root', type: TOKEN_TYPES.PROGRAM, body: treeNodes };
-};
-
-//TODO: seems redundant abstraction, refactor
-export const createFlowTreeModifier = () => {
-    const modifiers = FlowTreeModifier();
-
-    return {
-        setModifier(modifier) {
-            modifiers.addModifier(modifier);
-        },
-
-        registerNewModifier(test, updates) {
-            modifiers.create(test, updates);
-        },
-
-        destructNodeTree(test, newNameFn) {
-            this.setModifier(destructionModifier(test, newNameFn));
-        },
-
-        applyToFlowTree(flowTree) {
-            modifiers.applyTo(flowTree);
-            return flowTree;
-        }
-    };
-};
-
-export default ({ astParser = {}, astVisitor = {} } = {}) => {
-    const astParserConfig = {
-        ...astParser
-    };
-
-    const astVisitorConfig = {
-        definitionsMap: [...DefinitionsList],
-        globalIgnore: null,
-        ...astVisitor
-    };
-
-    const defaultModifier = createFlowTreeModifier();
-    defaultModifier.setModifier(expressionCallbacksModifier());
-
-    return {
-        setAbstractionLevel(level) {
-            astVisitorConfig.definitionsMap = rebuildConfigForAbstractionLevel(level);
-        },
-
-        resetAbstractionLevelToNormal() {
-            astVisitorConfig.definitionsMap = [...DefinitionsList];
-        },
-
-        setIgnoreFilter(fn) {
-            astVisitorConfig.globalIgnore = fn;
-        },
-
-        build(code) {
-            const ast = this.buildAst(code);
-            return this.buildFlowTreeFromAst(ast);
-        },
-
-        buildAst(code) {
-            return parseCodeToAST(code, astParserConfig);
-        },
-
-        buildFlowTreeFromAst(ast) {
-            const flowTree = buildFlowTree(ast, astVisitorConfig);
-
-            defaultModifier.applyToFlowTree(flowTree);
-
-            return flowTree;
-        }
-    };
-};
-
-export { DEFINED_MODIFIERS, MODIFIER_PRESETS, ABSTRACTION_LEVELS };
-
-
-    `;
-
-    const t0 = performance.now();
-    //===================================
-    //TODO: check ap+bp is not rendered
     const code = `
     import { complexTraversal } from 'shared/utils/traversalWithTreeLevelsPointer';
 import { SVGBase } from './SVGBase';
@@ -406,33 +210,16 @@ const buildConnectionConfig = (toShape, fromShape) => {
 
     `;
 
-    const code2 = 'list.map((i)=>i+1).filter(a=> a > 0).forEach(o=>console.log(o))';//ADD to DEMO
-
-    const code3 = `
-   stream.oninactive = function() {
-    console.log('Stream inactive');
-  };
-
-
-    `
-//TODO: const { astParser } = log;
-    //API
     const {createFlowTreeBuilder, createSVGRender} = window.js2flowchart;
 
     const flowTreeBuilder = createFlowTreeBuilder(),
         svgRender = createSVGRender();
 
-    const flowTree = flowTreeBuilder.build(code3);
-    console.log(flowTree)
-        const shapesTree = svgRender.buildShapesTree(flowTree);
+    const flowTree = flowTreeBuilder.build(code);
+    const shapesTree = svgRender.buildShapesTree(flowTree);
 
 
     document.getElementById('svgImage').innerHTML = shapesTree.print();
-
-    //==================================
-    const t1 = performance.now();
-    console.log('Call took ' + (t1 - t0) + ' milliseconds.');
-
 </script>
 </body>
 </html>

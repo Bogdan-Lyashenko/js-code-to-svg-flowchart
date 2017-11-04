@@ -501,6 +501,35 @@ flowTreeModifier.registerNewModifier((node)=> node.name.includes('hello'), {
 });
 ``` 
 
+#### Debug rendering
+What if you want to select a shape for applying special styles and want some unique id selector? Just pass ```debug``` flag to ```print```; 
+
+```javascript
+    const {
+        convertCodeToFlowTree,
+        createSVGRender,
+        createShapesTreeEditor
+    } = js2flowchart;
+
+    const svgRender = createSVGRender();
+
+    const shapesTree = svgRender.buildShapesTree(convertCodeToFlowTree(code));
+    const shapesTreeEditor = createShapesTreeEditor(shapesTree);
+
+    shapesTreeEditor.applyShapeStyles(
+        shape => shape.getNodePathId() === 'NODE-ID:|THIS.NAME=N|TCCP-', {
+        fillColor: '#90caf9'
+    });
+
+    const svg = shapesTreeEditor.print({debug: true});
+```
+
+Result:
+
+![](/docs/examples/debug-rendering/flowchart-image.png)
+
+See the example running [here](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/debug-rendering/index.html) or check out complete source code [of it](/docs/examples/debug-rendering/index.html).
+
 ### Under the hood
 Main stages:
 - get AST from code, [Babylon](https://github.com/babel/babylon) parser is used (develops by Babel team)
