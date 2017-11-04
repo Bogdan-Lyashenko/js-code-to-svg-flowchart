@@ -13,13 +13,7 @@
 <script src="../../../dist/js2flowchart.js"></script>
 <script>
     const code = `
-        const list = [1, 2, 3, 4];
-
         function print(list) {
-            if (!list) {
-                throw new Error('List is null.');
-            }
-
             const newList = list.map(i => {
                 return i + 1;
             });
@@ -29,27 +23,27 @@
                 console.log(i);
                 console.debug('iteration end');
             });
-
-            return false;
         }
-
-        print(list);
     `;
 
-    const JS2FlowChart = window['js2flowchart'];
+    const {
+        createFlowTreeBuilder,
+        createFlowTreeModifier,
+        convertFlowTreeToSvg,
+        MODIFIER_PRESETS
+    } = window.js2flowchart;
 
-    const flowTreeBuilder = JS2FlowChart.createFlowTreeBuilder();
+    const flowTreeBuilder = createFlowTreeBuilder(),
+        flowTree = flowTreeBuilder.build(code);
 
-    const flowTree = flowTreeBuilder.build(code);
-    const flowTreeModifier = JS2FlowChart.createFlowTreeModifier();
+    const flowTreeModifier = createFlowTreeModifier();
 
-    flowTreeModifier.setModifier(JS2FlowChart.MODIFIER_PRESETS.es5ArrayIterators);
+    flowTreeModifier.setModifier(MODIFIER_PRESETS.es5ArrayIterators);
     flowTreeModifier.applyToFlowTree(flowTree);
 
-    const svgRender = JS2FlowChart.createSVGRender();
-    const shapesTree = svgRender.buildShapesTree(flowTree);
+    const svg = convertFlowTreeToSvg(flowTree);
 
-    document.getElementById('svgImage').innerHTML = shapesTree.print();
+    document.getElementById('svgImage').innerHTML = svg;
 
 </script>
 </body>

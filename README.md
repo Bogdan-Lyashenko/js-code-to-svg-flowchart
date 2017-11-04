@@ -373,7 +373,7 @@ svgRender.applyTheme({
 Please check definition of [```DefaultBaseTheme```](/src/render/svg/appearance/themes/DefaultBaseTheme.js) to see all possible shapes names and properties. 
 
 
-#### Shapes editor
+#### Shapes tree editor
 
 There is sub-module for modifying shapes tree called 'ShapesTreeEditor'.
 It provides next interfaces:
@@ -435,8 +435,71 @@ Result:
 
 ![](/docs/examples/blur-shape-branch/flowchart-image.png)
 
-See the example running [here](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/blur-shape-branch/index.html) or check out complete source code [of it](/docs/examples/defined-abstraction-level/index.html).
+See the example running [here](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/blur-shape-branch/index.html) or check out complete source code [of it](/docs/examples/blur-shape-branch/index.html).
 
+
+#### Flow tree modifier
+
+There is sub-module for modifying flow tree called 'FlowTreeModifier' which allows you to apply modifiers defined separately to your existing flow tree. 
+Let's take simple use-case: you want to change 'names'(titles) on tree-nodes, here it is, just define modifier for that. But, actually, there are some behaviours where we already know we need to modify flow tree.
+
+Let's have a look at ES5 Array iterators, like ```forEach```, ```map``` and so on. We all know they behave like a loop, right? Let's treat them as a 'loop' then.  
+
+```javascript
+const code = `
+function print(list) {
+    const newList = list.map(i => {
+        return i + 1;
+    });
+
+    newList.forEach(i => {
+        console.debug('iteration start');
+        console.log(i);
+        console.debug('iteration end');
+    });
+}
+`;
+```
+ 
+ 
+```javascript
+const {
+    createFlowTreeBuilder,
+    createFlowTreeModifier,
+    convertFlowTreeToSvg,
+    MODIFIER_PRESETS
+} = js2flowchart;
+
+const flowTreeBuilder = createFlowTreeBuilder(),
+    flowTree = flowTreeBuilder.build(code);
+
+const flowTreeModifier = createFlowTreeModifier();
+
+flowTreeModifier.setModifier(MODIFIER_PRESETS.es5ArrayIterators);
+flowTreeModifier.applyToFlowTree(flowTree);
+
+const svg = convertFlowTreeToSvg(flowTree);
+```
+ 
+Result:
+
+As you can see, both iterators handled as a loop. And ```forEach``` omit function-callback as well.
+
+![](/docs/examples/defined-modifier/flowchart-image.png)
+
+See the example running [here](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/defined-modifier/index.html) or check out complete source code [of it](/docs/examples/defined-modifier/index.html).
+
+
+There is one more defined modifier for node destruction. It takes a block you specified and destruct it to on block.
+```javascript
+flowTreeModifier.destructNodeTree((node) => node.name.indexOf('.forEach') !== -1, 'and print list...');
+```
+What if you want **custom modifier**? 
+```javascript
+flowTreeModifier.registerNewModifier((node)=> node.name.includes('hello'), {
+    name: 'world'
+});
+``` 
 
 ### Under the hood
 Main stages:
