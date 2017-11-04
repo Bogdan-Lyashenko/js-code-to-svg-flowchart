@@ -4742,8 +4742,8 @@ var buildTheme = exports.buildTheme = function buildTheme(color) {
 
         CallExpression: _extends({}, BaseShape, {
             dot: _extends({}, BaseShape, {
-                offset: 4,
-                radius: 2,
+                offset: 6,
+                radius: 4,
                 fillColor: color.rectangleDotFillColor
             }),
             fillColor: color.callFillColor

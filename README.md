@@ -132,7 +132,7 @@ There is a list of defined levels you can do that with. Accessible by ```ABSTRAC
 - ```IMPORT```
 - ```EXPORT```
 
-Let's take example with module imports&exports. Below is not real code of some ```print-util.js```.
+Let's take example with module imports&exports. Below is the code of some ```print-util.js```.
 ```javascript
 const code = `
     import {format, trim} from 'formattier';
@@ -313,7 +313,7 @@ const code = `
 and apply scheme to render.
  
 ```javascript
-const {createSVGRender, convertCodeToFlowTree} = window.js2flowchart;
+const {createSVGRender, convertCodeToFlowTree} = js2flowchart;
 
 const flowTree = convertCodeToFlowTree(code),
     svgRender = createSVGRender();
@@ -371,6 +371,72 @@ svgRender.applyTheme({
 ``` 
 
 Please check definition of [```DefaultBaseTheme```](/src/render/svg/appearance/themes/DefaultBaseTheme.js) to see all possible shapes names and properties. 
+
+
+#### Shapes editor
+
+There is sub-module for modifying shapes tree called 'ShapesTreeEditor'.
+It provides next interfaces:
+- ```findShape```
+- ```applyShapeStyles```
+- ```blur```
+- ```focus```
+- ```blurShapeBranch```
+- ```focusShapeBranch```
+- ```print```
+
+Let's learn its usage on an example as well. Below is the code with some 'devMode hooks'.
+```javascript
+const code = `
+const doStuff = (stuff) => {
+    if (stuff) {
+        if (devFlag) {
+            log('perf start');
+            doRecursion();
+            log('perf end');
+
+            return;
+        }
+
+        doRecursion();
+        end();
+    } else {
+        throw new Error('No stuff!');
+    }
+
+    return null;
+};
+`;
+```
+
+what we want here is 'blur' that dev-branch condition, because it interferes code readability. 
+ 
+```javascript
+const {
+    convertCodeToFlowTree,
+    createSVGRender,
+    createShapesTreeEditor
+} = js2flowchart;
+
+const flowTree = convertCodeToFlowTree(code),
+    svgRender = createSVGRender();
+    shapesTree = svgRender.buildShapesTree(flowTree);
+
+const shapesTreeEditor = createShapesTreeEditor(shapesTree);
+
+shapesTreeEditor.blurShapeBranch(
+    (shape) => shape.getName() === '(devFlag)'
+);
+
+const svg = shapesTreeEditor.print();
+```
+ 
+Result:
+
+![](/docs/examples/blur-shape-branch/flowchart-image.png)
+
+See the example running [here](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/blur-shape-branch/index.html) or check out complete source code [of it](/docs/examples/defined-abstraction-level/index.html).
+
 
 ### Under the hood
 Main stages:
