@@ -37804,6 +37804,7 @@ exports.default = {
     sourceType: 'module',
     plugins: ['objectRestSpread']
 };
+module.exports = exports['default'];
 
 /***/ }),
 /* 447 */
@@ -38001,6 +38002,8 @@ exports.default = function () {
         }
     };
 };
+
+module.exports = exports['default'];
 
 /***/ }),
 /* 450 */
@@ -39249,6 +39252,7 @@ var _VerticalEdgedRectangle = __webpack_require__(113);
 var ENTITY_FIELD_NAME = 'ClassDeclaration';
 
 exports.default = (0, _BaseShape.delegateInit)(_VerticalEdgedRectangle.VerticalEdgedRectangle, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
 
 /***/ }),
 /* 468 */
@@ -39268,6 +39272,7 @@ var _Rectangle = __webpack_require__(26);
 var ENTITY_FIELD_NAME = 'DebuggerStatement';
 
 exports.default = (0, _BaseShape.delegateInit)(_Rectangle.Rectangle, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
 
 /***/ }),
 /* 469 */
@@ -39287,6 +39292,7 @@ var _ReturnStatement = __webpack_require__(47);
 var ENTITY_FIELD_NAME = 'ExportDeclaration';
 
 exports.default = (0, _BaseShape.delegateInit)(_ReturnStatement.ReturnStatement, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
 
 /***/ }),
 /* 470 */
@@ -39306,6 +39312,7 @@ var _VerticalEdgedRectangle = __webpack_require__(113);
 var ENTITY_FIELD_NAME = 'ImportDeclaration';
 
 exports.default = (0, _BaseShape.delegateInit)(_VerticalEdgedRectangle.VerticalEdgedRectangle, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
 
 /***/ }),
 /* 471 */
@@ -39325,6 +39332,7 @@ var _Rectangle = __webpack_require__(26);
 var ENTITY_FIELD_NAME = 'ImportSpecifier';
 
 exports.default = (0, _BaseShape.delegateInit)(_Rectangle.Rectangle, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
 
 /***/ }),
 /* 472 */
@@ -39344,6 +39352,7 @@ var _Rectangle = __webpack_require__(26);
 var ENTITY_FIELD_NAME = 'ThrowStatement';
 
 exports.default = (0, _BaseShape.delegateInit)(_Rectangle.Rectangle, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
 
 /***/ }),
 /* 473 */
@@ -39363,6 +39372,7 @@ var _Rectangle = __webpack_require__(26);
 var ENTITY_FIELD_NAME = 'TryStatement';
 
 exports.default = (0, _BaseShape.delegateInit)(_Rectangle.Rectangle, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
 
 /***/ }),
 /* 474 */
@@ -39382,6 +39392,7 @@ var _ReturnStatement = __webpack_require__(47);
 var ENTITY_FIELD_NAME = 'CatchClause';
 
 exports.default = (0, _BaseShape.delegateInit)(_ReturnStatement.ReturnStatement, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
 
 /***/ }),
 /* 475 */
@@ -39401,6 +39412,7 @@ var _ConditionRhombus = __webpack_require__(184);
 var ENTITY_FIELD_NAME = 'SwitchStatement';
 
 exports.default = (0, _BaseShape.delegateInit)(_ConditionRhombus.ConditionRhombus, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
 
 /***/ }),
 /* 476 */
@@ -39420,6 +39432,7 @@ var _ReturnStatement = __webpack_require__(47);
 var ENTITY_FIELD_NAME = 'BreakStatement';
 
 exports.default = (0, _BaseShape.delegateInit)(_ReturnStatement.ReturnStatement, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
 
 /***/ }),
 /* 477 */
@@ -39439,6 +39452,7 @@ var _Rectangle = __webpack_require__(26);
 var ENTITY_FIELD_NAME = 'SwitchCase';
 
 exports.default = (0, _BaseShape.delegateInit)(_Rectangle.Rectangle, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
 
 /***/ }),
 /* 478 */
@@ -39458,6 +39472,7 @@ var _ReturnStatement = __webpack_require__(47);
 var ENTITY_FIELD_NAME = 'ContinueStatement';
 
 exports.default = (0, _BaseShape.delegateInit)(_ReturnStatement.ReturnStatement, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
 
 /***/ }),
 /* 479 */
@@ -39477,6 +39492,7 @@ var _Rectangle = __webpack_require__(26);
 var ENTITY_FIELD_NAME = 'CallExpression';
 
 exports.default = (0, _BaseShape.delegateInit)(_Rectangle.Rectangle, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
 
 /***/ }),
 /* 480 */
@@ -39496,6 +39512,7 @@ var _Rectangle = __webpack_require__(26);
 var ENTITY_FIELD_NAME = 'ObjectProperty';
 
 exports.default = (0, _BaseShape.delegateInit)(_Rectangle.Rectangle, ENTITY_FIELD_NAME);
+module.exports = exports['default'];
 
 /***/ }),
 /* 481 */
