@@ -47,12 +47,12 @@ You can find sources for examples explained below in [docs directory](/docs).
 /**
 * Access APIs when js2flowchart injected into HTML page
 */
-const {convertFlowTreeToSvg, convertCodeToFlowTree} = window.js2flowchart;
+const {convertCodeToFlowTree, convertFlowTreeToSvg} = window.js2flowchart;
 
 /**
 * or import from node_modules 
 */ 
-import {convertFlowTreeToSvg, convertCodeToFlowTree} from 'js2flowchart';//way 1
+import {convertCodeToFlowTree, convertFlowTreeToSvg} from 'js2flowchart';//way 1
 import * as js2flowchart from 'js2flowchart';//way 2
 ```
 
@@ -100,7 +100,7 @@ If you need to modify default behavior you can split ```js2flowchart.convertCode
 - shapes printing
 
 ```javascript
-const {convertFlowTreeToSvg, convertCodeToFlowTree} = js2flowchart;
+const {convertCodeToFlowTree, convertFlowTreeToSvg} = js2flowchart;
 
 const flowTree = convertCodeToFlowTree(code);
 
