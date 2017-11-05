@@ -6,54 +6,12 @@
 </head>
 <body>
     <iframe style="position: fixed; right: 0" src="https://ghbtns.com/github-btn.html?user=Bogdan-Lyashenko&repo=js-code-to-svg-flowchart&type=star&count=true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
-<div>
-    <p id="svgImage"></p>
-</div>
+    <div>
+        <p id="svgImage"></p>
+    </div>
 
-<script src="../../../dist/js2flowchart.js"></script>
-<script>
-
-    const code = `
-        const doStuff = (stuff) => {
-            if (stuff) {
-                if (devFlag) {
-                    log('perf start');
-                    doRecursion();
-                    log('perf end');
-
-                    return;
-                }
-
-                doRecursion();
-                end();
-            } else {
-                throw new Error('No stuff!');
-            }
-
-            return null;
-        };
-    `;
-
-    const {
-        convertCodeToFlowTree,
-        createSVGRender,
-        createShapesTreeEditor
-    } = window.js2flowchart;
-
-    const flowTree = convertCodeToFlowTree(code),
-        svgRender = createSVGRender();
-        shapesTree = svgRender.buildShapesTree(flowTree);
-
-    const shapesTreeEditor = createShapesTreeEditor(shapesTree);
-
-    shapesTreeEditor.blurShapeBranch(
-        (shape) => shape.getName() === '(devFlag)'
-    );
-
-    const svg = shapesTreeEditor.print();
-
-    document.getElementById('svgImage').innerHTML = svg;
-
-</script>
+    <script src="../../../dist/js2flowchart.js"></script>
+    <script src="code-sample.js"></script>
+    <script src="index.js"></script>
 </body>
 </html>

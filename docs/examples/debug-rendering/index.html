@@ -11,34 +11,7 @@
 </div>
 
 <script src="../../../dist/js2flowchart.js"></script>
-<script>
-    const code = `
-        class Man {
-            constructor(n) {
-                this.name = n;
-            }
-
-            sayName() {
-                return this.name
-            }
-        }
-    `;
-
-    const {convertCodeToFlowTree, createSVGRender, createShapesTreeEditor} = window.js2flowchart;
-
-    const svgRender = createSVGRender();
-
-    const shapesTree = svgRender.buildShapesTree(convertCodeToFlowTree(code));
-    const shapesTreeEditor = createShapesTreeEditor(shapesTree);
-
-    shapesTreeEditor.applyShapeStyles(
-        shape => shape.getNodePathId() === 'NODE-ID:|THIS.NAME=N|TCCP-', {
-        fillColor: '#90caf9'
-    });
-
-    const svg = shapesTreeEditor.print({debug: true});
-
-    document.getElementById('svgImage').innerHTML = svg;
-</script>
+<script src="code-sample.js"></script>
+<script src="index.js"></script>
 </body>
 </html>

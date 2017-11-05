@@ -11,36 +11,7 @@
     </div>
 
     <script src="../../../dist/js2flowchart.js"></script>
-    <script>
-        const code = `
-            const list = [1, 2, 3, 4];
-
-            function filterAndPrint(list) {
-                list = list.filter((i, b) => a);
-
-                list.forEach(i => console.log(i));
-
-                return false;
-            }
-
-            filterAndPrint(list);
-    `;
-
-    const {
-        createFlowTreeBuilder,
-        createFlowTreeModifier,
-        convertFlowTreeToSvg
-    } = window.js2flowchart;
-
-    const flowTreeBuilder = createFlowTreeBuilder();
-    const flowTree = flowTreeBuilder.build(code);
-    const flowTreeModifier = createFlowTreeModifier();
-
-    flowTreeModifier.destructNodeTree((node) => node.name.indexOf('.forEach') !== -1, 'and print list...');
-    flowTreeModifier.applyToFlowTree(flowTree);
-
-    document.getElementById('svgImage').innerHTML = convertFlowTreeToSvg(flowTree);
-
-    </script>
+    <script src="code-sample.js"></script>
+    <script src="index.js"></script>
 </body>
 </html>

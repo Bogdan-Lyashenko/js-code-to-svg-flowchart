@@ -11,40 +11,7 @@
 </div>
 
 <script src="../../../dist/js2flowchart.js"></script>
-<script>
-    const code = `
-        function print(list) {
-            const newList = list.map(i => {
-                return i + 1;
-            });
-
-            newList.forEach(i => {
-                console.debug('iteration start');
-                console.log(i);
-                console.debug('iteration end');
-            });
-        }
-    `;
-
-    const {
-        createFlowTreeBuilder,
-        createFlowTreeModifier,
-        convertFlowTreeToSvg,
-        MODIFIER_PRESETS
-    } = window.js2flowchart;
-
-    const flowTreeBuilder = createFlowTreeBuilder(),
-        flowTree = flowTreeBuilder.build(code);
-
-    const flowTreeModifier = createFlowTreeModifier();
-
-    flowTreeModifier.setModifier(MODIFIER_PRESETS.es5ArrayIterators);
-    flowTreeModifier.applyToFlowTree(flowTree);
-
-    const svg = convertFlowTreeToSvg(flowTree);
-
-    document.getElementById('svgImage').innerHTML = svg;
-
-</script>
+<script src="code-sample.js"></script>
+<script src="index.js"></script>
 </body>
 </html>

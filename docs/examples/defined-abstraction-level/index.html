@@ -12,42 +12,7 @@
     </div>
 
     <script src="../../../dist/js2flowchart.js"></script>
-    <script>
-        const code = `
-            import {format, trim} from 'formattier';
-            import {log} from 'logger';
-
-            const data = [];
-
-            export default print = (list) => {
-                list.forEach(i => {
-                    console.log(i);
-                });
-            }
-
-            export const formatString = (str) => formatter(str);
-            export const MAX_STR_LENGTH = 15;
-        `;
-
-        const {
-            ABSTRACTION_LEVELS,
-            createFlowTreeBuilder,
-            convertFlowTreeToSvg
-        } = window.js2flowchart;
-
-        const flowTreeBuilder = createFlowTreeBuilder();
-
-        //you can pass one level or multiple levels in [] as well
-        flowTreeBuilder.setAbstractionLevel([
-            ABSTRACTION_LEVELS.IMPORT,
-            ABSTRACTION_LEVELS.EXPORT
-        ]);
-
-        const flowTree = flowTreeBuilder.build(code),
-            svg = convertFlowTreeToSvg(flowTree);
-
-        document.getElementById('svgImage').innerHTML = svg;
-
-    </script>
+    <script src="code-sample.js"></script>
+    <script src="index.js"></script>
 </body>
 </html>
