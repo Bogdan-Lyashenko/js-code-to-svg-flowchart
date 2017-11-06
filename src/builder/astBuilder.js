@@ -18,16 +18,6 @@ export const parseCodeToAST = (code, config = {}) => {
         throw e;
     }
 
-    //TODO: remove
-    traverse(ast, {
-        enter(path) {
-            if (path.node.type === 'ObjectPattern') {
-                // debugger;
-            }
-            //console.log(path.node.type, ' ==== ', path.node.name);
-        }
-    });
-
     return ast;
 };
 
@@ -114,6 +104,10 @@ const getBasicEntryConfig = (item, path) => {
         ...nameOptions,
         type: item.type
     };
+
+    if (!config.name) {
+        config.name = '';
+    }
 
     if (item.type !== path.node.type) {
         config.subType = path.node.type;

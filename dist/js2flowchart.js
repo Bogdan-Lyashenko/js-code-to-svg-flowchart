@@ -18099,16 +18099,6 @@ var parseCodeToAST = exports.parseCodeToAST = function parseCodeToAST(code) {
         throw e;
     }
 
-    //TODO: remove
-    (0, _babelTraverse2.default)(ast, {
-        enter: function enter(path) {
-            if (path.node.type === 'ObjectPattern') {}
-            // debugger;
-
-            //console.log(path.node.type, ' ==== ', path.node.name);
-        }
-    });
-
     return ast;
 };
 
@@ -18204,6 +18194,10 @@ var getBasicEntryConfig = function getBasicEntryConfig(item, path) {
     var config = _extends({}, nameOptions, {
         type: item.type
     });
+
+    if (!config.name) {
+        config.name = '';
+    }
 
     if (item.type !== path.node.type) {
         config.subType = path.node.type;
