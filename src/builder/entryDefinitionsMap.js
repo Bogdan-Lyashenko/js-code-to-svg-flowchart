@@ -123,6 +123,8 @@ export const DefinitionsMap = {
             const statementParent = path.getStatementParent(),
                 parent = path.parent || {};
 
+            if (parent.type === TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION) return false;
+
             return (
                 statementParent.isVariableDeclaration() ||
                 [

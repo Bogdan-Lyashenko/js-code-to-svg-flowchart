@@ -11,7 +11,8 @@ import {
     DEFINED_MODIFIERS,
     MODIFIER_PRESETS,
     destructionModifier,
-    expressionCallbacksModifier
+    expressionCallbacksModifier,
+    arrowFunctionReturnModifier
 } from './modifiers/modifiersFactory';
 import { TOKEN_TYPES } from 'shared/constants';
 import { logError } from 'shared/utils/logger';
@@ -64,6 +65,7 @@ export default ({ astParser = {}, astVisitor = {} } = {}) => {
 
     const defaultModifier = createFlowTreeModifier();
     defaultModifier.setModifier(expressionCallbacksModifier());
+    defaultModifier.setModifier(arrowFunctionReturnModifier());
 
     return {
         setAbstractionLevel(level) {

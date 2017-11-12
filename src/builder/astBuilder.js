@@ -46,8 +46,7 @@ const visitSimpleEntry = (item, pointer) => (path, globalIgnore) => {
     if (item.ignore && item.ignore(path)) return;
 
     const entryConfig = {
-        ...getBasicEntryConfig(item, path),
-        key: getStatementParentKey(path)
+        ...getBasicEntryConfig(item, path)
     };
 
     if (globalIgnore && globalIgnore(entryConfig)) return;
@@ -66,7 +65,6 @@ const enterComplexEntry = (item, pointer) => (path, globalIgnore) => {
 const pushComplexEntry = (item, pointer, path, globalIgnore) => {
     const entryConfig = {
         ...getBasicEntryConfig(item, path),
-        key: getStatementParentKey(path),
         body: []
     };
 
@@ -102,7 +100,9 @@ const getBasicEntryConfig = (item, path) => {
 
     const config = {
         ...nameOptions,
-        type: item.type
+        type: item.type,
+        key: getStatementParentKey(path),
+        isBodyEntry: path.key === TOKEN_KEYS.BODY
     };
 
     if (!config.name) {

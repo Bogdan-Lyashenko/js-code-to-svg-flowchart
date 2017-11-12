@@ -169,15 +169,17 @@ export const variableDeclaratorConverter = path => {
         return `${parentKind} ${node.id.name} = `;
     }
 
+    const variableName = (node.id.type === TOKEN_TYPES.OBJECT_PATTERN) ? '{...}' : node.id.name;
+
     if (
         node.init &&
         [TOKEN_TYPES.CALL_EXPRESSION, TOKEN_TYPES.NEW_EXPRESSION].includes(node.init.type)
     ) {
-        return `${parentKind} ${node.id.name} = ` + callExpressionConverter({ node: node.init });
+        return `${parentKind} ${variableName} = ` + callExpressionConverter({ node: node.init });
     }
 
     if (node.init && node.init.type === TOKEN_TYPES.OBJECT_EXPRESSION) {
-        return `${parentKind} ${node.id.name} = ${objectExpressionConverter()}`;
+        return `${parentKind} ${variableName} = ${objectExpressionConverter()}`;
     }
 
     if (node.id && node.id.type === TOKEN_TYPES.OBJECT_PATTERN) {

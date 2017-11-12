@@ -1313,6 +1313,7 @@ var TOKEN_TYPES = exports.TOKEN_TYPES = {
 };
 
 var TOKEN_KEYS = exports.TOKEN_KEYS = {
+    BODY: 'body',
     PROGRAM: 'program',
     CONSEQUENT: 'consequent',
     ALTERNATE: 'alternate'
@@ -4300,6 +4301,8 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
     ignore: function ignore(path) {
         var statementParent = path.getStatementParent(),
             parent = path.parent || {};
+
+        if (parent.type === _constants.TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION) return false;
 
         return statementParent.isVariableDeclaration() || [_constants.TOKEN_TYPES.RETURN, _constants.TOKEN_TYPES.CALL_EXPRESSION, _constants.TOKEN_TYPES.NEW_EXPRESSION, _constants.TOKEN_TYPES.UNARY_EXPRESSION, _constants.TOKEN_TYPES.BINARY_EXPRESSION].includes(parent.type) || statementParent.isConditional() && parent.test && parent.test.type === _constants.TOKEN_TYPES.CALL_EXPRESSION || path.parent.type === _constants.TOKEN_TYPES.ASSIGNMENT_EXPRESSION //TODO: BUG, fix line: list = list.filter(i => i % 2)
         ;
@@ -7420,6 +7423,7 @@ exports.default = function () {
 
     var defaultModifier = createFlowTreeModifier();
     defaultModifier.setModifier((0, _modifiersFactory.expressionCallbacksModifier)());
+    defaultModifier.setModifier((0, _modifiersFactory.arrowFunctionReturnModifier)());
 
     return {
         setAbstractionLevel: function setAbstractionLevel(level) {
@@ -16677,12 +16681,14 @@ var variableDeclaratorConverter = exports.variableDeclaratorConverter = function
         return parentKind + ' ' + node.id.name + ' = ';
     }
 
+    var variableName = node.id.type === _constants.TOKEN_TYPES.OBJECT_PATTERN ? '{...}' : node.id.name;
+
     if (node.init && [_constants.TOKEN_TYPES.CALL_EXPRESSION, _constants.TOKEN_TYPES.NEW_EXPRESSION].includes(node.init.type)) {
-        return parentKind + ' ' + node.id.name + ' = ' + callExpressionConverter({ node: node.init });
+        return parentKind + ' ' + variableName + ' = ' + callExpressionConverter({ node: node.init });
     }
 
     if (node.init && node.init.type === _constants.TOKEN_TYPES.OBJECT_EXPRESSION) {
-        return parentKind + ' ' + node.id.name + ' = ' + objectExpressionConverter();
+        return parentKind + ' ' + variableName + ' = ' + objectExpressionConverter();
     }
 
     if (node.id && node.id.type === _constants.TOKEN_TYPES.OBJECT_PATTERN) {
@@ -18133,9 +18139,7 @@ var visitSimpleEntry = function visitSimpleEntry(item, pointer) {
     return function (path, globalIgnore) {
         if (item.ignore && item.ignore(path)) return;
 
-        var entryConfig = _extends({}, getBasicEntryConfig(item, path), {
-            key: getStatementParentKey(path)
-        });
+        var entryConfig = _extends({}, getBasicEntryConfig(item, path));
 
         if (globalIgnore && globalIgnore(entryConfig)) return;
 
@@ -18155,7 +18159,6 @@ var enterComplexEntry = function enterComplexEntry(item, pointer) {
 
 var pushComplexEntry = function pushComplexEntry(item, pointer, path, globalIgnore) {
     var entryConfig = _extends({}, getBasicEntryConfig(item, path), {
-        key: getStatementParentKey(path),
         body: []
     });
 
@@ -18193,7 +18196,9 @@ var getBasicEntryConfig = function getBasicEntryConfig(item, path) {
         nameOptions = typeof name === 'string' ? { name: name } : name;
 
     var config = _extends({}, nameOptions, {
-        type: item.type
+        type: item.type,
+        key: getStatementParentKey(path),
+        isBodyEntry: path.key === _constants.TOKEN_KEYS.BODY
     });
 
     if (!config.name) {
@@ -38010,7 +38015,7 @@ module.exports = exports['default'];
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.MODIFIER_PRESETS = exports.expressionCallbacksModifier = exports.destructionModifier = exports.DEFINED_MODIFIERS = undefined;
+exports.MODIFIER_PRESETS = exports.expressionCallbacksModifier = exports.arrowFunctionReturnModifier = exports.destructionModifier = exports.DEFINED_MODIFIERS = undefined;
 
 var _constants = __webpack_require__(4);
 
@@ -38080,6 +38085,20 @@ var destructionModifier = exports.destructionModifier = function destructionModi
             name: newNameFn,
             body: [],
             type: _constants.MODIFIED_TYPES.DESTRUCTED
+        }
+    };
+};
+
+var arrowFunctionReturnModifier = exports.arrowFunctionReturnModifier = function arrowFunctionReturnModifier() {
+    return {
+        test: function test(node) {
+            return node.isBodyEntry && node.parent && node.parent.subType === _constants.TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION;
+        },
+        updates: {
+            name: function name(node) {
+                return 'return ' + node.name;
+            },
+            type: _constants.TOKEN_TYPES.RETURN
         }
     };
 };

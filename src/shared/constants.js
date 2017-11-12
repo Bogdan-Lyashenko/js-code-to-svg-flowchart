@@ -58,6 +58,7 @@ export const TOKEN_TYPES = {
 };
 
 export const TOKEN_KEYS = {
+    BODY: 'body',
     PROGRAM: 'program',
     CONSEQUENT: 'consequent',
     ALTERNATE: 'alternate'

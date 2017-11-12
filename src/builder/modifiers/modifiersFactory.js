@@ -1,4 +1,4 @@
-import { TOKEN_TYPES, MODIFIED_TYPES } from 'shared/constants';
+import { TOKEN_TYPES, TOKEN_KEYS, MODIFIED_TYPES } from 'shared/constants';
 
 const extractNodeName = (node, field) => {
     const name = node.name.split(`.${field}(`)[0];
@@ -49,6 +49,15 @@ export const destructionModifier = (test, newNameFn) => ({
         name: newNameFn,
         body: [],
         type: MODIFIED_TYPES.DESTRUCTED
+    }
+});
+
+export const arrowFunctionReturnModifier = () => ({
+    test: node => node.isBodyEntry &&
+        node.parent && node.parent.subType === TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION,
+    updates: {
+        name: (node) => 'return ' + node.name,
+        type: TOKEN_TYPES.RETURN
     }
 });
 
