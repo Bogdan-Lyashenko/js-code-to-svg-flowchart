@@ -108,8 +108,11 @@ export const DefinitionsMap = {
         type: TOKEN_TYPES.ASSIGNMENT_EXPRESSION,
         body: true,
         getName: assignmentExpressionConverter,
-        ignore: path =>
-            path.getStatementParent().isVariableDeclaration() || isNodeContainsFunc(path.node.right)
+        ignore: path => {
+            const statementParent = path.getStatementParent();
+            return statementParent.isVariableDeclaration() || statementParent.isConditional() ||
+                isNodeContainsFunc(path.node.right);
+        }
     },
     [TOKEN_TYPES.CALL_EXPRESSION]: {
         type: TOKEN_TYPES.CALL_EXPRESSION,

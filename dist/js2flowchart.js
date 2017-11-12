@@ -4289,7 +4289,8 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
     body: true,
     getName: _core.assignmentExpressionConverter,
     ignore: function ignore(path) {
-        return path.getStatementParent().isVariableDeclaration() || (0, _core.isNodeContainsFunc)(path.node.right);
+        var statementParent = path.getStatementParent();
+        return statementParent.isVariableDeclaration() || statementParent.isConditional() || (0, _core.isNodeContainsFunc)(path.node.right);
     }
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.CALL_EXPRESSION, {
     type: _constants.TOKEN_TYPES.CALL_EXPRESSION,
