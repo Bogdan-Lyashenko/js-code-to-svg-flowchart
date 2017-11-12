@@ -37689,7 +37689,7 @@ var getExportDeclarations = function getExportDeclarations(declaration) {
 var classDeclarationConverter = exports.classDeclarationConverter = function classDeclarationConverter(_ref4) {
     var node = _ref4.node;
 
-    return 'class ' + (0, _babelGenerator2.default)(node.id).code + ' ' + (node.superClass ? ' extends ' + node.superClass.name : '');
+    return 'class ' + (0, _babelGenerator2.default)(node.id).code + ' ' + (node.superClass ? ' extends ' + (0, _babelGenerator2.default)(node.superClass).code : '');
 };
 
 var objectPatternConverter = exports.objectPatternConverter = function objectPatternConverter() {
@@ -37802,7 +37802,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = {
     sourceType: 'module',
-    plugins: ['objectRestSpread']
+    plugins: ['objectRestSpread', 'jsx']
 };
 module.exports = exports['default'];
 

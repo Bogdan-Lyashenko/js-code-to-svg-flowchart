@@ -558,5 +558,5 @@ Highly appreciated if you can join and help with any TODOs above. Thanks.
 MIT license 
 
 ### Version 
-First alpha shoot! Take it easy.
+First shoot! Take it easy (check version number above in NPM badge)
 

@@ -1,4 +1,4 @@
 export default {
     sourceType: 'module',
-    plugins: ['objectRestSpread']
+    plugins: ['objectRestSpread','jsx']
 };
