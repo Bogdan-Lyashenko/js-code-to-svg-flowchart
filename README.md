@@ -218,7 +218,7 @@ Check out more token parsing configs from [source code (entryDefinitionsMap.js)]
 
 #### Presentation generator
 
-When you learn other's code it's good to go trough it by different abstractions levels. 
+When you learn other's code it's good to go through it by different abstractions levels. 
 Take a look what module exports, which function and classes contains etc.
 There is a sub-module ```createPresentationGenerator``` to generate list of SVGs in order to different abstractions levels.
 
