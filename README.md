@@ -1,6 +1,6 @@
 > Why? While I've been working on [Under-the-hood-ReactJS](https://github.com/Bogdan-Lyashenko/Under-the-hood-ReactJS) I spent enormous amount of time on creating schemes. Each change in code or flowchart affects all entire scheme instantly, forcing you to move and align 'broken pieces'. Just repeated manual work...
 
-Imagine a library which takes any JS code and generate SVG flowchart from it, works on client and server. Allows you easily adjust styles scheme for your context or demonstrate your code logic from different abstractions levels. Highlighting, destructing whole blocks, custom modifiers for your needs etc.            
+Imagine a library which takes any JS code and generate SVG flowchart from it, works on client and server. Allows you easily adjust styles scheme for your context or demonstrate your code logic from different abstractions levels. Highlighting, destructing whole blocks, custom modifiers for your needs etc.
 
 # js2flowchart.js [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Generate%20beautiful%20flowcharts%20from%20JavaScript&url=https://github.com/Bogdan-Lyashenko/js-code-to-svg-flowchart&via=bliashenko&hashtags=javascript,flowchart,svg)
 [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php) [![npm version](https://badge.fury.io/js/js2flowchart.svg)](https://badge.fury.io/js/js2flowchart)
@@ -15,7 +15,7 @@ or try it right away at [codepen sample](https://codepen.io/Bogdan-Lyashenko/pen
 ## [Demo](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/live-editor/index.html)
 Check out live [**code editor**](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/live-editor/index.html), paste your code and **download SVG file** of flowchart!
 
-[<img src="/docs/live-editor/demo.gif" width="700">](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/live-editor/index.html) 
+[<img src="/docs/live-editor/demo.gif" width="700">](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/live-editor/index.html)
 
 ### What does js2flowchart do?
 js2flowchart takes your JS code and returns SVG flowchart, works on client/server, support ES6.
@@ -29,20 +29,20 @@ Main features:
 - **custom flow tree modifiers support** create your own one
 - **flow tree ignore filter** to omit some code nodes completely i.e. log lines
 - **focus node or entire code logic branch** to highlight important section on scheme
-- **blur node or entire code logic branch** to hide less-important stuff 
+- **blur node or entire code logic branch** to hide less-important stuff
 - **defined styles themes supports** choose one you like
 - **custom themes support** create your own one which fits your context colors better
-- **custom colors and styles support** provides handy API to change specific styles without boilerplate    
+- **custom colors and styles support** provides handy API to change specific styles without boilerplate
 
 Use cases:
 - **explain/document** your code by flowcharts
-- **learn** other's code by visual understanding 
+- **learn** other's code by visual understanding
 - **create** flowcharts for any process simply described by valid JS syntax
- 
+
 ### API and examples
 You can find sources for examples explained below in [docs directory](/docs).
 
-**In examples only** js2flowchart library included explicitly, by ```<script>``` tag and accessed by global variable from ```window``` **to make it simpler to run for you without boilerplate**. But feel free to use it through ES6 modules as well, when you have Babel&Webpack local server configured.    
+**In examples only** js2flowchart library included explicitly, by ```<script>``` tag and accessed by global variable from ```window``` **to make it simpler to run for you without boilerplate**. But feel free to use it through ES6 modules as well, when you have Babel&Webpack local server configured.
 ```javascript
 /**
 * Access APIs when js2flowchart injected into HTML page
@@ -87,7 +87,7 @@ const code = `function indexSearch(list, element) {
     return -1;
 }`;
 ```
-let's convert it to SVG(the simplest way): 
+let's convert it to SVG(the simplest way):
 ```javascript
 const svg = js2flowchart.convertCodeToSvg(code);
 ```
@@ -95,7 +95,7 @@ Result:
 
 ![](/docs/examples/default/flowchart-image.png)
 
-If you need to modify default behavior you can split ```js2flowchart.convertCodeToSvg``` into two building block: 
+If you need to modify default behavior you can split ```js2flowchart.convertCodeToSvg``` into two building block:
 - flow tree building
 - shapes printing
 
@@ -118,14 +118,14 @@ const flowTree = flowTreeBuilder.build(code),
     shapesTree = svgRender.buildShapesTree(flowTree);
 
 const svg = shapesTree.print();//XML string
-```  
+```
 
-See the example running [here](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/default/index.html) or check out complete source code [of it](/docs/examples/default/index.html).  
+See the example running [here](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/default/index.html) or check out complete source code [of it](/docs/examples/default/index.html).
 
 #### Defined abstraction level
 
 What is called 'abstraction level'? Let's say you would like to omit some details, like, e.g. for given module you are interested only in what the module ```exports```, or, what classes it contains.
-There is a list of defined levels you can do that with. Accessible by ```ABSTRACTION_LEVELS``` interface. 
+There is a list of defined levels you can do that with. Accessible by ```ABSTRACTION_LEVELS``` interface.
 - ```FUNCTION```
 - ```FUNCTION_DEPENDENCIES```
 - ```CLASS```
@@ -151,7 +151,7 @@ const code = `
 `;
 ```
 we need to instantiate ```flowTreeBuilder``` and assign abstraction level on it.
- 
+
 ```javascript
     const {
         ABSTRACTION_LEVELS,  createFlowTreeBuilder, convertFlowTreeToSvg
@@ -168,7 +168,7 @@ we need to instantiate ```flowTreeBuilder``` and assign abstraction level on it.
     const flowTree = flowTreeBuilder.build(code);
     const svg = convertFlowTreeToSvg(flowTree);
 ```
- 
+
 Result:
 
 ![](/docs/examples/defined-abstraction-level/flowchart-image.png)
@@ -178,7 +178,7 @@ See the example running [here](https://bogdan-lyashenko.github.io/js-code-to-svg
 **Custom abstraction level (label:advanced)**
 
 What if you want your 'own' level? To the same API endpoint ```flowTreeBuilder.setAbstractionLevel``` you can provide configuration object.
-For example, have a look at the code of [function dependencies](/src/builder/abstraction-levels/functionDependencies.js) abstraction level.  
+For example, have a look at the code of [function dependencies](/src/builder/abstraction-levels/functionDependencies.js) abstraction level.
 Check out the export of it
 ```javascript
 export const getFunctionDependenciesLevel = () => ({
@@ -204,7 +204,7 @@ flowTreeBuilder.setAbstractionLevel({
 
 ````
 And what is behind of ```getCustomAssignmentExpression``` for example?
-There is a token parsing config. 
+There is a token parsing config.
 ```javascript
 {
     type: 'TokenType', /*see types in TOKEN_TYPES map*/
@@ -218,7 +218,7 @@ Check out more token parsing configs from [source code (entryDefinitionsMap.js)]
 
 #### Presentation generator
 
-When you learn other's code it's good to go through it by different abstractions levels. 
+When you learn other's code it's good to go through it by different abstractions levels.
 Take a look what module exports, which function and classes contains etc.
 There is a sub-module ```createPresentationGenerator``` to generate list of SVGs in order to different abstractions levels.
 
@@ -226,37 +226,37 @@ Let's take the next code for example:
 ```javascript
 const code = `
     import {format} from './util/string';
-    
+
     function formatName(name) {
         if (!name) return 'no-name';
-    
+
         return format(name);
     }
-    
+
     class Animal {
         constructor(breed) {
             this.breed = breed;
         }
-    
+
         getBreed() {
             return this.breed;
         }
-    
+
         setName(name) {
             if (this.nameExist()) {
                 return;
             }
-    
+
             this.name = name;
         }
     }
-    
+
     class Man extends Animal {
        sayName() {
             console.log('name', this.name);
        }
     }
-    
+
     export default Man;
 `;
 ```
@@ -265,7 +265,7 @@ pass it to
 const { createPresentationGenerator } = js2flowchart;
 
 const presentationGenerator = createPresentationGenerator(code);
-const slides = presentationGenerator.buildSlides();//array of SVGs 
+const slides = presentationGenerator.buildSlides();//array of SVGs
 ```
 
 Result (one of slides):
@@ -274,14 +274,14 @@ Result (one of slides):
 
 You can switch slides by prev-next buttons.
 
-[<img src="/docs/examples/one-module-presentation/slides.gif" width="500">](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/one-module-presentation/index.html) 
+[<img src="/docs/examples/one-module-presentation/slides.gif" width="500">](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/one-module-presentation/index.html)
 
 See the example running [here](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/one-module-presentation/index.html) or check out complete source code [of it](/docs/examples/one-module-presentation/index.html).
 
 
 #### Defined colors theme
 
-You can apply different themes to your ```svgRender``` instance. Simply calling e.g. ```svgRender.applyLightTheme()``` to apply light scheme. 
+You can apply different themes to your ```svgRender``` instance. Simply calling e.g. ```svgRender.applyLightTheme()``` to apply light scheme.
 
 There are next predefined color schemes:
 - DEFAULT: ```applyDefaultTheme```
@@ -311,7 +311,7 @@ const code = `
 `;
 ```
 and apply scheme to render.
- 
+
 ```javascript
 const {createSVGRender, convertCodeToFlowTree} = js2flowchart;
 
@@ -323,7 +323,7 @@ svgRender.applyLightTheme();
 
 const svg = svgRender.buildShapesTree(flowTree).print();
 ```
- 
+
 Result:
 
 ![](/docs/examples/defined-color-theme/flowchart-image.png)
@@ -355,11 +355,11 @@ svgRender.applyColorBasedTheme({
    callFillColor: '#dcedc8',
    debugModeFillColor: '#666'
 });
-``` 
+```
 
 #### Custom styles
 
-What if you need different styles, not only colors? Here it's ```svgRender.applyTheme({})```. Yuo can apply styles above of current theme, overriding only that behaviour you need.
+What if you need different styles, not only colors? Here it's ```svgRender.applyTheme({})```. You can apply styles above of current theme, overriding only that behaviour you need.
 Let's take an example with Return statement.
 ```javascript
 svgRender.applyTheme({
@@ -368,9 +368,9 @@ svgRender.applyTheme({
         roundBorder: 10
     }
 });
-``` 
+```
 
-Please check definition of [```DefaultBaseTheme```](/src/render/svg/appearance/themes/DefaultBaseTheme.js) to see all possible shapes names and properties. 
+Please check definition of [```DefaultBaseTheme```](/src/render/svg/appearance/themes/DefaultBaseTheme.js) to see all possible shapes names and properties.
 
 
 #### Shapes tree editor
@@ -409,8 +409,8 @@ const doStuff = (stuff) => {
 `;
 ```
 
-what we want here is 'blur' that dev-branch condition, because it interferes code readability. 
- 
+what we want here is 'blur' that dev-branch condition, because it interferes code readability.
+
 ```javascript
 const {
     convertCodeToFlowTree,
@@ -430,7 +430,7 @@ shapesTreeEditor.blurShapeBranch(
 
 const svg = shapesTreeEditor.print();
 ```
- 
+
 Result:
 
 ![](/docs/examples/blur-shape-branch/flowchart-image.png)
@@ -440,7 +440,7 @@ See the example running [here](https://bogdan-lyashenko.github.io/js-code-to-svg
 
 #### Flow tree modifier
 
-There is sub-module for modifying flow tree called 'FlowTreeModifier' which allows you to apply modifiers defined separately to your existing flow tree. 
+There is sub-module for modifying flow tree called 'FlowTreeModifier' which allows you to apply modifiers defined separately to your existing flow tree.
 Let's take simple use-case: you want to change 'names'(titles) on tree-nodes, here it is, just define modifier for that. But, actually, there are some behaviours where we already know we need to modify flow tree.
 
 Let's have a look at ES5 Array iterators, like ```forEach```, ```map``` and so on. We all know they behave like a loop, right? Let's treat them as a 'loop' then.  
@@ -460,8 +460,8 @@ function print(list) {
 }
 `;
 ```
- 
- 
+
+
 ```javascript
 const {
     createFlowTreeBuilder,
@@ -480,7 +480,7 @@ flowTreeModifier.applyToFlowTree(flowTree);
 
 const svg = convertFlowTreeToSvg(flowTree);
 ```
- 
+
 Result:
 
 As you can see, both iterators handled as a loop. And ```forEach``` omit function-callback as well.
@@ -494,15 +494,15 @@ There is one more defined modifier for node destruction. It takes a block you sp
 ```javascript
 flowTreeModifier.destructNodeTree((node) => node.name.indexOf('.forEach') !== -1, 'and print list...');
 ```
-What if you want **custom modifier**? 
+What if you want **custom modifier**?
 ```javascript
 flowTreeModifier.registerNewModifier((node)=> node.name.includes('hello'), {
     name: 'world'
 });
-``` 
+```
 
 #### Debug rendering
-What if you want to select a shape for applying special styles and want some unique id selector? Just pass ```debug``` flag to ```print```; 
+What if you want to select a shape for applying special styles and want some unique id selector? Just pass ```debug``` flag to ```print```;
 
 ```javascript
     const {
@@ -548,15 +548,15 @@ Main stages:
 - TypeScript support
 - Multi files support
 - Webstorm plugin
-- Chrome extension for dev-tools 
+- Chrome extension for dev-tools
 
 ### Contributing
-Feel free to file an issue if it doesn't work for your code sample (please add 'breaking' lines of code if it's possible to identify) or for any other things you think can be improved. 
-Highly appreciated if you can join and help with any TODOs above. Thanks. 
- 
-### License 
-MIT license 
+Feel free to file an issue if it doesn't work for your code sample (please add 'breaking' lines of code if it's possible to identify) or for any other things you think can be improved.
+Highly appreciated if you can join and help with any TODOs above. Thanks.
 
-### Version 
+### License
+MIT license
+
+### Version
 First shoot! Take it easy (check version number above in NPM badge)
 
