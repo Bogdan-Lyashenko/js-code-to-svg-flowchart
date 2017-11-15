@@ -29,7 +29,8 @@ import {
     exportNamedDeclarationConverter,
     exportDefaultDeclarationConverter,
     classDeclarationConverter,
-    objectPatternConverter
+    objectPatternConverter,
+    arrayPatternConverter
 } from './converters/Harmony';
 
 const singleTypeFilter = path => {
@@ -293,6 +294,19 @@ export const DefinitionsMap = {
     [TOKEN_TYPES.OBJECT_PATTERN]: {
         type: TOKEN_TYPES.OBJECT_PATTERN,
         getName: objectPatternConverter,
+        ignore: path => {
+            return (
+                path.listKey === 'params' ||
+                [TOKEN_TYPES.VARIABLE_DECLARATOR, TOKEN_TYPES.ASSIGNMENT_PATTERN].includes(
+                    path.parent.type
+                )
+            );
+        },
+        body: true
+    },
+    [TOKEN_TYPES.ARRAY_PATTERN]: {
+        type: TOKEN_TYPES.ARRAY_PATTERN,
+        getName: arrayPatternConverter,
         ignore: path => {
             return (
                 path.listKey === 'params' ||

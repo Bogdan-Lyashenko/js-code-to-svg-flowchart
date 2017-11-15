@@ -169,7 +169,14 @@ export const variableDeclaratorConverter = path => {
         return `${parentKind} ${node.id.name} = `;
     }
 
-    const variableName = (node.id.type === TOKEN_TYPES.OBJECT_PATTERN) ? '{...}' : node.id.name;
+    let variableName = '';
+    if (node.id.type === TOKEN_TYPES.OBJECT_PATTERN) {
+        variableName = '{...}';
+    } else if (node.id.type === TOKEN_TYPES.ARRAY_PATTERN) {
+        variableName = '[...]';
+    } else {
+        variableName = node.id.name;
+    }
 
     if (
         node.init &&
@@ -184,6 +191,10 @@ export const variableDeclaratorConverter = path => {
 
     if (node.id && node.id.type === TOKEN_TYPES.OBJECT_PATTERN) {
         return `${parentKind} {...} = ${node.init.name}`;
+    }
+
+    if (node.id && node.id.type === TOKEN_TYPES.ARRAY_PATTERN) {
+        return `${parentKind} [...] = ${node.init.name}`;
     }
 
     return parentKind + ' ' + generate(node).code;
@@ -292,19 +303,8 @@ export const isFunctionType = type => {
     ].includes(type);
 };
 
-//TODO: node.properties, case when function is property.value of object
-/* c = {
-    a: function (b) {
-        list.push(b.id);
-    }
-};*/
 export const isNodeContainsFunc = node => {
     const functions = [TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION, TOKEN_TYPES.FUNCTION_EXPRESSION];
 
     return node && functions.indexOf(node.type) !== -1;
 };
-//TODO: render arrow function/anonymous function on the same Y position shifted to the right.
-//const func = (c,d)=> {c++; d++;}
-//|func| |(c,d)=>|
-//       |c++|
-//       |d++|

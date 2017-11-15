@@ -51,3 +51,5 @@ export const classDeclarationConverter = ({ node }) => {
 };
 
 export const objectPatternConverter = () => '{...}';
+
+export const arrayPatternConverter = () => '[...]';

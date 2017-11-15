@@ -1309,6 +1309,7 @@ var TOKEN_TYPES = exports.TOKEN_TYPES = {
     SPREAD_PROPERTY: 'SpreadProperty',
     REST_PROPERTY: 'RestProperty',
     OBJECT_PATTERN: 'ObjectPattern',
+    ARRAY_PATTERN: 'ArrayPattern',
     ASSIGNMENT_PATTERN: 'AssignmentPattern'
 };
 
@@ -4428,6 +4429,13 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.OBJECT_PATTERN, {
     type: _constants.TOKEN_TYPES.OBJECT_PATTERN,
     getName: _Harmony.objectPatternConverter,
+    ignore: function ignore(path) {
+        return path.listKey === 'params' || [_constants.TOKEN_TYPES.VARIABLE_DECLARATOR, _constants.TOKEN_TYPES.ASSIGNMENT_PATTERN].includes(path.parent.type);
+    },
+    body: true
+}), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.ARRAY_PATTERN, {
+    type: _constants.TOKEN_TYPES.ARRAY_PATTERN,
+    getName: _Harmony.arrayPatternConverter,
     ignore: function ignore(path) {
         return path.listKey === 'params' || [_constants.TOKEN_TYPES.VARIABLE_DECLARATOR, _constants.TOKEN_TYPES.ASSIGNMENT_PATTERN].includes(path.parent.type);
     },
@@ -16681,7 +16689,14 @@ var variableDeclaratorConverter = exports.variableDeclaratorConverter = function
         return parentKind + ' ' + node.id.name + ' = ';
     }
 
-    var variableName = node.id.type === _constants.TOKEN_TYPES.OBJECT_PATTERN ? '{...}' : node.id.name;
+    var variableName = '';
+    if (node.id.type === _constants.TOKEN_TYPES.OBJECT_PATTERN) {
+        variableName = '{...}';
+    } else if (node.id.type === _constants.TOKEN_TYPES.ARRAY_PATTERN) {
+        variableName = '[...]';
+    } else {
+        variableName = node.id.name;
+    }
 
     if (node.init && [_constants.TOKEN_TYPES.CALL_EXPRESSION, _constants.TOKEN_TYPES.NEW_EXPRESSION].includes(node.init.type)) {
         return parentKind + ' ' + variableName + ' = ' + callExpressionConverter({ node: node.init });
@@ -16693,6 +16708,10 @@ var variableDeclaratorConverter = exports.variableDeclaratorConverter = function
 
     if (node.id && node.id.type === _constants.TOKEN_TYPES.OBJECT_PATTERN) {
         return parentKind + ' {...} = ' + node.init.name;
+    }
+
+    if (node.id && node.id.type === _constants.TOKEN_TYPES.ARRAY_PATTERN) {
+        return parentKind + ' [...] = ' + node.init.name;
     }
 
     return parentKind + ' ' + (0, _babelGenerator2.default)(node).code;
@@ -16789,22 +16808,11 @@ var isFunctionType = exports.isFunctionType = function isFunctionType(type) {
     return [_constants.TOKEN_TYPES.FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION, _constants.TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION_DECLARATION].includes(type);
 };
 
-//TODO: node.properties, case when function is property.value of object
-/* c = {
-    a: function (b) {
-        list.push(b.id);
-    }
-};*/
 var isNodeContainsFunc = exports.isNodeContainsFunc = function isNodeContainsFunc(node) {
     var functions = [_constants.TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION, _constants.TOKEN_TYPES.FUNCTION_EXPRESSION];
 
     return node && functions.indexOf(node.type) !== -1;
 };
-//TODO: render arrow function/anonymous function on the same Y position shifted to the right.
-//const func = (c,d)=> {c++; d++;}
-//|func| |(c,d)=>|
-//       |c++|
-//       |d++|
 
 /***/ }),
 /* 167 */
@@ -37627,7 +37635,7 @@ function JSXEmptyExpression() {}
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.objectPatternConverter = exports.classDeclarationConverter = exports.exportDefaultDeclarationConverter = exports.exportNamedDeclarationConverter = exports.importDeclarationConverter = undefined;
+exports.arrayPatternConverter = exports.objectPatternConverter = exports.classDeclarationConverter = exports.exportDefaultDeclarationConverter = exports.exportNamedDeclarationConverter = exports.importDeclarationConverter = undefined;
 
 var _babelGenerator = __webpack_require__(167);
 
@@ -37694,6 +37702,10 @@ var classDeclarationConverter = exports.classDeclarationConverter = function cla
 
 var objectPatternConverter = exports.objectPatternConverter = function objectPatternConverter() {
     return '{...}';
+};
+
+var arrayPatternConverter = exports.arrayPatternConverter = function arrayPatternConverter() {
+    return '[...]';
 };
 
 /***/ }),

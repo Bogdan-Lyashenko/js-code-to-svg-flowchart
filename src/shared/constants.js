@@ -54,6 +54,7 @@ export const TOKEN_TYPES = {
     SPREAD_PROPERTY: 'SpreadProperty',
     REST_PROPERTY: 'RestProperty',
     OBJECT_PATTERN: 'ObjectPattern',
+    ARRAY_PATTERN: 'ArrayPattern',
     ASSIGNMENT_PATTERN: 'AssignmentPattern'
 };
 
