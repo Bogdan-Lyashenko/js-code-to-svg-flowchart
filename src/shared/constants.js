@@ -62,7 +62,8 @@ export const TOKEN_KEYS = {
     BODY: 'body',
     PROGRAM: 'program',
     CONSEQUENT: 'consequent',
-    ALTERNATE: 'alternate'
+    ALTERNATE: 'alternate',
+    TEST: 'test'
 };
 
 export const ARROW_TYPE = {

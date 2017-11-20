@@ -111,7 +111,10 @@ export const DefinitionsMap = {
         getName: assignmentExpressionConverter,
         ignore: path => {
             const statementParent = path.getStatementParent();
-            return statementParent.isVariableDeclaration() || statementParent.isConditional() ||
+
+            return statementParent.isVariableDeclaration() ||
+                path.parent.type === TOKEN_TYPES.LOGICAL_EXPRESSION ||
+                (statementParent.isConditional() && path.key === TOKEN_KEYS.TEST) ||
                 isNodeContainsFunc(path.node.right);
         }
     },

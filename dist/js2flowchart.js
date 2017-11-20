@@ -1317,7 +1317,8 @@ var TOKEN_KEYS = exports.TOKEN_KEYS = {
     BODY: 'body',
     PROGRAM: 'program',
     CONSEQUENT: 'consequent',
-    ALTERNATE: 'alternate'
+    ALTERNATE: 'alternate',
+    TEST: 'test'
 };
 
 var ARROW_TYPE = exports.ARROW_TYPE = {
@@ -4292,7 +4293,8 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
     getName: _core.assignmentExpressionConverter,
     ignore: function ignore(path) {
         var statementParent = path.getStatementParent();
-        return statementParent.isVariableDeclaration() || statementParent.isConditional() || (0, _core.isNodeContainsFunc)(path.node.right);
+
+        return statementParent.isVariableDeclaration() || path.parent.type === _constants.TOKEN_TYPES.LOGICAL_EXPRESSION || statementParent.isConditional() && path.key === _constants.TOKEN_KEYS.TEST || (0, _core.isNodeContainsFunc)(path.node.right);
     }
 }), _defineProperty(_DefinitionsMap, _constants.TOKEN_TYPES.CALL_EXPRESSION, {
     type: _constants.TOKEN_TYPES.CALL_EXPRESSION,
