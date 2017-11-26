@@ -1,6 +1,6 @@
 {
   "name": "js2flowchart",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "author": "Bohdan Liashenko",
   "license": "MIT",
   "repository": {
@@ -43,6 +43,7 @@
     "global": "^4.3.2",
     "npm-name-cli": "^1.2.0",
     "remove": "^0.1.5",
+    "string-width": "^2.1.1",
     "xml-escape": "^1.1.0"
   }
 }

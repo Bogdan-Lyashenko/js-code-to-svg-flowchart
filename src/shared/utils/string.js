@@ -1,3 +1,5 @@
+import stringWidth from 'string-width';
+
 export const generateId = () => {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
         const r = (Math.random() * 16) | 0,
@@ -56,5 +58,6 @@ export const splitNameString = (str, maxLineLength, nameSplitterTokensIterator) 
 
 export const getMaxStringLengthFromList = list =>
     list.reduce((max, current) => {
-        return current.length >= max ? current.length : max;
+        const currentLength = stringWidth(current);
+        return  currentLength >= max ? currentLength : max;
     }, 0);
