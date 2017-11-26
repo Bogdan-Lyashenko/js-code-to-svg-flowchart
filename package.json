@@ -1,6 +1,6 @@
 {
   "name": "js2flowchart",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "author": "Bohdan Liashenko",
   "license": "MIT",
   "repository": {
@@ -12,6 +12,9 @@
     "build": "webpack --env build",
     "dev": "webpack --progress --colors --watch --env dev",
     "pretty": "prettier  --write \"./src/**/*.js\""
+  },
+  "bin": {
+    "js2flowchart": "./cli/index.cli.js"
   },
   "devDependencies": {
     "babel-cli": "6.24.1",
@@ -39,6 +42,7 @@
     "babel-traverse": "^6.25.0",
     "babel-types": "^6.25.0",
     "babylon": "^6.17.4",
+    "commander": "^2.12.1",
     "deepmerge": "^1.5.1",
     "global": "^4.3.2",
     "npm-name-cli": "^1.2.0",

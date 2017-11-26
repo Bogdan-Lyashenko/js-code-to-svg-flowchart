@@ -4444,7 +4444,9 @@ var DefinitionsMap = exports.DefinitionsMap = (_DefinitionsMap = {}, _defineProp
     body: true
 }), _DefinitionsMap);
 
-var DefinitionsList = exports.DefinitionsList = Object.values(DefinitionsMap);
+var DefinitionsList = exports.DefinitionsList = Object.keys(DefinitionsMap).map(function (key) {
+    return DefinitionsMap[key];
+});
 
 /***/ }),
 /* 69 */

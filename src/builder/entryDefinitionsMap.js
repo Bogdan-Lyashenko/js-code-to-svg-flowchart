@@ -322,4 +322,4 @@ export const DefinitionsMap = {
     }
 };
 
-export const DefinitionsList = Object.values(DefinitionsMap);
+export const DefinitionsList = Object.keys(DefinitionsMap).map(key => DefinitionsMap[key]);
