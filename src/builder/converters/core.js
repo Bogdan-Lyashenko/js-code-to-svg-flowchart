@@ -163,9 +163,9 @@ export const getVariableDeclarations = variables =>
 
 export const variableDeclaratorConverter = path => {
     const node = path.node,
-        parentKind = path.parent.kind;
+        parentKind = (path.parent && path.parent.kind) || '';
 
-    if (isNodeContainsFunc(node.init) || node.init.type === TOKEN_TYPES.CONDITIONAL_EXPRESSION) {
+    if (node.init && (isNodeContainsFunc(node.init) || node.init.type === TOKEN_TYPES.CONDITIONAL_EXPRESSION)) {
         return `${parentKind} ${node.id.name} = `;
     }
 

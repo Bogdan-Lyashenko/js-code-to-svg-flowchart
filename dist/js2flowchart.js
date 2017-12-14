@@ -16700,9 +16700,9 @@ var getVariableDeclarations = exports.getVariableDeclarations = function getVari
 
 var variableDeclaratorConverter = exports.variableDeclaratorConverter = function variableDeclaratorConverter(path) {
     var node = path.node,
-        parentKind = path.parent.kind;
+        parentKind = path.parent && path.parent.kind || '';
 
-    if (isNodeContainsFunc(node.init) || node.init.type === _constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION) {
+    if (node.init && (isNodeContainsFunc(node.init) || node.init.type === _constants.TOKEN_TYPES.CONDITIONAL_EXPRESSION)) {
         return parentKind + ' ' + node.id.name + ' = ';
     }
 
