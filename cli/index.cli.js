@@ -5,8 +5,6 @@ const program = require('commander');
 const fs = require('fs'),
     path = require('path');
 
-const distDir = './js2flowchart';
-
 
 const readJsFile = function(file, onComplete) {
     fs.readFile(path.relative(process.cwd(), file), 'utf8', function (err, code) {
@@ -19,12 +17,8 @@ const readJsFile = function(file, onComplete) {
 };
 
 const createSvgFile = function(file, code) {
-    if (!fs.existsSync(distDir)){
-        fs.mkdirSync(distDir);
-    }
-
     const svg = js2flowchart.convertCodeToSvg(code),
-        filePath = `${distDir}/${file}.svg`;
+        filePath = `${file}.svg`;
 
     fs.writeFile(filePath, svg, function(err) {
         if(err) {
