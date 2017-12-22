@@ -22,14 +22,16 @@ const setupRectangleBehavior = state => ({
                 <g>
                    ${getRoundedRectangle(x, y, w, h, theme)}
                    ${this.printName()}
-                   ${node.chain
-                       ? getCircle(
-                             x + dotTheme.offset,
-                             y + h - dotTheme.offset,
-                             dotTheme.radius,
-                             dotTheme
-                         )
-                       : ''}
+                   ${
+                       node.chain
+                           ? getCircle(
+                                 x + dotTheme.offset,
+                                 y + h - dotTheme.offset,
+                                 dotTheme.radius,
+                                 dotTheme
+                             )
+                           : ''
+                   }
                    ${this.printDebugInfo(config)}
                 </g>`;
     }

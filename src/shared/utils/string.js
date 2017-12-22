@@ -59,5 +59,5 @@ export const splitNameString = (str, maxLineLength, nameSplitterTokensIterator) 
 export const getMaxStringLengthFromList = list =>
     list.reduce((max, current) => {
         const currentLength = stringWidth(current);
-        return  currentLength >= max ? currentLength : max;
+        return currentLength >= max ? currentLength : max;
     }, 0);

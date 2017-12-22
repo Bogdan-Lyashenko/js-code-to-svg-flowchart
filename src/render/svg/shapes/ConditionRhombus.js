@@ -79,23 +79,25 @@ export const setupConditionRhombusBehavior = state => ({
             alternative = '-';
 
         return `${getText(
-                x + R / 2 - text.length * theme.symbolWidth / 2,
-                y + R / 2 + theme.symbolHeight / 2,
-                theme,
-                text
-            )} ${getText(
-                x + R / 2 + theme.symbolWidth,
-                y + R + theme.symbolWidth / 4,
-                theme,
-                positive
-            )} ${this.checkIfChildExist(TOKEN_KEYS.ALTERNATE)
+            x + R / 2 - text.length * theme.symbolWidth / 2,
+            y + R / 2 + theme.symbolHeight / 2,
+            theme,
+            text
+        )} ${getText(
+            x + R / 2 + theme.symbolWidth,
+            y + R + theme.symbolWidth / 4,
+            theme,
+            positive
+        )} ${
+            this.checkIfChildExist(TOKEN_KEYS.ALTERNATE)
                 ? getText(
                       x + w + theme.symbolWidth / 2,
                       y + R / 2 - theme.symbolWidth / 4,
                       theme,
                       alternative
                   )
-                : ''}`;
+                : ''
+        }`;
     },
 
     print(config) {

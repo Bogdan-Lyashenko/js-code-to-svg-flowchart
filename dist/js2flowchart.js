@@ -38180,9 +38180,9 @@ var _Blurred = __webpack_require__(453);
 
 var _Blurred2 = _interopRequireDefault(_Blurred);
 
-var _LIGHT = __webpack_require__(454);
+var _Light = __webpack_require__(454);
 
-var _LIGHT2 = _interopRequireDefault(_LIGHT);
+var _Light2 = _interopRequireDefault(_Light);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -38195,7 +38195,7 @@ var ThemeNamesMap = {
     LIGHT: 'LIGHT'
 };
 
-var Themes = exports.Themes = (_Themes = {}, _defineProperty(_Themes, ThemeNamesMap.DEFAULT, _DefaultBaseTheme2.default), _defineProperty(_Themes, ThemeNamesMap.BLACK_AND_WHITE, _BlackAndWhite2.default), _defineProperty(_Themes, ThemeNamesMap.BLURRED, _Blurred2.default), _defineProperty(_Themes, ThemeNamesMap.LIGHT, _LIGHT2.default), _Themes);
+var Themes = exports.Themes = (_Themes = {}, _defineProperty(_Themes, ThemeNamesMap.DEFAULT, _DefaultBaseTheme2.default), _defineProperty(_Themes, ThemeNamesMap.BLACK_AND_WHITE, _BlackAndWhite2.default), _defineProperty(_Themes, ThemeNamesMap.BLURRED, _Blurred2.default), _defineProperty(_Themes, ThemeNamesMap.LIGHT, _Light2.default), _Themes);
 
 var getTheme = exports.getTheme = function getTheme(themeName) {
     if (!Themes[themeName] === themeName === ThemeNamesMap.DEFAULT) {

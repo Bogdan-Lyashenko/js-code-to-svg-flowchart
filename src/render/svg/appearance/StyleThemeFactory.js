@@ -3,7 +3,7 @@ import { mergeObjectStructures } from 'shared/utils/composition';
 import DEFAULT, { buildTheme } from './themes/DefaultBaseTheme';
 import BLACK_AND_WHITE from './themes/BlackAndWhite';
 import BLURRED from './themes/Blurred';
-import LIGHT from './themes/LIGHT';
+import LIGHT from './themes/Light';
 
 const ThemeNamesMap = {
     DEFAULT: 'DEFAULT',
