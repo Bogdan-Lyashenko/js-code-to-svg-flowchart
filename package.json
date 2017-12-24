@@ -11,7 +11,7 @@
   "scripts": {
     "build": "webpack --env build",
     "dev": "webpack --progress --colors --watch --env dev",
-    "pretty": "prettier  --write \"./src/**/*.js\""
+    "pretty": "prettier  --write \"./src/**/*.js\" \"./cli/*.js\""
   },
   "bin": {
     "js2flowchart": "./cli/index.cli.js"
