@@ -40,12 +40,31 @@ Use cases:
 - **create** flowcharts for any process simply described by valid JS syntax
 
 ### CLI
-You can simply generate SVG files from your local JS files using CLI tool. Install js2flowchart globally
+You can simply generate SVG files from your local JS files using CLI tool.
+Install js2flowchart globally by running:
 > yarn global add js2flowchart
 
-open terminal and navigate to needed directory with JS file you want to visualize (e.g. './my-project/main.js'). Run command
-```javascript
+Or in a project by running:
+> yarn add js2flowchart --dev
+
+Open terminal and navigate to needed directory with JS file you want to visualize (e.g. './my-project/main.js').
+Run the command (if you installed it globally)
+```cli
 js2flowchart main.js
+```
+Or add this to your _package.json_ file:
+```json
+{
+  ...
+  "scripts": {
+    ...
+    "js2flowchart": "js2flowchart"
+  }
+}
+```
+And run (with either npm or yarn):
+```cli
+yarn run js2flowchart main.js
 ```
 
 After script is executed observe log ```SVG file was created: ./js2flowchart/main.js.svg```. SVG file will be placed in new directory '/js2flowchart' near your JS file.
