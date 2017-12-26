@@ -112,10 +112,12 @@ export const DefinitionsMap = {
         ignore: path => {
             const statementParent = path.getStatementParent();
 
-            return statementParent.isVariableDeclaration() ||
+            return (
+                statementParent.isVariableDeclaration() ||
                 path.parent.type === TOKEN_TYPES.LOGICAL_EXPRESSION ||
                 (statementParent.isConditional() && path.key === TOKEN_KEYS.TEST) ||
-                isNodeContainsFunc(path.node.right);
+                isNodeContainsFunc(path.node.right)
+            );
         }
     },
     [TOKEN_TYPES.CALL_EXPRESSION]: {

@@ -53,10 +53,12 @@ export const destructionModifier = (test, newNameFn) => ({
 });
 
 export const arrowFunctionReturnModifier = () => ({
-    test: node => node.isBodyEntry &&
-        node.parent && node.parent.subType === TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION,
+    test: node =>
+        node.isBodyEntry &&
+        node.parent &&
+        node.parent.subType === TOKEN_TYPES.ARROW_FUNCTION_EXPRESSION,
     updates: {
-        name: (node) => 'return ' + node.name,
+        name: node => 'return ' + node.name,
         type: TOKEN_TYPES.RETURN
     }
 });

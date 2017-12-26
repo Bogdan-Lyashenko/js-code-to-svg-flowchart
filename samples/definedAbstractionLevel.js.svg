@@ -1,0 +1,267 @@
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+                width="342" height="602">
+                
+            <g>
+                <rect x="50" y="80"
+            width="219.4" height="30"
+            style="fill:#fff; stroke:#444; stroke-width:1" />
+                    
+                <line x1="55" y1="80" x2="55" y2="110"
+                style="fill:#fff; stroke:#444; stroke-width:1" />
+                <line x1="264.4" y1="80" x2="264.4" y2="110"
+                style="fill:#fff; stroke:#444; stroke-width:1" />
+             
+                <title>import from&apos;formattier&apos;</title>
+            <text x="70" y="100"
+                font-family="monospace" font-size="13" fill="#222">
+                <tspan x="70" y="100">import from&apos;formattier&apos;</tspan>
+            </text>
+                
+            </g>
+                <g>
+                   <rect x="87" y="128.5"
+            width="76.8" height="30"
+            rx="2" ry="2"
+            style="fill:#81d4fa; stroke:#444; stroke-width:1" />
+                   <title>format</title>
+            <text x="102" y="148.5"
+                font-family="monospace" font-size="13" fill="#222">
+                <tspan x="102" y="148.5">format</tspan>
+            </text>
+                   
+                   
+                </g>
+                <g>
+                   <rect x="87" y="177"
+            width="61.2" height="30"
+            rx="2" ry="2"
+            style="fill:#81d4fa; stroke:#444; stroke-width:1" />
+                   <title>trim</title>
+            <text x="102" y="197"
+                font-family="monospace" font-size="13" fill="#222">
+                <tspan x="102" y="197">trim</tspan>
+            </text>
+                   
+                   
+                </g>
+            <g>
+                <rect x="50" y="240.5"
+            width="188.2" height="30"
+            style="fill:#fff; stroke:#444; stroke-width:1" />
+                    
+                <line x1="55" y1="240.5" x2="55" y2="270.5"
+                style="fill:#fff; stroke:#444; stroke-width:1" />
+                <line x1="233.2" y1="240.5" x2="233.2" y2="270.5"
+                style="fill:#fff; stroke:#444; stroke-width:1" />
+             
+                <title>import from&apos;logger&apos;</title>
+            <text x="70" y="260.5"
+                font-family="monospace" font-size="13" fill="#222">
+                <tspan x="70" y="260.5">import from&apos;logger&apos;</tspan>
+            </text>
+                
+            </g>
+                <g>
+                   <rect x="87" y="289"
+            width="53.4" height="30"
+            rx="2" ry="2"
+            style="fill:#81d4fa; stroke:#444; stroke-width:1" />
+                   <title>log</title>
+            <text x="102" y="309"
+                font-family="monospace" font-size="13" fill="#222">
+                <tspan x="102" y="309">log</tspan>
+            </text>
+                   
+                   
+                </g>
+            <g>
+                <rect x="50" y="352.5"
+            width="193.79999999999998" height="30"
+            rx="3" ry="3"
+            style="fill:#81d4fa; stroke:#444; stroke-width:1" />
+                
+                <line x1="243.79999999999998" y1="362.5" x2="248.79999999999998" y2="362.5"
+                style="fill:#fff; stroke:#444; stroke-width:1" />
+                
+                <line x1="243.79999999999998" y1="372.5" x2="248.79999999999998" y2="372.5"
+                style="fill:#fff; stroke:#444; stroke-width:1" />
+
+                <path d="M248.79999999999998, 353.5 L268.79999999999995, 367.5 L248.79999999999998, 381.5 Z" 
+        fill="#fff" stroke="#444" stroke-width="1" />
+                             
+                <title>export default  print</title>
+            <text x="65" y="372.5"
+                font-family="monospace" font-size="13" fill="#222">
+                <tspan x="65" y="372.5">export default  print</tspan>
+            </text>
+                
+            </g>
+            <g>
+                <rect x="87" y="401"
+            width="182.6" height="30"
+            style="fill:#a5d6a7; stroke:#444; stroke-width:1" />
+                    
+                <line x1="97" y1="401" x2="97" y2="431"
+                style="fill:#a5d6a7; stroke:#444; stroke-width:1" />
+                <line x1="259.6" y1="401" x2="259.6" y2="431"
+                style="fill:#a5d6a7; stroke:#444; stroke-width:1" />
+             
+                <title>print = (list) =&gt;</title>
+            <text x="112" y="421"
+                font-family="monospace" font-size="13" fill="#222">
+                <tspan x="112" y="421">print = (list) =&gt;</tspan>
+            </text>
+                
+            </g>
+            <g>
+                <rect x="50" y="449.5"
+            width="178.2" height="30"
+            rx="3" ry="3"
+            style="fill:#81d4fa; stroke:#444; stroke-width:1" />
+                
+                <line x1="228.2" y1="459.5" x2="233.2" y2="459.5"
+                style="fill:#fff; stroke:#444; stroke-width:1" />
+                
+                <line x1="228.2" y1="469.5" x2="233.2" y2="469.5"
+                style="fill:#fff; stroke:#444; stroke-width:1" />
+
+                <path d="M233.2, 450.5 L253.2, 464.5 L233.2, 478.5 Z" 
+        fill="#fff" stroke="#444" stroke-width="1" />
+                             
+                <title>export formatString</title>
+            <text x="65" y="469.5"
+                font-family="monospace" font-size="13" fill="#222">
+                <tspan x="65" y="469.5">export formatString</tspan>
+            </text>
+                
+            </g>
+            <g>
+                <rect x="87" y="498"
+            width="229.4" height="30"
+            style="fill:#a5d6a7; stroke:#444; stroke-width:1" />
+                    
+                <line x1="97" y1="498" x2="97" y2="528"
+                style="fill:#a5d6a7; stroke:#444; stroke-width:1" />
+                <line x1="306.4" y1="498" x2="306.4" y2="528"
+                style="fill:#a5d6a7; stroke:#444; stroke-width:1" />
+             
+                <title>formatString = (str) =&gt;</title>
+            <text x="112" y="518"
+                font-family="monospace" font-size="13" fill="#222">
+                <tspan x="112" y="518">formatString = (str) =&gt;</tspan>
+            </text>
+                
+            </g>
+            <g>
+                <rect x="50" y="546.5"
+            width="193.79999999999998" height="30"
+            rx="3" ry="3"
+            style="fill:#81d4fa; stroke:#444; stroke-width:1" />
+                
+                <line x1="243.79999999999998" y1="556.5" x2="248.79999999999998" y2="556.5"
+                style="fill:#fff; stroke:#444; stroke-width:1" />
+                
+                <line x1="243.79999999999998" y1="566.5" x2="248.79999999999998" y2="566.5"
+                style="fill:#fff; stroke:#444; stroke-width:1" />
+
+                <path d="M248.79999999999998, 547.5 L268.79999999999995, 561.5 L248.79999999999998, 575.5 Z" 
+        fill="#fff" stroke="#444" stroke-width="1" />
+                             
+                <title>export MAX_STR_LENGTH</title>
+            <text x="65" y="566.5"
+                font-family="monospace" font-size="13" fill="#222">
+                <tspan x="65" y="566.5">export MAX_STR_LENGTH</tspan>
+            </text>
+                
+            </g>
+            <g>
+               <rect x="25" y="13.75"
+            width="216.6" height="24"
+            style="fill:#fff59d; stroke:#444; stroke-width:1" />
+               <circle cx="25" cy="25" r="15"
+        style="fill:#fff59d; stroke:#444; stroke-width:1" />
+               <title>Program: source module</title>
+            <text x="55" y="30"
+                font-family="monospace" font-size="13" fill="#222">
+                <tspan x="55" y="30">Program: source module</tspan>
+            </text>
+            </g>
+            <g>
+               <path d="M25, 40 L25 91 Q25 95
+                29 95
+                L42 95 "
+        style="fill:none; stroke:#444; stroke-width:1" />
+               <path d="M42, 92 L50, 95 L42, 98 Z" 
+        fill="#333" />
+            </g>
+            <g>
+               <path d="M68.5, 110 L68.5 139.5 Q68.5 143.5
+                72.5 143.5
+                L87 143.5 "
+        style="fill:none; stroke:#444; stroke-width:1" />
+               false
+            </g>
+            <g>
+               <path d="M68.5, 110 L68.5 188 Q68.5 192
+                72.5 192
+                L87 192 "
+        style="fill:none; stroke:#444; stroke-width:1" />
+               false
+            </g>
+            <g>
+               <path d="M25, 40 L25 251.5 Q25 255.5
+                29 255.5
+                L42 255.5 "
+        style="fill:none; stroke:#444; stroke-width:1" />
+               <path d="M42, 252.5 L50, 255.5 L42, 258.5 Z" 
+        fill="#333" />
+            </g>
+            <g>
+               <path d="M68.5, 270.5 L68.5 300 Q68.5 304
+                72.5 304
+                L87 304 "
+        style="fill:none; stroke:#444; stroke-width:1" />
+               false
+            </g>
+            <g>
+               <path d="M25, 40 L25 363.5 Q25 367.5
+                29 367.5
+                L42 367.5 "
+        style="fill:none; stroke:#444; stroke-width:1" />
+               <path d="M42, 364.5 L50, 367.5 L42, 370.5 Z" 
+        fill="#333" />
+            </g>
+            <g>
+               <path d="M68.5, 382.5 L68.5 412 Q68.5 416
+                72.5 416
+                L79 416 "
+        style="fill:none; stroke:#444; stroke-width:1" />
+               <path d="M79, 413 L87, 416 L79, 419 Z" 
+        fill="#333" />
+            </g>
+            <g>
+               <path d="M25, 40 L25 460.5 Q25 464.5
+                29 464.5
+                L42 464.5 "
+        style="fill:none; stroke:#444; stroke-width:1" />
+               <path d="M42, 461.5 L50, 464.5 L42, 467.5 Z" 
+        fill="#333" />
+            </g>
+            <g>
+               <path d="M68.5, 479.5 L68.5 509 Q68.5 513
+                72.5 513
+                L79 513 "
+        style="fill:none; stroke:#444; stroke-width:1" />
+               <path d="M79, 510 L87, 513 L79, 516 Z" 
+        fill="#333" />
+            </g>
+            <g>
+               <path d="M25, 40 L25 557.5 Q25 561.5
+                29 561.5
+                L42 561.5 "
+        style="fill:none; stroke:#444; stroke-width:1" />
+               <path d="M42, 558.5 L50, 561.5 L42, 564.5 Z" 
+        fill="#333" />
+            </g>
+            </svg>

@@ -71,11 +71,11 @@ export const getFunctionParametersCode = params => {
 export const returnConverter = path => {
     const node = path.node;
     if (
-        node.argument && (
-            [TOKEN_TYPES.CONDITIONAL_EXPRESSION, TOKEN_TYPES.OBJECT_EXPRESSION].includes(
-                node.argument.type
-            ) ||
-        isFunctionType(node.argument.type))
+        node.argument &&
+        ([TOKEN_TYPES.CONDITIONAL_EXPRESSION, TOKEN_TYPES.OBJECT_EXPRESSION].includes(
+            node.argument.type
+        ) ||
+            isFunctionType(node.argument.type))
     ) {
         return 'return';
     }
@@ -165,7 +165,10 @@ export const variableDeclaratorConverter = path => {
     const node = path.node,
         parentKind = (path.parent && path.parent.kind) || '';
 
-    if (node.init && (isNodeContainsFunc(node.init) || node.init.type === TOKEN_TYPES.CONDITIONAL_EXPRESSION)) {
+    if (
+        node.init &&
+        (isNodeContainsFunc(node.init) || node.init.type === TOKEN_TYPES.CONDITIONAL_EXPRESSION)
+    ) {
         return `${parentKind} ${node.id.name} = `;
     }
 
@@ -206,9 +209,9 @@ export const assignmentExpressionConverter = ({ node }) => {
     }
 
     if (node.right.type === TOKEN_TYPES.OBJECT_EXPRESSION) {
-        return `${getLeftAssignmentName(
-            node.left
-        )} ${node.operator} ${objectExpressionConverter()}`;
+        return `${getLeftAssignmentName(node.left)} ${
+            node.operator
+        } ${objectExpressionConverter()}`;
     }
 
     if ([TOKEN_TYPES.CALL_EXPRESSION, TOKEN_TYPES.NEW_EXPRESSION].includes(node.right.type)) {

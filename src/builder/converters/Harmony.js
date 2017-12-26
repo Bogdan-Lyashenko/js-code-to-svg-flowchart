@@ -45,9 +45,9 @@ const getExportDeclarations = declaration => {
 };
 
 export const classDeclarationConverter = ({ node }) => {
-    return `class ${generate(node.id).code} ${node.superClass
-        ? ` extends ${generate(node.superClass).code}`
-        : ''}`;
+    return `class ${generate(node.id).code} ${
+        node.superClass ? ` extends ${generate(node.superClass).code}` : ''
+    }`;
 };
 
 export const objectPatternConverter = () => '{...}';

@@ -68,7 +68,9 @@ export const getCircle = (x, y, r, theme) => {
 
 export const getText = (x, y, theme, text) => {
     return `<text x="${x}" y="${y}"
-        font-family="${theme.fontFamily}" font-size="${theme.fontSize}" fill="${theme.textColor}">${text}</text>`;
+        font-family="${theme.fontFamily}" font-size="${theme.fontSize}" fill="${
+        theme.textColor
+    }">${text}</text>`;
 };
 
 export const getClosedPath = (points, theme) => {

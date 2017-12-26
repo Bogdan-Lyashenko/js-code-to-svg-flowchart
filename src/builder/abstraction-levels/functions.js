@@ -6,7 +6,7 @@ export const getCustomFunctionDeclaration = () => {
 
     return {
         ...functionDeclaration,
-        getName: (path) => {
+        getName: path => {
             let nameConfig = functionDeclaration.getName(path);
 
             if (path.parent.type === TOKEN_TYPES.OBJECT_PROPERTY && path.parent.key) {
