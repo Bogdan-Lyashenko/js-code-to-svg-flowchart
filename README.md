@@ -558,6 +558,10 @@ Result:
 
 See the example running [here](https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/docs/examples/debug-rendering/index.html) or check out complete source code [of it](/docs/examples/debug-rendering/index.html).
 
+### Tools
+Thanks to @LucasBadico we got Visual Studio extension. Check [it out](https://marketplace.visualstudio.com/items?itemName=lucasbadico.code-flowchart).
+![](https://user-images.githubusercontent.com/16516889/32584821-824634c8-c4e1-11e7-9e83-4c97561f01e0.png)
+
 ### Under the hood
 Main stages:
 - get AST from code, [Babylon](https://github.com/babel/babel/tree/master/packages/babylon) parser is used (develops by Babel team)
