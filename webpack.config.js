@@ -17,7 +17,8 @@ const config = {
     filename: outputFile,
     library: libraryName,
     libraryTarget: 'umd',
-    umdNamedDefine: true
+    umdNamedDefine: true,
+    globalObject: "(typeof window !== 'undefined' ? window : this)"
   },
   module: {
     rules: [

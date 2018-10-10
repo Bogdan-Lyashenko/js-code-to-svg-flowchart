@@ -7,7 +7,7 @@
 		exports["js2flowchart"] = factory();
 	else
 		root["js2flowchart"] = factory();
-})(window, function() {
+})((typeof window !== 'undefined' ? window : this), function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
