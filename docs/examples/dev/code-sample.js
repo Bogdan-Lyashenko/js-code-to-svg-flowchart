@@ -194,3 +194,22 @@ const buildConnectionConfig = (toShape, fromShape) => {
 };
 
     `;
+
+const tsCode = `
+
+export interface Image {
+    imageUri: string;
+    link: string;
+    board: string;
+    comments: {text: string; user: string;}[];
+}
+
+export function getUser(id: string, callback: (user: User) => void) {
+    db.collection('users', function(error, users) {
+        if(error) { console.error(error); return; }
+        users.find({_id: id}).batchSize(10).nextObject(function(error, user) {
+            callback(user);
+        });
+    });
+}
+`;
