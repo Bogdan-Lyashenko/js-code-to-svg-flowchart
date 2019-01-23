@@ -1,5 +1,7 @@
 > Why? While I've been working on [Under-the-hood-ReactJS](https://github.com/Bogdan-Lyashenko/Under-the-hood-ReactJS) I spent enormous amount of time on creating schemes. Each change in code or flowchart affects all entire scheme instantly, forcing you to move and align 'broken pieces'. Just repeated manual work...
 
+## For multy-files support checkout [codecrumbs project](https://github.com/Bogdan-Lyashenko/codecrumbs) I am building right now.
+
 Imagine a library which takes any JS code and generate SVG flowchart from it, works on client and server. Allows you easily adjust styles scheme for your context or demonstrate your code logic from different abstractions levels. Highlighting, destructing whole blocks, custom modifiers for your needs etc.
 
 # js2flowchart.js [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Generate%20beautiful%20flowcharts%20from%20JavaScript&url=https://github.com/Bogdan-Lyashenko/js-code-to-svg-flowchart&via=bliashenko&hashtags=javascript,flowchart,svg)
