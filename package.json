@@ -17,8 +17,8 @@
     "js2flowchart": "./cli/index.cli.js"
   },
   "devDependencies": {
-    "babel-loader": "7.0.0",
-    "babel-preset-es2015": "6.24.1",
+    "@babel/preset-env": "^7.5.5",
+    "babel-loader": "^8.0.0",
     "prettier": "1.9.2",
     "webpack": "^4.20.2",
     "webpack-cli": "^3.1.2"
@@ -34,15 +34,10 @@
     "commonjs"
   ],
   "dependencies": {
-    "babel-core": "^6.26.3",
-    "babel-generator": "7.0.0-beta.3",
-    "babel-plugin-add-module-exports": "^0.2.1",
-    "babel-plugin-transform-es2015-destructuring": "^6.23.0",
-    "babel-plugin-transform-es2015-spread": "^6.22.0",
-    "babel-plugin-transform-object-rest-spread": "^6.23.0",
-    "babel-traverse": "7.0.0-beta.3",
-    "babel-types": "^6.25.0",
-    "babylon": "7.0.0-beta.42",
+    "@babel/core": "^7.1.2",
+    "@babel/generator": "^7.5.5",
+    "@babel/parser": "^7.5.5",
+    "@babel/traverse": "^7.5.5",
     "commander": "^2.12.1",
     "deepmerge": "^1.5.1",
     "global": "^4.3.2",

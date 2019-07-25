@@ -1,4 +1,4 @@
-import generate from 'babel-generator';
+import generate from '@babel/generator';
 import { TOKEN_TYPES, CLASS_FUNCTION_KINDS } from 'shared/constants';
 
 export const idleConverter = path => {

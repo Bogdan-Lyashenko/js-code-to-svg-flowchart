@@ -1,6 +1,5 @@
 /* global __dirname, require, module*/
 
-const webpack = require('webpack');
 const path = require('path');
 
 let libraryName = 'js2flowchart';

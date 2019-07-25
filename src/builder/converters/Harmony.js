@@ -1,4 +1,4 @@
-import generate from 'babel-generator';
+import generate from '@babel/generator';
 import { TOKEN_TYPES } from 'shared/constants';
 
 export const importDeclarationConverter = ({ node }) => 'import from' + generate(node.source).code;

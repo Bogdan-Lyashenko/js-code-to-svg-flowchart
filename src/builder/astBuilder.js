@@ -1,4 +1,4 @@
-import * as babylon from 'babylon';
+import * as babelParser from '@babel/parser';
 import { mergeObjectStructures } from 'shared/utils/composition';
 
 import { TOKEN_KEYS } from 'shared/constants';
@@ -6,13 +6,11 @@ import { setupPointer } from 'shared/utils/treeLevelsPointer';
 import { logError } from 'shared/utils/logger';
 import defaultAstConfig from './astParserConfig';
 
-import traverse from 'babel-traverse';
-
 export const parseCodeToAST = (code, config = {}) => {
     let ast = [];
 
     try {
-        ast = babylon.parse(code, mergeObjectStructures(defaultAstConfig, config));
+        ast = babelParser.parse(code, mergeObjectStructures(defaultAstConfig, config));
     } catch (e) {
         logError('Error at parseCodeToAST: ' + e.message, e.loc, e.stack);
         throw e;

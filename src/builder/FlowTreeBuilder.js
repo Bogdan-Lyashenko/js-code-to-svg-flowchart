@@ -1,4 +1,4 @@
-import traverse from 'babel-traverse';
+import traverse from '@babel/traverse';
 
 import { DefinitionsList } from './entryDefinitionsMap';
 import { parseCodeToAST, buildVisitor } from './astBuilder';
