@@ -1,4 +1,6 @@
 const code = `
+    class A { b = 1; }
+
     function indexSearch(list, element) {
         let currentIndex,
             currentElement,

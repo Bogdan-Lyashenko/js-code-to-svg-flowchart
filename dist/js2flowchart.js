@@ -51255,7 +51255,7 @@ var getBasicEntryConfig = function getBasicEntryConfig(item, path) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   sourceType: 'module',
-  plugins: ['objectRestSpread', 'jsx', 'typescript']
+  plugins: ['objectRestSpread', 'jsx', 'typescript', 'classProperties', 'asyncGenerators', 'dynamicImport', 'exportDefaultFrom', 'exportNamespaceFrom']
 });
 
 /***/ }),
