@@ -1,6 +1,6 @@
 > Why? While I've been working on [Under-the-hood-ReactJS](https://github.com/Bogdan-Lyashenko/Under-the-hood-ReactJS) I spent enormous amount of time on creating schemes. Each change in code or flowchart affects all entire scheme instantly, forcing you to move and align 'broken pieces'. Just repeated manual work...
 
-> If you like this project, follow me on Twitter[@bliashenko](https://twitter.com/bliashenko) to hear about things I am building.
+> If you like this project, follow me on Twitter [@bliashenko](https://twitter.com/bliashenko) to hear about things I am building.
 
 ### For multi-files support checkout [codecrumbs project](https://github.com/Bogdan-Lyashenko/codecrumbs) I am building right now.
 
