@@ -568,7 +568,7 @@ Thanks to @LucasBadico we got Visual Studio extension. Check [it out](https://ma
 
 ### Under the hood
 Main stages:
-- get AST from code, [Babylon](https://github.com/babel/babel/tree/master/packages/babylon) parser is used (develops by Babel team)
+- get AST from code, [babel-parser](https://babeljs.io/docs/en/next/babel-parser.html) is used (develops by Babel team)
 - convert AST to FlowTree, remove and combing nodes ([FlowTreeBuilder](src/builder/FlowTreeBuilder.js))
   - apply modifiers ([FlowTreeModifier](src/builder/FlowTreeModifier.js))
 - create SVG objects based on FlowTree ([SVGRender](src/render/svg/SVGRender.js))
