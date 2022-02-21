@@ -9,6 +9,7 @@ export default {
         'dynamicImport',
         'exportDefaultFrom',
         'exportNamespaceFrom',
-        'optionalChaining'
+        'optionalChaining',
+        'nullishCoalescingOperator'
     ]
 };
