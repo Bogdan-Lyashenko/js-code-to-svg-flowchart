@@ -8,6 +8,8 @@ export default {
         'asyncGenerators',
         'dynamicImport',
         'exportDefaultFrom',
-        'exportNamespaceFrom'
+        'exportNamespaceFrom',
+        'optionalChaining',
+        'nullishCoalescingOperator'
     ]
 };
