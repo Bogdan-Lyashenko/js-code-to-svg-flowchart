@@ -1,10 +1,15 @@
-const {createFlowTreeBuilder, createSVGRender} = window.js2flowchart;
+const { createSVGRender, convertCodeToFlowTree } = window.js2flowchart;
 
-const flowTreeBuilder = createFlowTreeBuilder(),
+const flowTree = convertCodeToFlowTree(`const longNamelongNamelongNamelongNamelongName = 1`),
     svgRender = createSVGRender();
 
-const flowTree = flowTreeBuilder.build(tsCode);
-const shapesTree = svgRender.buildShapesTree(flowTree);
+//applying another theme for render
+svgRender.applyTheme({
+    common: {
+        maxNameLength: 10
+    }
+});
 
+const svg = svgRender.buildShapesTree(flowTree).print();
 
-document.getElementById('svgImage').innerHTML = shapesTree.print();
+document.getElementById('svgImage').innerHTML = svg

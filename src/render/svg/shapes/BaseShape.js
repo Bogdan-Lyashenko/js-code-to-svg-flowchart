@@ -28,7 +28,7 @@ export const delegateInit = (shape, themeFieldName) => {
 export const getInitialState = (node, { x, y }, theme, type) => {
     const nameParts = splitNameString(
             node.name,
-            MAX_NAME_STR_LENGTH,
+            theme.maxNameLength || MAX_NAME_STR_LENGTH,
             getNameSplitterTokensIterator()
         ),
         totalNamePartsNumber = nameParts.length,

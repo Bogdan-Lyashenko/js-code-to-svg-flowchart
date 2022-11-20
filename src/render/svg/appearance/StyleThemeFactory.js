@@ -35,6 +35,18 @@ export const getBlurredTheme = () => getTheme(ThemeNamesMap.BLURRED);
 
 export const getLightTheme = () => getTheme(ThemeNamesMap.LIGHT);
 
-export const applyStyleToTheme = (theme, styles) => mergeObjectStructures(theme, styles);
+export const applyStyleToTheme = (theme, styles) => {
+    const { common, ...shapes } = styles;
+    const deepMerge = mergeObjectStructures(theme, shapes);
+    if (!common) return deepMerge;
+
+    return Object.keys(deepMerge).reduce(
+        (acc, key) => ({
+            ...acc,
+            [key]: { ...deepMerge[key], ...common }
+        }),
+        {}
+    );
+};
 
 export const buildColorsBasedTheme = colors => buildTheme(colors);

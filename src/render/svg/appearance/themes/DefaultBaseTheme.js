@@ -20,12 +20,12 @@ export const DefaultColors = {
     debugModeFillColor: '#666'
 };
 
-export const buildTheme = color => {
+export const buildTheme = config => {
     const BaseShape = {
-        strokeColor: color.strokeColor,
+        strokeColor: config.strokeColor,
         strokeWidth: 1,
-        fillColor: color.defaultFillColor,
-        textColor: color.textColor,
+        fillColor: config.defaultFillColor,
+        textColor: config.textColor,
         fontFamily: 'monospace',
         fontSize: 13,
         lineHeight: 5, //depends on fontSize
@@ -39,7 +39,8 @@ export const buildTheme = color => {
         complexTypeExtraSpace: 15,
 
         debugFontSize: 8,
-        debugTextColor: color.debugModeFillColor
+        debugTextColor: config.debugModeFillColor,
+        ...config
     };
 
     return {
@@ -50,10 +51,10 @@ export const buildTheme = color => {
                     x: 8,
                     y: 6
                 },
-                fillColor: color.arrowFillColor
+                fillColor: config.arrowFillColor
             },
             line: {
-                strokeColor: color.strokeColor,
+                strokeColor: config.strokeColor,
                 strokeWidth: 1,
                 curveTurnRadius: 4
             },
@@ -66,19 +67,19 @@ export const buildTheme = color => {
 
         Rectangle: {
             ...BaseShape,
-            fillColor: color.rectangleFillColor,
+            fillColor: config.rectangleFillColor,
             dot: {
                 ...BaseShape,
                 offset: 4,
                 radius: 2,
-                fillColor: color.rectangleDotFillColor
+                fillColor: config.rectangleDotFillColor
             },
             roundBorder: 3
         },
 
         VerticalEdgedRectangle: {
             ...BaseShape,
-            fillColor: color.functionFillColor,
+            fillColor: config.functionFillColor,
             edgeOffset: 10
         },
 
@@ -86,12 +87,12 @@ export const buildTheme = color => {
             ...BaseShape,
             radius: 15,
             padding: 3,
-            fillColor: color.rootCircleFillColor
+            fillColor: config.rootCircleFillColor
         },
 
         LoopRhombus: {
             ...BaseShape,
-            fillColor: color.loopFillColor,
+            fillColor: config.loopFillColor,
             thinPartOffset: 15,
             rhombusSize: 50,
             roundBorder: 3,
@@ -103,7 +104,7 @@ export const buildTheme = color => {
 
         ConditionRhombus: {
             ...BaseShape,
-            fillColor: color.conditionFillColor,
+            fillColor: config.conditionFillColor,
             thinPartOffset: 15,
             roundBorder: 3,
             childOffset: 20,
@@ -129,24 +130,24 @@ export const buildTheme = color => {
         ReturnStatement: {
             ...BaseShape,
             roundBorder: 3,
-            fillColor: color.rectangleFillColor,
+            fillColor: config.rectangleFillColor,
             arrow: {
                 ...BaseShape,
                 handlerLength: 5,
                 sizeX: 16,
                 sizeY: 22,
-                fillColor: color.functionFillColor
+                fillColor: config.functionFillColor
             }
         },
 
         DestructedNode: {
             ...BaseShape,
-            fillColor: color.destructedNodeFillColor,
+            fillColor: config.destructedNodeFillColor,
             roundBorder: 2,
             suffix: {
                 ...BaseShape,
                 roundBorder: 2,
-                fillColor: color.destructedNodeFillColor,
+                fillColor: config.destructedNodeFillColor,
                 width: 8,
                 space: 4
             }
@@ -154,65 +155,65 @@ export const buildTheme = color => {
 
         ClassDeclaration: {
             ...BaseShape,
-            fillColor: color.classFillColor,
+            fillColor: config.classFillColor,
             edgeOffset: 10
         },
 
         DebuggerStatement: {
             ...BaseShape,
-            fillColor: color.debuggerFillColor,
+            fillColor: config.debuggerFillColor,
             roundBorder: 2
         },
 
         ExportDeclaration: {
             ...BaseShape,
             roundBorder: 3,
-            fillColor: color.exportFillColor,
+            fillColor: config.exportFillColor,
             arrow: {
                 ...BaseShape,
                 handlerLength: 5,
                 sizeX: 20,
                 sizeY: 28,
-                fillColor: color.defaultFillColor
+                fillColor: config.defaultFillColor
             }
         },
 
         ImportDeclaration: {
             ...BaseShape,
-            fillColor: color.defaultFillColor,
+            fillColor: config.defaultFillColor,
             edgeOffset: 5
         },
 
         ImportSpecifier: {
             ...BaseShape,
-            fillColor: color.exportFillColor
+            fillColor: config.exportFillColor
         },
 
         ThrowStatement: {
             ...BaseShape,
-            fillColor: color.throwFillColor
+            fillColor: config.throwFillColor
         },
 
         TryStatement: {
             ...BaseShape,
-            fillColor: color.tryFillColor
+            fillColor: config.tryFillColor
         },
 
         CatchClause: {
             ...BaseShape,
-            fillColor: color.throwFillColor,
+            fillColor: config.throwFillColor,
             arrow: {
                 ...BaseShape,
                 handlerLength: 2,
                 sizeX: 16,
                 sizeY: 28,
-                fillColor: color.throwFillColor
+                fillColor: config.throwFillColor
             }
         },
 
         SwitchStatement: {
             ...BaseShape,
-            fillColor: color.conditionFillColor,
+            fillColor: config.conditionFillColor,
             thinPartOffset: 15,
             roundBorder: 3,
             childOffset: 20,
@@ -226,36 +227,36 @@ export const buildTheme = color => {
 
         BreakStatement: {
             ...BaseShape,
-            fillColor: color.rectangleFillColor,
+            fillColor: config.rectangleFillColor,
             arrow: {
                 ...BaseShape,
                 handlerLength: 5,
                 sizeX: 16,
                 sizeY: 28,
-                fillColor: color.conditionFillColor
+                fillColor: config.conditionFillColor
             }
         },
 
         SwitchCase: {
             ...BaseShape,
-            fillColor: color.conditionFillColor
+            fillColor: config.conditionFillColor
         },
 
         ContinueStatement: {
             ...BaseShape,
-            fillColor: color.rectangleFillColor,
+            fillColor: config.rectangleFillColor,
             arrow: {
                 ...BaseShape,
                 handlerLength: 5,
                 sizeX: 16,
                 sizeY: 28,
-                fillColor: color.loopFillColor
+                fillColor: config.loopFillColor
             }
         },
 
         ObjectProperty: {
             ...BaseShape,
-            fillColor: color.rectangleFillColor
+            fillColor: config.rectangleFillColor
         },
 
         CallExpression: {
@@ -264,9 +265,9 @@ export const buildTheme = color => {
                 ...BaseShape,
                 offset: 6,
                 radius: 4,
-                fillColor: color.rectangleDotFillColor
+                fillColor: config.rectangleDotFillColor
             },
-            fillColor: color.callFillColor
+            fillColor: config.callFillColor
         }
     };
 };

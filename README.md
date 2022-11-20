@@ -394,6 +394,9 @@ What if you need different styles, not only colors? Here it's ```svgRender.apply
 Let's take an example with Return statement.
 ```javascript
 svgRender.applyTheme({
+    common: {
+        maxNameLength: 100
+    },
     ReturnStatement: {
         fillColor: 'red',
         roundBorder: 10
