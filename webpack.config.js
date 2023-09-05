@@ -1,6 +1,7 @@
 /* global __dirname, require, module*/
 
 const path = require('path');
+const webpack = require('webpack');
 
 let libraryName = 'js2flowchart';
 
@@ -34,8 +35,17 @@ const config = {
         path.resolve('./src/shared'), path.resolve('./src/render'),
         path.resolve('./src/builder'), path.resolve('./src/presentation-generator')
     ],
+    fallback: {
+      "buffer": require.resolve("buffer")
+    },
     extensions: ['.json', '.js']
   },
+  plugins: [
+    new webpack.ProvidePlugin({
+        process: 'process/browser',
+        Buffer: ['buffer', 'Buffer'],
+    })
+  ],
   mode: process.env.NODE_ENV || 'development'
 };
 

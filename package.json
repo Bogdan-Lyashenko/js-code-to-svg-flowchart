@@ -1,6 +1,6 @@
 {
   "name": "js2flowchart",
-  "version": "1.3.4",
+  "version": "1.3.5",
   "author": "Bohdan Liashenko",
   "license": "MIT",
   "repository": {
@@ -18,13 +18,14 @@
     "js2flowchart": "./cli/index.cli.js"
   },
   "devDependencies": {
-    "@babel/core": "^7.1.2",
-    "@babel/cli": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "babel-loader": "^8.0.0",
-    "prettier": "1.9.2",
-    "webpack": "^4.20.2",
-    "webpack-cli": "^3.1.2"
+    "@babel/cli": "^7.22.10",
+    "@babel/core": "^7.22.10",
+    "@babel/preset-env": "^7.22.10",
+    "babel-loader": "^9.1.3",
+    "buffer": "^6.0.3",
+    "prettier": "3.0.2",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
   },
   "keywords": [
     "svg",
@@ -37,13 +38,13 @@
     "commonjs"
   ],
   "dependencies": {
-    "@babel/generator": "^7.5.5",
-    "@babel/parser": "^7.5.5",
-    "@babel/traverse": "^7.5.5",
-    "commander": "^2.12.1",
-    "deepmerge": "^1.5.1",
-    "global": "^4.3.2",
-    "string-width": "^2.1.1",
+    "@babel/generator": "^7.22.10",
+    "@babel/parser": "^7.22.10",
+    "@babel/traverse": "^7.22.10",
+    "commander": "^11.0.0",
+    "deepmerge": "^4.3.1",
+    "global": "^4.4.0",
+    "string-width": "^6.1.0",
     "xml-escape": "^1.1.0"
   }
 }
